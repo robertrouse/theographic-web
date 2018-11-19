@@ -13,15 +13,13 @@ exports.onCreateNode = ({node, actions, getNode}) => {
 
   if (node && node.internal.type === `Airtable` && node.table === `Places`) {
     slug = `/place/${node.data.Place_Lookup.replace(/ /g, '-')
-      .replace(/[,&]/g, '')
-      .toLowerCase()}/`
+      .replace(/[,&]/g, '')}/`
 
     // Add slug as a field on the node.
     createNodeField({node, name: `slug`, value: slug})
   } else if (node && node.internal.type === `Airtable` && node.table === `People`) {
     slug = `/person/${node.data.Person_Lookup.replace(/ /g, '-')
-      .replace(/[,&]/g, '')
-      .toLowerCase()}/`
+      .replace(/[,&]/g, '')}/`
 
     // Add slug as a field on the node.
     createNodeField({node, name: `slug`, value: slug})
@@ -31,9 +29,9 @@ exports.onCreateNode = ({node, actions, getNode}) => {
 exports.createPages = ({graphql, actions}) => {
 
   const placesPages = makingPages(`src/templates/placeTemplate.js`, 'Places', 'Place_Lookup', graphql, actions)
-  // const peoplePages = makingPages(`src/templates/personTemplate.js`, 'People', 'Person_Lookup', graphql, actions)
+  const peoplePages = makingPages(`src/templates/personTemplate.js`, 'People', 'Person_Lookup', graphql, actions)
 
-  return placesPages;
+  return peoplePages;
 
 }
 
@@ -47,11 +45,11 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
       graphql(
         `
           {
-            allAirtable(filter: { table: { eq: "Places" }}) {
+            allAirtable(filter: { table: { eq: "${table}" }}) {
               edges {
                 node {
                   data {
-                    Place_Lookup
+                    ${lookupName}
                   }
                   fields {
                     slug

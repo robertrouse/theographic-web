@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'Gatsby Default Starter',
+    title: 'Theographic',
   },
   plugins: [
     {
@@ -20,12 +20,12 @@ module.exports = {
             tableView: 'Grid view',
             tableLinks: ['Book'],
           },
-          // {
-          //   baseId: 'app5UK4s70d5PwupX',
-          //   tableName: 'Verses',
-          //   tableView: 'Grid',
-          //   tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events'],
-          // },
+          {
+            baseId: 'app5UK4s70d5PwupX',
+            tableName: 'Verses',
+            tableView: 'Grid',
+            tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events_Described'],
+          },
           {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Places',
@@ -42,7 +42,7 @@ module.exports = {
             tableName: 'People',
             tableView: 'Grid view',
             tableLinks: [
-              'Member_of_Groups',
+              'Member of Groups',
               'Mother',
               'Father',
               'Birth_Place',
@@ -52,19 +52,23 @@ module.exports = {
               'Siblings',
               'Half_Siblings_Same_Mother',
               'Half_Siblings_Same_Father',
-              'Chapters_Written'
+              'Chapters_Written',
+              'Has Been to',
+              'Verses',
+              'Chapters Written',
+              'Personal network'
             ],
           },
-          // {
-          //   baseId: 'app5UK4s70d5PwupX',
-          //   tableName: 'People Groups',
-          //   tableView: 'Grid view',
-          // },
+          {
+            baseId: 'app5UK4s70d5PwupX',
+            tableName: 'People Groups',
+            tableView: 'Grid view',
+          },
           {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Events',
             tableView: 'Grid View',
-            tableLinks: ['People', 'Places', 'Preceding_Event','Start Year'],
+            tableLinks: ['People', 'Places', 'Preceding_Event','Start Year','Verses_Described'],
           }
         ]
       }
