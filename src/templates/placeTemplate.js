@@ -15,7 +15,7 @@ function DateGrouping (props) {
   const eventGroup = props.eventGroup
   const year = props.year
 
-  const listItems = eventGroup.map((event) => <li key={event.data.Event_Name}><a href="#">{event.data.Event_Name}</a></li>)
+  const listItems = eventGroup.map((event) => <li key={event.data.Event_Name}><a href={`/event/${event.data.Event_Name}`}>{event.data.Event_Name}</a></li>)
   return (
     <div>
       <div className="year-label">{year} A.D.</div>
@@ -38,14 +38,16 @@ function PeopleList (props) {
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return people.map((person, i) => <React.Fragment key={i}>
     {i > 0 && ', '}
-    <a href="#">{person.data.Name}</a>
+    <a href={`/person/${person.data.Person_Lookup}/`}>{person.data.Name}</a>
   </React.Fragment>)
 }
 
 function BookList (props) {
+  if(!props.verses) return <div></div>
   const verses = props.verses.map(v => {
     return {
       book: v.data.Book[0].data.Osis_Name,
+      Osis_Ref: v.data.Osis_Ref,
       bookCannonicalOrder: v.data.Book[0].data.Canonical_Order,
       chapter: v.data.Chapter[0].data.Chapter_Lookup.split('.')[1],
       verse: v.data.Verse_Num
@@ -74,11 +76,11 @@ function VerseList (props) {
       const key = `${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}`
       if (numberOfAdjacentVerses) {
         listOfVerses.push(<a key={key}
-                             href="#">{`${firstVerse ? ' ' : ', '}${verse.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
+                             href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{`${firstVerse ? ' ' : ', '}${verse.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
         numberOfAdjacentVerses = 0
       }
       else {
-        listOfVerses.push(<a key={key} href="#">{key}</a>)
+        listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{key}</a>)
       }
       firstOfAdjacentVerses = verse
       firstVerse = false
@@ -87,10 +89,10 @@ function VerseList (props) {
   const key = `${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}`
   if (numberOfAdjacentVerses) {
     listOfVerses.push(<a key={key}
-                         href="#">{`${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
+                         href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{`${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
   }
   else {
-    listOfVerses.push(<a key={key} href="#">{key}</a>)
+    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{key}</a>)
   }
   return listOfVerses
 }
@@ -113,9 +115,9 @@ class Place extends React.Component {
         </Helmet>
         <div className="container">
           <h1 className="heading">{data.airtable.data.KJV_Name}</h1>
-          <img src={`/images/${data.airtable.data.Place_Lookup}-wide.png`}  sizes="(max-width: 767px) 100vw, 750px" alt=""
+          <img src={`/images/${data.airtable.data.Place_Lookup}-wide.png`} sizes="(max-width: 767px) 100vw, 750px" alt=""
                className="map"/>
-          <img src={`/images/${data.airtable.data.Place_Lookup}-detail.png`}  sizes="(max-width: 767px) 100vw, 750px" alt=""
+          <img src={`/images/${data.airtable.data.Place_Lookup}-detail.png`} sizes="(max-width: 767px) 100vw, 750px" alt=""
                className="map"/>
           <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_text}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
@@ -124,7 +126,7 @@ class Place extends React.Component {
           <h3>Related Events</h3>
           <EventList events={data.airtable.data.Events_here}/>
           <h3>Verses</h3>
-          {/*<BookList verses={data.airtable.data.Verses}/>*/}
+          <BookList verses={data.airtable.data.Verses}/>
 
           <div className="footer"/>
           <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossOrigin="anonymous"/>
@@ -147,6 +149,7 @@ export const pageQuery = graphql`
         KJV_Name
         Has_been_here{
           data{
+            Person_Lookup
             Name
           }
         }
@@ -161,8 +164,24 @@ export const pageQuery = graphql`
             Duration
           }
         }
-        Verses
+        Verses{
+          data{
+            Verse_Num
+            Book{
+              data{
+                Canonical_Order
+                Osis_Name
+              }
+            }
+            Chapter{
+              data{
+                Chapter_Lookup
+              }
+            }
+          }
+        }
+      }
     }
   }
-}
 `
+

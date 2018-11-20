@@ -20,17 +20,19 @@ module.exports = {
             tableView: 'Grid view',
             tableLinks: ['Book'],
           },
-          // {
-          //   baseId: 'app5UK4s70d5PwupX',
-          //   tableName: 'Verses',
-          //   tableView: 'Grid',
-          //   tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events'],
-          // },
+          {
+            baseId: 'app5UK4s70d5PwupX',
+            tableName: 'Verses',
+            tableView: 'Grid',
+            tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events'],
+          },
           {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Places',
             tableView: 'Grid View',
-            tableLinks: ['Events here', 'Books', 'Has been here','People born', 'People died'],
+            tableLinks: ['Events here', 'Books', 'Has been here','People born', 'People died',
+              'Verses'
+            ],
           },
           {
             baseId: 'app5UK4s70d5PwupX',
@@ -42,7 +44,7 @@ module.exports = {
             tableName: 'People',
             tableView: 'Grid view',
             tableLinks: [
-              'Member_of_Groups',
+              'Member of Groups',
               'Mother',
               'Father',
               'Birth_Place',
@@ -52,14 +54,18 @@ module.exports = {
               'Siblings',
               'Half_Siblings_Same_Mother',
               'Half_Siblings_Same_Father',
-              'Chapters_Written'
+              'Chapters_Written',
+              'Has Been to',
+              'Chapters Written',
+              'Personal network',
+              'Verses'
             ],
           },
-          // {
-          //   baseId: 'app5UK4s70d5PwupX',
-          //   tableName: 'People Groups',
-          //   tableView: 'Grid view',
-          // },
+          {
+            baseId: 'app5UK4s70d5PwupX',
+            tableName: 'People Groups',
+            tableView: 'Grid view',
+          },
           {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Events',
