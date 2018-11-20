@@ -27,7 +27,7 @@ module.exports = {
             tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events_Described'],
           },
           {
-            baseId: 'app5UK4s70d5PwupX',~
+            baseId: 'app5UK4s70d5PwupX',
             tableName: 'Places',
             tableView: 'Grid View',
             tableLinks: ['Events here', 'Books', 'Has been here','People born', 'People died','Verses'],
