@@ -1,12 +1,12 @@
 module.exports = {
   siteMetadata: {
-    title: 'Gatsby Default Starter',
+    title: 'Theographic',
   },
   plugins: [
     {
       resolve: 'gatsby-source-airtable',
       options: {
-        apiKey: 'YOUR_KEY_HERE',
+        apiKey: 'keydpEiM0nD8Jrdd6',
         tables: [
           {
             baseId: 'app5UK4s70d5PwupX',
@@ -24,7 +24,7 @@ module.exports = {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Verses',
             tableView: 'Grid',
-            tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events'],
+            tableLinks: ['Book', 'Chapter', 'Places', 'People', 'Events_Described'],
           },
           {
             baseId: 'app5UK4s70d5PwupX',
@@ -70,7 +70,7 @@ module.exports = {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Events',
             tableView: 'Grid View',
-            tableLinks: ['People', 'Places', 'Preceding_Event','Start Year'],
+            tableLinks: ['People', 'Places', 'Preceding_Event','Start Year','Verses_Described'],
           }
         ]
       }
