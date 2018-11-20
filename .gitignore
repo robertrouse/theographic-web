@@ -8,4 +8,4 @@ yarn-error.log
 .DS_Store
 
 #config file with API key
-#gatsby-config.js
+gatsby-config.js
