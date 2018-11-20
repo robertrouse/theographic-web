@@ -150,50 +150,6 @@ function ConditionalGroups(props){
     return <div></div>
   }
 }
-
-function ConditionalAliases (props) {
-  if (props.aliases) {
-    return <div className="container"><strong>Also called: </strong>{props.aliases}</div>
-  } else {
-    return <div></div>
-  }
-}
-
-function ConditionalFather (props) {
-  if (props.father) {
-    return <div id="w-node-70773c1d322e-749a0e41"><strong>Father:</strong> <a href={`/person/${props.father[0].data.Person_Lookup}/`}>{props.father[0].data.Name}</a></div>
-  } else {
-    return <div></div>
-  }
-}
-
-// TODO not finished done
-function BookWrittenList (props) {
-  const books = props.booksWritten || []
-  // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
-  return books.map((book, i) => <React.Fragment key={i}>
-    {i > 0 && ', '}
-    <a href={`/book/${book.data.Name}/`}>{book.data.Name}</a>
-  </React.Fragment>)
-}
-
-function ConditionalBooksWritten (props) {
-  if (props.booksWritten) {
-    return <div><strong>Books written:</strong> <a href="/book/1">1 Peter</a>, <a href="/book/2">2 Peter</a></div>
-  } else {
-    return <div></div>
-  }
-}
-
-function ConditionalGroups (props) {
-  if (props.groups) {
-    // TODO more than one group
-    const groupName = props.groups[0].data.Group_Name
-    return <div><strong>Member of:</strong> <a href={`/groups/${groupName}/`}>groupName</a></div>
-  } else {
-    return <div></div>
-  }
-}
   
 class Person extends React.Component {
 
