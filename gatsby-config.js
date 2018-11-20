@@ -30,7 +30,9 @@ module.exports = {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'Places',
             tableView: 'Grid View',
-            tableLinks: ['Events here', 'Books', 'Has been here','People born', 'People died','Verses'],
+            tableLinks: ['Events here', 'Books', 'Has been here','People born', 'People died',
+              'Verses'
+            ],
           },
           {
             baseId: 'app5UK4s70d5PwupX',
@@ -54,9 +56,9 @@ module.exports = {
               'Half_Siblings_Same_Father',
               'Chapters_Written',
               'Has Been to',
-              'Verses',
               'Chapters Written',
-              'Personal network'
+              'Personal network',
+              'Verses'
             ],
           },
           {

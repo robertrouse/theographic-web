@@ -6,6 +6,8 @@ yarn-error.log
 # Build directory
 /public
 .DS_Store
+.idea
+=======
 
 #config file with API key
 gatsby-config.js

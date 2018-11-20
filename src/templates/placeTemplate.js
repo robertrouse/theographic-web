@@ -43,6 +43,7 @@ function PeopleList (props) {
 }
 
 function BookList (props) {
+  if(!props.verses) return <div></div>
   const verses = props.verses.map(v => {
     return {
       book: v.data.Book[0].data.Osis_Name,
@@ -182,3 +183,4 @@ export const pageQuery = graphql`
     }
   }
 `
+
