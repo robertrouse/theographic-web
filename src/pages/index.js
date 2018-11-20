@@ -10,7 +10,7 @@ class IndexPage extends React.Component {
 
     return(
   <Layout>
-    <h1>Hi people</h1>
+    <h1>Welcome to Theographic. While we're working on things, here's a list of all pages.</h1>
     {this.props.data.allSitePage.edges.map(edge => (
       <p key={edge.node.path}>
         <Link to={edge.node.path}>{edge.node.path}</Link>
