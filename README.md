@@ -19,8 +19,7 @@ To test locally, run:
 gatsby develop
 ```
 
-## Build pages locally
-To build all static pages and optimized code, run:
+To build all static pages locally, run:
 ``` sh
 gatsby build
 ```
