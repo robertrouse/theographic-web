@@ -101,7 +101,6 @@ class Place extends React.Component {
 
   render () {
     const {data} = this.props
-    console.log(JSON.stringify(data.airtable))
     return (
       <>
         <Helmet>
