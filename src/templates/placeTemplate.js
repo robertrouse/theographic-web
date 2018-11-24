@@ -108,7 +108,6 @@ class Place extends React.Component {
           <title>Places</title>
           <meta content="Places" property="og:title"/>
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
-          <meta content="Webflow" name="generator"/>
           <link href="https://daks2k3a4ib2z.cloudfront.net/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
           <link href="https://daks2k3a4ib2z.cloudfront.net/img/webclip.png" rel="apple-touch-icon"/>
         </Helmet>
@@ -126,10 +125,7 @@ class Place extends React.Component {
           <EventList events={data.airtable.data.Events_here}/>
           <h3>Verses</h3>
           <BookList verses={data.airtable.data.Verses}/>
-
           <div className="footer"/>
-          <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossOrigin="anonymous"/>
-          <script src="js/webflow.js" type="text/javascript"/>
         </div>
       </>
     )
