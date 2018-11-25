@@ -15,17 +15,14 @@ const groupBy = function (xs, key) {
 function ConditionalWideMap(props){
   if(props.wideMap){
     return <Img fluid={props.wideMap.fluid} critical={true} className="map"/>
-  }else{
-    return <div></div>
   }
+  return
 }
 
 function ConditionalDetailMap(props){
   if(props.detailMap){
     return <Img fluid={props.detailMap.fluid} critical={true} className="map"/>
-  }else{
-    return <div></div>
-  }
+  } return
 }
 
 function DateGrouping (props) {
