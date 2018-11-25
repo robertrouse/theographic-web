@@ -114,8 +114,8 @@ class Place extends React.Component {
         </Helmet>
         <div className="container">
           <h1 className="heading">{data.airtable.data.KJV_Name}</h1>
-          {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} critical={true} className="map"/>)}
-          {data.detailMap && (<Img fluid={data.detailMap.childImageSharp.fluid} critical={true} className="map"/>)}
+          {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
+          {data.detailMap && (<Img fluid={data.detailMap.childImageSharp.fluid} className="map"/>)}
           <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_text}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
           <h3 className="heading-3">Related People</h3>
