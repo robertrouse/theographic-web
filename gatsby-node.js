@@ -73,7 +73,9 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
             path: edge.node.fields.slug, // required, we don't have frontmatter for this page hence separate if()
             component: template,
             context: {
-              lookup: edge.node.data[lookupName]
+              lookup: edge.node.data[lookupName],
+              wideMap: edge.node.data[lookupName] + "-wide.png",
+              detailMap: edge.node.data[lookupName] + "-detail.png"
             }
           })
         })

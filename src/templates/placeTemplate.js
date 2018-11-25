@@ -1,6 +1,7 @@
 import React from 'react'
 import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
+import Img from 'gatsby-image';
 import '../components/layout.css'
 
 // Taken from https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-a-array-of-objects?rq=1
@@ -113,10 +114,8 @@ class Place extends React.Component {
         </Helmet>
         <div className="container">
           <h1 className="heading">{data.airtable.data.KJV_Name}</h1>
-          <img src={`/images/${data.airtable.data.Place_Lookup}-wide.png`} sizes="(max-width: 767px) 100vw, 750px" alt=""
-               className="map"/>
-          <img src={`/images/${data.airtable.data.Place_Lookup}-detail.png`} sizes="(max-width: 767px) 100vw, 750px" alt=""
-               className="map"/>
+          <Img fluid={data.wideMap.childImageSharp.fluid} critical={true} className="map"/>
+          <Img fluid={data.detailMap.childImageSharp.fluid} critical={true} className="map"/>
           <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_text}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
           <h3 className="heading-3">Related People</h3>
@@ -135,7 +134,21 @@ class Place extends React.Component {
 export default Place
 
 export const pageQuery = graphql`
-   query PlaceLookup($lookup: String!) {
+   query PlaceLookup($lookup: String!, $wideMap: String!, $detailMap: String!) {
+    wideMap: file(relativePath: {eq: $wideMap}) {
+      childImageSharp {
+        fluid(maxWidth: 767) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    detailMap: file(relativePath: {eq: $detailMap}) {
+      childImageSharp {
+        fluid(maxWidth: 767) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
     airtable(table: {eq: "Places"}, data: {Place_Lookup: {eq: $lookup }}) {
       data {
         Place_Lookup

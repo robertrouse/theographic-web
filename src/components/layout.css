@@ -84,8 +84,8 @@ img {
   font-size: 16px;
 }
 
-.container.map {
-  padding-bottom: 30px;
+.map {
+  margin-bottom: 30px;
 }
 
 .paragraph {
