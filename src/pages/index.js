@@ -34,6 +34,7 @@ class IndexPage extends React.Component {
       </a>
     </div>
   </div>
+  <div className="footer"></div>
   </Layout>)
   }
 }
