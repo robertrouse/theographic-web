@@ -166,7 +166,7 @@ class Person extends React.Component {
           <link href="https://daks2k3a4ib2z.cloudfront.net/img/webclip.png" rel="apple-touch-icon"/>
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.Person_Lookup}</h1>
+          <h1 className="heading">{data.airtable.data.Display_Title}</h1>
 
           <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_Text}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
@@ -200,6 +200,7 @@ query PersonLookup($lookup: String!) {
    airtable(table: {eq: "People"}, data: {Person_Lookup: {eq: $lookup }}) {
       data {
         Person_Lookup
+        Display_Title
         Dictionary_Text
         Aliases
         Father{

@@ -13,10 +13,10 @@ class IndexPage extends React.Component {
   return(
   <Layout>
     <div className="container-2 w-container">
-    <div className="section-2">
-      <Img fixed={data.file.childImageSharp.fixed} critical='true' />
+    <div className="logo-home">
+      <Img fluid={data.file.childImageSharp.fluid} critical={true} />
     </div>
-    <div className="section">
+    <div className="nav-home">
       <a href="/people" className="home-cat w-inline-block">
         <span>People</span>
       </a>
@@ -56,8 +56,8 @@ export const query = graphql`
   query {
     file(relativePath: { eq: "theographic-logo.png" }) {
       childImageSharp {
-        fixed(width: 550, height: 257) {
-          ...GatsbyImageSharpFixed_tracedSVG
+        fluid(maxWidth: 550) {
+          ...GatsbyImageSharpFluid_tracedSVG
         }
       }
     }
