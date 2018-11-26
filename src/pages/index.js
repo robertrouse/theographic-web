@@ -14,7 +14,7 @@ class IndexPage extends React.Component {
   <Layout>
     <div className="container-2 w-container">
     <div className="logo-home">
-      <Img fluid={data.file.childImageSharp.fluid} critical={true} fadeIn={false}/>
+      <Img fluid={data.file.childImageSharp.fluid} />
     </div>
     <div className="nav-home">
       <a href="/people" className="home-cat w-inline-block">
@@ -46,7 +46,7 @@ export const query = graphql`
     file(relativePath: { eq: "theographic-logo.png" }) {
       childImageSharp {
         fluid(maxWidth: 550) {
-          ...GatsbyImageSharpFluid
+          ...GatsbyImageSharpFluid_tracedSVG
         }
       }
     }
