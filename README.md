@@ -13,6 +13,11 @@ npm install --global gatsby-cli
 npm install
 ```
 
+3. Set airtable API key in an environment variable. (e-mail robert@viz.bible to obtain a key)
+``` sh
+export AIRTABLE_API_KEY=keycEYIacbyYglArc
+```
+
 ## Develop
 To test locally, run:
 ``` sh
@@ -23,4 +28,3 @@ To build all static pages locally, run:
 ``` sh
 gatsby build
 ```
-
