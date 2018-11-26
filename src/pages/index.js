@@ -17,23 +17,23 @@ class IndexPage extends React.Component {
       <Img fluid={data.file.childImageSharp.fluid} fadeIn={false}/>
     </div>
     <div className="nav-home">
-      <a href="/people" className="home-cat w-inline-block">
-        <span>People</span>
-      </a>
+        <a href="/people" className="home-cat w-inline-block">
+          <span>People</span>
+        </a>
       <div className="home-edges"></div>
-      <a href="/places" className="home-cat w-inline-block">
-        Places
-      </a>
+        <a href="/places" className="home-cat w-inline-block">
+          Places
+        </a>
       <div className="home-edges"></div>
-      <a href="/periods" className="home-cat w-inline-block">
-        Periods
-      </a>
+        <a href="/periods" className="home-cat w-inline-block">
+          Periods
+        </a>
       <div className="home-edges"></div>
-      <a href="/passages" className="home-cat w-inline-block">
-        Passages
-      </a>
+        <a href="/passages" className="home-cat w-inline-block">
+          Passages
+        </a>
+      </div>
     </div>
-  </div>
   <div className="footer"></div>
   </Layout>)
   }
