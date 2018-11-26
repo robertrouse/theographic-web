@@ -45,9 +45,7 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
       graphql(
         `
           {
-            allAirtable(filter: { table: { eq: "${table}" }} 
-              // limit:100
-            ) {
+            allAirtable(filter: { table: { eq: "${table}" }} ) {
               edges {
                 node {
                   data {
