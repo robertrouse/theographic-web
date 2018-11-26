@@ -15,7 +15,7 @@ npm install
 
 3. Set airtable API key in an environment variable. (e-mail robert@viz.bible to obtain a key)
 ``` sh
-export AIRTABLE_API_KEY=keycEYIacbyYglArc
+export AIRTABLE_API_KEY=your_api_key
 ```
 
 ## Develop
