@@ -41,18 +41,6 @@ class IndexPage extends React.Component {
 
 export default IndexPage
 
-// export const pageQuery = graphql`
-//   query allPages {
-//     allSitePage {
-//       edges {
-//         node {
-//           path
-//         }
-//       }
-//     }
-//   }
-// `;
-
 export const query = graphql`
   query {
     file(relativePath: { eq: "theographic-logo.png" }) {
