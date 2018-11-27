@@ -162,8 +162,6 @@ class Person extends React.Component {
           <title>People</title>
           <meta content="People" property="og:title"/>
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
-          <link href="https://daks2k3a4ib2z.cloudfront.net/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
-          <link href="https://daks2k3a4ib2z.cloudfront.net/img/webclip.png" rel="apple-touch-icon"/>
         </Helmet>
         <div className="container">
           <h1 className="heading">{data.airtable.data.Display_Title}</h1>

@@ -106,14 +106,12 @@ class Place extends React.Component {
       <>
         <Helmet>
           <meta charSet="utf-8"/>
-          <title>Places</title>
-          <meta content="Places" property="og:title"/>
+          <title>{data.airtable.data.Display_Title}</title>
+          <meta content="{data.airtable.data.Display_Title}" property="og:title"/>
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
-          <link href="https://daks2k3a4ib2z.cloudfront.net/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
-          <link href="https://daks2k3a4ib2z.cloudfront.net/img/webclip.png" rel="apple-touch-icon"/>
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.KJV_Name}</h1>
+          <h1 className="heading">{data.airtable.data.Display_Title}</h1>
           {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
           {data.detailMap && (<Img fluid={data.detailMap.childImageSharp.fluid} className="map"/>)}
           <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_text}}/>
@@ -152,6 +150,7 @@ export const pageQuery = graphql`
     airtable(table: {eq: "Places"}, data: {Place_Lookup: {eq: $lookup }}) {
       data {
         Place_Lookup
+        Display_Title
         Dictionary_text
         Place_ID
         KJV_Name

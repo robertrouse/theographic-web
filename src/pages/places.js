@@ -5,6 +5,30 @@ import Img from 'gatsby-image';
 import Layout from '../components/layout.js';
 import '../components/layout.css'
 
+function LinkList(props) {
+  const letterData = props.letterData.edges;
+  console.log(letterData);
+  const alphaGroup = letterData[0].node.data.alpha_group;
+  const letterList = letterData.map((letter) => {
+    if (letter.node.data.status === 'wip') {
+      return <span className="index-item">{letter.node.data.Display_Title}</span>
+    } else {
+      return <a href = {`/place/${letter.node.data.Place_Lookup}`} className="index-item">{letter.node.data.Display_Title}</a>
+    }
+}
+  );
+  return (
+    <div>
+      <h3>{alphaGroup}</h3>
+      <div className="index-row">{letterList}</div>
+    </div>
+  )
+}
+
+function AlphaList(props) {
+  const letters = props.letters.group;
+    return  Object.keys(letters).map((letter) => <LinkList letterData={letters[letter]} />)
+}
 
 class PlacesPage extends React.Component {
   
@@ -12,8 +36,9 @@ class PlacesPage extends React.Component {
     const {data} = this.props
   return(
   <Layout>
-    <div className="container-2 w-container">
-    
+    <div className="container">
+      <h1 className="heading">All Places in the Bible</h1>
+      <AlphaList letters={data.allAirtable}/>
     </div>
     <div className="footer"></div>
   </Layout>)

@@ -77,10 +77,6 @@ img {
   -webkit-align-items: stretch;
   -ms-flex-align: stretch;
   align-items: stretch;
-  background-image: url('../images/linen.png');
-  background-position: 0px 0px;
-  background-size: 200px;
-  background-repeat: repeat;
   font-size: 16px;
 }
 
@@ -399,7 +395,14 @@ img {
   -webkit-box-align: start;
   -webkit-align-items: flex-start;
   -ms-flex-align: start;
-  align-items: flex-start;
+  align-items: flex-start; 
+  flex-direction: row;
+  -ms-flex-direction: row;
+}
+
+.index-item {
+  display:inline-block;
+  width:180px;
 }
 
 .link-2 {
