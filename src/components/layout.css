@@ -9,7 +9,7 @@ body {
 }
 
 h1 {
-  margin-top: 30px;
+  margin-top: 50px;
   margin-bottom: 20px;
   font-family: Georgia, Times, 'Times New Roman', serif;
   font-size: 38px;
@@ -380,7 +380,7 @@ img {
   grid-template-rows: auto auto auto auto;
 }
 
-.index-row {
+.index-group {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -460,6 +460,15 @@ img {
 }
 
 @media (max-width: 479px) {
+  h1 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-family: Georgia, Times, 'Times New Roman', serif;
+    font-size: 34px;
+    line-height: 32px;
+    font-style: italic;
+    font-weight: 400;
+  }
   .nav-home {
     width: auto;
     -webkit-box-orient: vertical;

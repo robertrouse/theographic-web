@@ -20,7 +20,7 @@ function LinkList(props) {
   return (
     <div>
       <h3>{alphaGroup}</h3>
-      <div className="index-row">{letterList}</div>
+      <div className="index-group">{letterList}</div>
     </div>
   )
 }
@@ -37,7 +37,7 @@ class PlacesPage extends React.Component {
   return(
   <Layout>
     <div className="container">
-      <h1 className="heading">All Places in the Bible</h1>
+      <h1>All Places in the Bible</h1>
       <AlphaList letters={data.allAirtable}/>
     </div>
     <div className="footer"></div>
