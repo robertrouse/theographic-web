@@ -1,0 +1,2 @@
+export AIRTABLE_API_KEY=keyKJPaUNHVOH2Ovh
+gatsby develop
