@@ -50,7 +50,7 @@ function BookList (props) {
       book: v.data.book[0].data.osisName,
       osisRef: v.data.osisRef,
       bookCannonicalOrder: v.data.book[0].data.bookOrder,
-      chapter: v.data.chapter[0].data.chapterLookup.split("_")[1],
+      chapter: v.data.chapter[0].data.chapterNum,
       verse: v.data.verseNum
     }
   })
@@ -181,7 +181,7 @@ export const pageQuery = graphql`
             }
             chapter{
               data{
-                chapterLookup
+                chapterNum
               }
             }
           }
