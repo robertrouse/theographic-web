@@ -7,7 +7,6 @@ import '../components/layout.css'
 
 function LinkList(props) {
   const letterData = props.letterData.edges;
-  console.log(letterData);
   const alphaGroup = letterData[0].node.data.alphaGroup;
   const letterList = letterData.map((letter) => {
     if (letter.node.data.status === 'wip') {
@@ -50,7 +49,7 @@ export default PlacesPage
 export const query = graphql
   `
   {
-    allAirtable(filter: { table: { eq: "Places" }} ) {
+    allAirtable(filter: { table: { eq: "places" }} ) {
       group(field:data___alphaGroup){
         edges {
         	node {

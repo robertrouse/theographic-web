@@ -47,7 +47,7 @@ function BookList (props) {
   if(!props.verses) return <div></div>
   const verses = props.verses.map(v => {
     return {
-      book: v.data.Book[0].data.osisName,
+      book: v.data.book[0].data.osisName,
       osisRef: v.data.osisRef,
       bookCannonicalOrder: v.data.book[0].data.bookOrder,
       chapter: v.data.chapter[0].data.chapterLookup.split('.')[1],

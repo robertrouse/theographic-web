@@ -8,18 +8,18 @@ const path = require(`path`)
 
 exports.onCreateNode = ({node, actions, getNode}) => {
   const {createNodeField} = actions
-  let url_slug
+  let urlSlug
 
   if (node && node.internal.type === `Airtable` && node.table === `places`) {
-    url_slug = `/place/${node.data.slug}/`
+    urlSlug = `/place/${node.data.slug}/`
 
     // Add slug as a field on the node.
-    createNodeField({node, name: `url_slug`, value: url_slug})
+    createNodeField({node, name: `urlSlug`, value: urlSlug})
   } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
-    url_slug = `/person/${node.data.slug}/`
+    urlSlug = `/person/${node.data.slug}/`
 
     // Add slug as a field on the node.
-    createNodeField({node, name: `url_slug`, value: url_slug})
+    createNodeField({node, name: `urlSlug`, value: urlSlug})
   }
 }
 
@@ -50,7 +50,7 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
                     slug
                   }
                   fields {
-                    url_slug
+                    urlSlug
                   }
                 }
               }
@@ -68,7 +68,7 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
 
         result.data.allAirtable.edges.forEach(edge => {
           createPage({
-            path: edge.node.fields.url_slug, // required, we don't have frontmatter for this page hence separate if()
+            path: edge.node.fields.urlSlug, // required, we don't have frontmatter for this page hence separate if()
             component: template,
             context: {
               lookup: edge.node.data[lookupName],
