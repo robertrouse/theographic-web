@@ -15,7 +15,7 @@ function DateGrouping (props) {
   const eventGroup = props.eventGroup
   const year = props.year
 
-  const listItems = eventGroup.map((event) => <li key={event.data.Event_Name}><a href={`/event/${event.data.Event_Name}`}>{event.data.Event_Name}</a></li>)
+  const listItems = eventGroup.map((event) => <li key={event.data.eventName}><a href={`/event/${event.data.eventName}`}>{event.data.eventName}</a></li>)
   return (
     <div>
       <div className="year-label">{year} A.D.</div>
@@ -27,7 +27,7 @@ function DateGrouping (props) {
 //TODO deal with B.C. times as negative
 function EventList (props) {
   const events = props.events || []
-  const listItems = events.map(event => { return {year: event.data.Start_Year[0].data.Year, ...event}})
+  const listItems = events.map(event => { return {year: event.data.startYear[0].data.year, ...event}})
     .sort((event1, event2) => Number.parseInt(event1.year) - Number.parseInt(event2.year))
   const grouped = groupBy(listItems, `year`)
   return Object.keys(grouped).map((year) => <DateGrouping key={year} year={year} eventGroup={grouped[year]}/>)
@@ -38,7 +38,7 @@ function PeopleList (props) {
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return people.map((person, i) => <React.Fragment key={i}>
     {i > 0 && ', '}
-    <a href={`/person/${person.data.Person_Lookup}/`}>{person.data.Name}</a>
+    <a href={`/person/${person.data.personLookup}/`}>{person.data.displayTitle}</a>
   </React.Fragment>)
 }
 
@@ -47,7 +47,7 @@ function PlaceList (props) {
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return places.map((place, i) => <React.Fragment key={i}>
     {i > 0 && ', '}
-    <a href={`/place/${place.data.Place_Lookup}/`}>{place.data.ESV_name}</a>
+    <a href={`/place/${place.data.placeLookup}/`}>{place.data.displayTitle}</a>
   </React.Fragment>)
 }
 
@@ -55,10 +55,10 @@ function BookList (props) {
   if(!props.verses) return <div></div>
   const verses = props.verses.map(v => {
     return {
-      book: v.data.Book[0].data.Osis_Name,
-      bookCannonicalOrder: v.data.Book[0].data.Canonical_Order,
-      chapter: v.data.Chapter[0].data.Chapter_Lookup.split('.')[1],
-      verse: v.data.Verse_Num
+      book: v.data.book[0].data.osisName,
+      bookCannonicalOrder: v.data.book[0].data.bookOrder,
+      chapter: v.data.chapter[0].data.chapterLookup.split('.')[1],
+      verse: v.data.verseNum
     }
   })
   const groupedBooks = groupBy(verses, 'book')
@@ -90,7 +90,7 @@ function VerseList (props) {
         numberOfAdjacentVerses = 0
       }
       else {
-        listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{key}</a>)
+        listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>{key}</a>)
       }
       firstOfAdjacentVerses = verse
       firstVerse = false
@@ -98,12 +98,12 @@ function VerseList (props) {
   }
   const key = `${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}`
   if (numberOfAdjacentVerses) {
-    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>
+    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>
       {`${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}
     </a>)
   }
   else {
-    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{key}</a>)
+    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>{key}</a>)
   }
   return listOfVerses
 }
@@ -117,7 +117,7 @@ function ConditionalAliases(props){
 
 function ConditionalFather(props){
   if(props.father){
-    return <div id="w-node-70773c1d322e-749a0e41"><strong>Father:</strong> <a href={`/person/${props.father[0].data.Person_Lookup}/`}>{props.father[0].data.Name}</a></div>
+    return <div id="w-node-70773c1d322e-749a0e41"><strong>Father:</strong> <a href={`/person/${props.father[0].data.personLookup}/`}>{props.father[0].data.displayTitle}</a></div>
   }else{
     return <div></div>
   }
@@ -129,7 +129,7 @@ function BookWrittenList (props) {
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return books.map((book, i) => <React.Fragment key={i}>
     {i > 0 && ', '}
-    <a href={`/book/${book.data.Name}/`}>{book.data.Name}</a>
+    <a href={`/book/${book.data.osisName}/`}>{book.data.osisName}</a>
   </React.Fragment>)
 }
 
@@ -144,7 +144,7 @@ function ConditionalBooksWritten(props){
 function ConditionalGroups(props){
   if(props.groups){
     // TODO more than one group
-    const groupName = props.groups[0].data.Group_Name;
+    const groupName = props.groups[0].data.groupName;
     return   <div><strong>Member of:</strong> <a href={`/groups/${groupName}/`}>groupName</a></div>
   }else{
     return <div></div>
@@ -164,26 +164,26 @@ class Person extends React.Component {
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.Display_Title}</h1>
+          <h1 className="heading">{data.airtable.data.displayTitle}</h1>
 
-          <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_Text}}/>
+          <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.dictionaryText}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
 
           <div className="div-block"/>
-          <ConditionalAliases aliases={data.airtable.data.Aliases}/>
-          <ConditionalFather father={data.airtable.data.Father}/>
+          <ConditionalAliases aliases={data.airtable.data.aliases}/>
+          <ConditionalFather father={data.airtable.data.father}/>
 
           <h3 className="heading-3">Related People</h3>
-          <p><PeopleList people={data.airtable.data.Personal_network}/></p>
+          <p><PeopleList people={data.airtable.data.personalNetwork}/></p>
 
           <h3>Related Events</h3>
-          <EventList events={data.airtable.data.Events}/>
+          <EventList events={data.airtable.data.events}/>
 
           <h3 className="heading-3">Related Places</h3>
-          <p><PlaceList places={data.airtable.data.Has_Been_to}/></p>
+          <p><PlaceList places={data.airtable.data.hasBeenTo}/></p>
 
           <h3>Verses</h3>
-          <BookList verses={data.airtable.data.Verses}/>
+          <BookList verses={data.airtable.data.verses}/>
           <div className="footer"/>
         </div>
       </>
@@ -194,58 +194,58 @@ class Person extends React.Component {
 export default Person
 
 export const pageQuery = graphql`
-query PersonLookup($lookup: String!) {
-   airtable(table: {eq: "People"}, data: {Person_Lookup: {eq: $lookup }}) {
+query personLookup($lookup: String!) {
+   airtable(table: {eq: "people"}, data: {personLookup: {eq: $lookup }}) {
       data {
-        Person_Lookup
-        Display_Title
-        Dictionary_Text
-        Aliases
-        Father{
+        personLookup
+        displayTitle
+        dictionaryText
+        aliases
+        father{
           data{
-            Person_Lookup
-            Name
+            personLookup
+            displayTitle
            }
         }   
-        Has_Been_to{
+        hasBeenTo{
           data{
-            Place_Lookup
-            ESV_name
+            placeLookup
+            displayTitle
           }
         }
-        Events{
+        events{
           data{
-            Event_Name
-            Start_Year{
+            eventName
+            startYear{
               data {
-                Year
+                year
               }
             }
           }
         }
-        Personal_network{
+        personalNetwork{
           data{
-            Person_Lookup
-            Name
+            personLookup
+            displayTitle
           }
         }
-        Member_of_Groups{
+        memberOf{
           data{
-            Group_Name
+            groupName
            }
         }
-        Verses{
+        verses{
           data{
-            Verse_Num
-            Book{
+            verseNum
+            book{
               data{
-                Canonical_Order
-                Osis_Name
+                bookOrder
+                osisName
               }
             }
-            Chapter{
+            chapter{
               data{
-                Chapter_Lookup
+                chapterLookup
               }
             }
           }

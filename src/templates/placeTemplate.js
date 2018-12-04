@@ -16,7 +16,7 @@ function DateGrouping (props) {
   const eventGroup = props.eventGroup
   const year = props.year
 
-  const listItems = eventGroup.map((event) => <li key={event.data.Event_Name}><a href={`/event/${event.data.Event_Name}`}>{event.data.Event_Name}</a></li>)
+  const listItems = eventGroup.map((event) => <li key={event.data.eventName}><a href={`/event/${event.data.eventName}`}>{event.data.eventName}</a></li>)
   return (
     <div>
       <div className="year-label">{year} A.D.</div>
@@ -28,7 +28,7 @@ function DateGrouping (props) {
 //TODO deal with B.C. times as negative
 function EventList (props) {
   const events = props.events || []
-  const listItems = events.map(event => { return {year: event.data.Start_Year[0].data.Year, ...event}})
+  const listItems = events.map(event => { return {year: event.data.startYear[0].data.year, ...event}})
     .sort((event1, event2) => Number.parseInt(event1.year) - Number.parseInt(event2.year))
   const grouped = groupBy(listItems, `year`)
   return Object.keys(grouped).map((year) => <DateGrouping key={year} year={year} eventGroup={grouped[year]}/>)
@@ -39,7 +39,7 @@ function PeopleList (props) {
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return people.map((person, i) => <React.Fragment key={i}>
     {i > 0 && ', '}
-    <a href={`/person/${person.data.Person_Lookup}/`}>{person.data.Name}</a>
+    <a href={`/person/${person.data.personLookup}/`}>{person.data.displayTitle}</a>
   </React.Fragment>)
 }
 
@@ -47,10 +47,10 @@ function BookList (props) {
   if(!props.verses) return <div></div>
   const verses = props.verses.map(v => {
     return {
-      book: v.data.Book[0].data.Osis_Name,
-      Osis_Ref: v.data.Osis_Ref,
-      bookCannonicalOrder: v.data.Book[0].data.Canonical_Order,
-      chapter: v.data.Chapter[0].data.Chapter_Lookup.split('.')[1],
+      book: v.data.Book[0].data.osisName,
+      osisRef: v.data.osisRef,
+      bookCannonicalOrder: v.data.book[0].data.bookOrder,
+      chapter: v.data.chapter[0].data.chapterLookup.split('.')[1],
       verse: v.data.Verse_Num
     }
   })
@@ -81,7 +81,7 @@ function VerseList (props) {
         numberOfAdjacentVerses = 0
       }
       else {
-        listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{key}</a>)
+        listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>{key}</a>)
       }
       firstOfAdjacentVerses = verse
       firstVerse = false
@@ -93,7 +93,7 @@ function VerseList (props) {
                          href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{`${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
   }
   else {
-    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{key}</a>)
+    listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>{key}</a>)
   }
   return listOfVerses
 }
@@ -106,22 +106,22 @@ class Place extends React.Component {
       <>
         <Helmet>
           <meta charSet="utf-8"/>
-          <title>{data.airtable.data.Display_Title}</title>
-          <meta content="{data.airtable.data.Display_Title}" property="og:title"/>
+          <title>{data.airtable.data.displayTitle}</title>
+          <meta content="{data.airtable.data.displayTitle}" property="og:title"/>
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.Display_Title}</h1>
+          <h1 className="heading">{data.airtable.data.displayTitle}</h1>
           {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
           {data.detailMap && (<Img fluid={data.detailMap.childImageSharp.fluid} className="map"/>)}
-          <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.Dictionary_text}}/>
+          <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.dictionaryText}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
           <h3 className="heading-3">Related People</h3>
-          <p><PeopleList people={data.airtable.data.Has_been_here}/></p>
+          <p><PeopleList people={data.airtable.data.hasBeenHere}/></p>
           <h3>Related Events</h3>
-          <EventList events={data.airtable.data.Events_here}/>
+          <EventList events={data.airtable.data.events}/>
           <h3>Verses</h3>
-          <BookList verses={data.airtable.data.Verses}/>
+          <BookList verses={data.airtable.data.verses}/>
           <div className="footer"/>
         </div>
       </>
@@ -132,7 +132,7 @@ class Place extends React.Component {
 export default Place
 
 export const pageQuery = graphql`
-   query PlaceLookup($lookup: String!, $wideMap: String!, $detailMap: String!) {
+   query placeLookup($lookup: String!, $wideMap: String!, $detailMap: String!) {
     wideMap: file(relativePath: {eq: $wideMap}) {
       childImageSharp {
         fluid(maxWidth: 767) {
@@ -147,41 +147,41 @@ export const pageQuery = graphql`
         }
       }
     }
-    airtable(table: {eq: "Places"}, data: {Place_Lookup: {eq: $lookup }}) {
+    airtable(table: {eq: "places"}, data: {placeLookup: {eq: $lookup }}) {
       data {
-        Place_Lookup
-        Display_Title
-        Dictionary_text
-        Place_ID
-        KJV_Name
-        Has_been_here{
+        placeLookup
+        displayTitle
+        dictionaryText
+        placeID
+        kjvName
+        hasBeenHere{
           data{
-            Person_Lookup
-            Name
+            personLookup
+            displayTitle
           }
         }
-        Events_here{
+        eventsHere{
           data{
-            Event_Name
-            Start_Year{
+            eventName
+            startYear{
               data {
-                Year
+                year
               }
             }
           }
         }
-        Verses{
+        verses{
           data{
-            Verse_Num
-            Book{
+            verseNum
+            book{
               data{
-                Canonical_Order
-                Osis_Name
+                bookOrder
+                osisName
               }
             }
-            Chapter{
+            chapter{
               data{
-                Chapter_Lookup
+                chapterLookup
               }
             }
           }

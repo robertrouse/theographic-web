@@ -4,32 +4,29 @@
  * See: https://www.gatsbyjs.org/docs/node-apis/
  */
 
-// You can delete this file if you're not using it
 const path = require(`path`)
 
 exports.onCreateNode = ({node, actions, getNode}) => {
   const {createNodeField} = actions
-  let slug
+  let url_slug
 
-  if (node && node.internal.type === `Airtable` && node.table === `Places`) {
-    slug = `/place/${node.data.Place_Lookup.replace(/ /g, '-')
-      .replace(/[,&]/g, '')}/`
-
-    // Add slug as a field on the node.
-    createNodeField({node, name: `slug`, value: slug})
-  } else if (node && node.internal.type === `Airtable` && node.table === `People`) {
-    slug = `/person/${node.data.Person_Lookup.replace(/ /g, '-')
-      .replace(/[,&]/g, '')}/`
+  if (node && node.internal.type === `Airtable` && node.table === `places`) {
+    url_slug = `/place/${node.data.slug}/`
 
     // Add slug as a field on the node.
-    createNodeField({node, name: `slug`, value: slug})
+    createNodeField({node, name: `url_slug`, value: url_slug})
+  } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
+    url_slug = `/person/${node.data.slug}/`
+
+    // Add slug as a field on the node.
+    createNodeField({node, name: `url_slug`, value: url_slug})
   }
 }
 
 exports.createPages = ({graphql, actions}) => {
 
-  const placesPages = makingPages(`src/templates/placeTemplate.js`, 'Places', 'Place_Lookup', graphql, actions)
-  const peoplePages = makingPages(`src/templates/personTemplate.js`, 'People', 'Person_Lookup', graphql, actions)
+  const placesPages = makingPages(`src/templates/placeTemplate.js`, 'places', 'placeLookup', graphql, actions)
+  const peoplePages = makingPages(`src/templates/personTemplate.js`, 'people', 'personLookup', graphql, actions)
 
   return peoplePages;
 
@@ -50,9 +47,10 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
                 node {
                   data {
                     ${lookupName}
+                    slug
                   }
                   fields {
-                    slug
+                    url_slug
                   }
                 }
               }
@@ -70,7 +68,7 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
 
         result.data.allAirtable.edges.forEach(edge => {
           createPage({
-            path: edge.node.fields.slug, // required, we don't have frontmatter for this page hence separate if()
+            path: edge.node.fields.url_slug, // required, we don't have frontmatter for this page hence separate if()
             component: template,
             context: {
               lookup: edge.node.data[lookupName],

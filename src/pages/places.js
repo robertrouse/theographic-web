@@ -8,12 +8,12 @@ import '../components/layout.css'
 function LinkList(props) {
   const letterData = props.letterData.edges;
   console.log(letterData);
-  const alphaGroup = letterData[0].node.data.alpha_group;
+  const alphaGroup = letterData[0].node.data.alphaGroup;
   const letterList = letterData.map((letter) => {
     if (letter.node.data.status === 'wip') {
-      return <span className="index-item">{letter.node.data.Display_Title}</span>
+      return <span className="index-item">{letter.node.data.displayTitle}</span>
     } else {
-      return <a href = {`/place/${letter.node.data.Place_Lookup}`} className="index-item">{letter.node.data.Display_Title}</a>
+      return <a href = {`/place/${letter.node.data.placeLookup}`} className="index-item">{letter.node.data.displayTitle}</a>
     }
 }
   );
@@ -51,14 +51,14 @@ export const query = graphql
   `
   {
     allAirtable(filter: { table: { eq: "Places" }} ) {
-      group(field:data___alpha_group){
+      group(field:data___alphaGroup){
         edges {
         	node {
             data {
-              Place_Lookup
-              Display_Title
+              placeLookup
+              displayTitle
               status
-            	alpha_group
+            	alphaGroup
           	}
           } 
         }
