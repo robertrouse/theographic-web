@@ -57,7 +57,7 @@ function BookList (props) {
     return {
       book: v.data.book[0].data.osisName,
       bookCannonicalOrder: v.data.book[0].data.bookOrder,
-      chapter: v.data.chapter[0].data.chapterNum,
+      chapter: v.data.chapter[0].data.chapterLookup.split("_")[1],
       verse: v.data.verseNum
     }
   })
@@ -245,7 +245,7 @@ query personLookup($lookup: String!) {
             }
             chapter{
               data{
-                chapterNum
+                chapterLookup
               }
             }
           }
