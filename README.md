@@ -1,4 +1,8 @@
-Changes pushed to this repo will automatically trigger a deployment to Netlify at https://theographic.netlify.com/
+# Overview
+Theographic will solve two basic problems with Bible applications: poor search experience and difficult navigation among resources. Search results will differentiate people, places, events, and other subjects instead of simple word matching. After arriving on a page, Theographic serves up all collected facts about a subject. Users arrive at these pages with one click on a subject’s name wherever it appears.
+
+_Visit the Projects tab for open tasks related to the initial build_
+_Changes pushed to the master branch will automatically trigger a deployment to Netlify at https://theographic.netlify.com/_
 
 ## Setup
 
