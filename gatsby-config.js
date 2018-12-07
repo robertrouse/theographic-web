@@ -30,7 +30,7 @@ module.exports = {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'places',
             tableView: 'Grid view',
-            tableLinks: ['eventsHere', 'booksWritten', 'hasBeenHere','peopleBorn', 'peopleDied','verses'],
+            tableLinks: ['events', 'booksWritten', 'hasBeenHere','peopleBorn', 'peopleDied','verses'],
           },
           {
             baseId: 'app5UK4s70d5PwupX',
