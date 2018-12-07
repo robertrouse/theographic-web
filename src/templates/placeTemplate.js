@@ -160,7 +160,7 @@ export const pageQuery = graphql`
             displayTitle
           }
         }
-        eventsHere{
+        events{
           data{
             eventName
             startYear{
