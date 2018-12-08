@@ -119,7 +119,7 @@ class Place extends React.Component {
           <h3 className="heading-3">Related People</h3>
           <p><PeopleList people={data.airtable.data.hasBeenHere}/></p>
           <h3>Related Events</h3>
-          <EventList events={data.airtable.data.events}/>
+          <EventList events={data.airtable.data.eventsHere}/>
           <h3>Verses</h3>
           <BookList verses={data.airtable.data.verses}/>
           <div className="footer"/>
@@ -160,7 +160,7 @@ export const pageQuery = graphql`
             displayTitle
           }
         }
-        events{
+        eventsHere{
           data{
             eventName
             startYear{
