@@ -1,9 +1,8 @@
 import React from 'react'
-
 import { StaticQuery, Link, graphql } from 'gatsby';
-// import Img from 'gatsby-image';
 import Layout from '../components/layout.js';
 import '../components/layout.css'
+import logo from '../images/theographic-logo.png'
 
 
 class IndexPage extends React.Component {
@@ -14,8 +13,7 @@ class IndexPage extends React.Component {
   <Layout>
     <div className="home-container">
     <div className="logo-home">
-      <Img fluid={data.file.childImageSharp.fluid} fadeIn={false}/>
-      {/* <img src={data.file.publicURL}/> */}
+      <img src={logo} alt="Logo" className="logo-home" />
     </div>
     <div className="nav-home">
         <a href="/people" className="home-cat">
@@ -41,16 +39,3 @@ class IndexPage extends React.Component {
 }
 
 export default IndexPage
-
-export const query = graphql`
-  query {
-    file(relativePath: { eq: "theographic-logo.png" }) {
-      publicURL
-      childImageSharp {
-        fluid(maxWidth: 550, quality:100) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-  }
-`
