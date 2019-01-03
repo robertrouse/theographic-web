@@ -62,7 +62,7 @@ module.exports = {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'peopleGroups',
             tableView: 'Grid view',
-            // tableLinks: ['members','verses','events'],
+            tableLinks: ['members','verses','events'],
           },
           {
             baseId: 'app5UK4s70d5PwupX',

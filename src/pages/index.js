@@ -12,25 +12,25 @@ class IndexPage extends React.Component {
     const {data} = this.props
   return(
   <Layout>
-    <div className="container-2 w-container">
+    <div className="home-container">
     <div className="logo-home">
-      {/* <Img fluid={data.file.childImageSharp.fluid} fadeIn={false}/> */}
-      <img src={data.file.publicURL} className="logo-home"/>
+      <Img fluid={data.file.childImageSharp.fluid} fadeIn={false}/>
+      {/* <img src={data.file.publicURL}/> */}
     </div>
     <div className="nav-home">
-        <a href="/people" className="home-cat w-inline-block">
+        <a href="/people" className="home-cat">
           <span>People</span>
         </a>
       <div className="home-edges"></div>
-        <a href="/places" className="home-cat w-inline-block">
+        <a href="/places" className="home-cat">
           Places
         </a>
       <div className="home-edges"></div>
-        <a href="/periods" className="home-cat w-inline-block">
+        <a href="/periods" className="home-cat">
           Periods
         </a>
       <div className="home-edges"></div>
-        <a href="/passages" className="home-cat w-inline-block">
+        <a href="/passages" className="home-cat">
           Passages
         </a>
       </div>
@@ -47,7 +47,7 @@ export const query = graphql`
     file(relativePath: { eq: "theographic-logo.png" }) {
       publicURL
       childImageSharp {
-        fluid(maxWidth: 600, quality:80) {
+        fluid(maxWidth: 550, quality:100) {
           ...GatsbyImageSharpFluid
         }
       }

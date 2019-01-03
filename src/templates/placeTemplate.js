@@ -113,7 +113,6 @@ class Place extends React.Component {
         <div className="container">
           <h1 className="heading">{data.airtable.data.displayTitle}</h1>
           {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
-          {data.detailMap && (<Img fluid={data.detailMap.childImageSharp.fluid} className="map"/>)}
           <p className="container" dangerouslySetInnerHTML={{__html: data.airtable.data.dictionaryText}}/>
           <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
           <h3 className="heading-3">Related People</h3>
