@@ -9,9 +9,9 @@ function LinkList(props) {
   const alphaGroup = letterData[0].node.data.alphaGroup;
   const letterList = letterData.map((letter) => {
     if (letter.node.data.status === 'wip') {
-      return <span className="index-item">{letter.node.data.displayTitle}</span>
+      return <span className="index-item">{letter.node.data.name}</span>
     } else {
-      return <a href = {`/place/${letter.node.data.placeLookup}`} className="index-item">{letter.node.data.displayTitle}</a>
+      return <a href = {`/person/${letter.node.data.personLookup}`} className="index-item">{letter.node.data.displayTitle}</a>
     }
 }
   );
@@ -28,14 +28,14 @@ function AlphaList(props) {
     return  Object.keys(letters).map((letter) => <LinkList letterData={letters[letter]} />)
 }
 
-class PlacesPage extends React.Component {
+class PeoplePage extends React.Component {
   
   render() {
     const {data} = this.props
   return(
   <Layout>
     <div className="container">
-      <h1>All Places in the Bible</h1>
+      <h1>All People in the Bible</h1>
       <AlphaList letters={data.allAirtable}/>
     </div>
     <div className="footer"></div>
@@ -43,18 +43,19 @@ class PlacesPage extends React.Component {
   }
 }
 
-export default PlacesPage
+export default PeoplePage
 
 export const query = graphql
   `
   {
-    allAirtable(filter: { table: { eq: "places" }} ) {
+    allAirtable(filter: { table: { eq: "people" }} ) {
       group(field:data___alphaGroup){
         edges {
         	node {
             data {
-              placeLookup
+              personLookup
               displayTitle
+              name
               status
             	alphaGroup
           	}
