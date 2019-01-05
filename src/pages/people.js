@@ -1,6 +1,5 @@
 import React from 'react'
-
-import { StaticQuery, Link, graphql } from 'gatsby';
+import { Link, graphql } from 'gatsby';
 import Layout from '../components/layout.js';
 import '../components/layout.css'
 
@@ -11,7 +10,7 @@ function LinkList(props) {
     if (letter.node.data.status === 'wip') {
       return <span className="index-item">{letter.node.data.name}</span>
     } else {
-      return <a href = {`/person/${letter.node.data.personLookup}`} className="index-item">{letter.node.data.displayTitle}</a>
+      return <Link to = {`/person/${letter.node.data.personLookup}`} className="index-item">{letter.node.data.displayTitle}</Link>
     }
 }
   );
