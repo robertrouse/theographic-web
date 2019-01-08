@@ -12,23 +12,21 @@ exports.onCreateNode = ({node, actions, getNode}) => {
 
   if (node && node.internal.type === `Airtable` && node.table === `places`) {
     urlSlug = `/place/${node.data.slug}/`
-
-    // Add slug as a field on the node.
-    createNodeField({node, name: `urlSlug`, value: urlSlug})
   } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
     urlSlug = `/person/${node.data.slug}/`
-
-    // Add slug as a field on the node.
-    createNodeField({node, name: `urlSlug`, value: urlSlug})
+  } else if (node && node.internal.type === `Airtable` && node.table === `books`) {
+    urlSlug = `/passage/${node.data.slug}/`
   }
+  createNodeField({node, name: `urlSlug`, value: urlSlug})
 }
 
 exports.createPages = ({graphql, actions}) => {
 
   const placesPages = makingPages(`src/templates/placeTemplate.js`, 'places', 'placeLookup', graphql, actions)
   const peoplePages = makingPages(`src/templates/personTemplate.js`, 'people', 'personLookup', graphql, actions)
-
-  return peoplePages;
+  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'books', 'bookName', graphql, actions)
+  
+  return peoplePages,placesPages,passagePages;
 
 }
 

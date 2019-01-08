@@ -6,7 +6,7 @@ import '../components/layout.css'
 function LinkList(props) {
   const bookData = props.bookData.edges;
   const bookList = bookData.map((book) => {
-      return <Link to={`/${book.node.data.bookName}`} className="index-item">{book.node.data.bookName}</Link>
+      return <Link to={`/passage/${book.node.data.slug}`} className="index-item">{book.node.data.bookName}</Link>
   }
   );
   return (
@@ -18,7 +18,9 @@ function LinkList(props) {
 }
 
 function BookList(props) {
-  const testaments = props.books.group.reverse();
+  const groups = props.books.group;
+  const sorted = groups.sort();
+  const testaments = sorted.reverse();
   return  Object.keys(testaments).map((testament) => <LinkList bookData={testaments[testament]}/>)
 }
 
@@ -48,6 +50,7 @@ export const query = graphql
           node {
             data {
               bookName
+              slug
               testament
             }
           }
