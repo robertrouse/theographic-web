@@ -3,16 +3,20 @@ import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 
+function Verse(props) {
+  const verse = props.verseData.data;
+  //here we'll handle logic to insert links
+  return <span key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{verse.verseText}&nbsp;</span>
+}
+
 function Verses(props) {
   const chapters = props.chapterData.data;
-  const verses = chapters.verses.map((verse) => 
-      <li key={verse.data.verseNum}>{verse.data.verseText}</li>
-    )
+  const verses = chapters.verses.map((verse) => <Verse verseData={verse} />)
   
   return (
     <div>
       <h3>Chapter {chapters.chapterNum}</h3>
-      <ol>{verses}</ol>
+      <div>{verses}</div>
     </div>
   )
 }
@@ -59,6 +63,18 @@ query passage($lookup: String!) {
             data {
               verseNum
               verseText
+              people{
+                data{
+                  Aliases
+                  slug
+                }
+              }
+              places{
+                data{
+                  aliases
+                  slug
+                }
+              }
             }
           }
         }
