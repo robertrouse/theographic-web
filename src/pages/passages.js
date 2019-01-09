@@ -6,7 +6,7 @@ import '../components/layout.css'
 function LinkList(props) {
   const bookData = props.bookData.edges;
   const bookList = bookData.map((book) => {
-      return <Link to={`/passage/${book.node.data.slug}`} className="index-item">{book.node.data.bookName}</Link>
+      return <Link to={`/${book.node.data.slug}`} className="index-item">{book.node.data.bookName}</Link>
   }
   );
   return (

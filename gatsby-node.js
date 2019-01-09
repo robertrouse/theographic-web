@@ -15,7 +15,7 @@ exports.onCreateNode = ({node, actions, getNode}) => {
   } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
     urlSlug = `/person/${node.data.slug}/`
   } else if (node && node.internal.type === `Airtable` && node.table === `books`) {
-    urlSlug = `/passage/${node.data.slug}/`
+    urlSlug = `/${node.data.slug}/`
   }
   createNodeField({node, name: `urlSlug`, value: urlSlug})
 }
