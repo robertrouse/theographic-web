@@ -18,9 +18,9 @@ function LinkList(props) {
 }
 
 function BookList(props) {
-  const groups = props.books.group;
-  const sorted = groups.sort();
-  const testaments = sorted.reverse();
+  const testaments = props.books.group;
+  console.log(testaments);
+  testaments.sort((a, b) => b.edges[0].node.data.testament.localeCompare(a.edges[0].node.data.testament));
   return  Object.keys(testaments).map((testament) => <LinkList bookData={testaments[testament]}/>)
 }
 
