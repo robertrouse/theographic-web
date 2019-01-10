@@ -1,12 +1,19 @@
 import React from 'react'
-import { graphql } from 'gatsby'
+import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 
+function Word(props) {
+  //here we'll handle logic to insert links
+  return <Link>{props.wordData}&nbsp;</Link>;
+}
+
 function Verse(props) {
   const verse = props.verseData.data;
-  //here we'll handle logic to insert links
-  return <span key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{verse.verseText}&nbsp;</span>
+  const verseText = verse.verseText;
+  const words = verseText.split(" ").map((word)=> <Word wordData={word}/>);
+
+  return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{words}</div>
 }
 
 function Verses(props) {
@@ -83,4 +90,3 @@ query passage($lookup: String!) {
   }
 }
 `
-
