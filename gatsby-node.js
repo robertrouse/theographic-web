@@ -70,12 +70,10 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
             component: template,
             context: {
               lookup: edge.node.data[lookupName],
-              wideMap: edge.node.data[lookupName] + "_wide.png",
-              detailMap: edge.node.data[lookupName] + "_detail.png"
+              wideMap: edge.node.data[lookupName] + "_wide.png"
             }
           })
         })
-
         return
       })
     )

@@ -131,7 +131,7 @@ class Place extends React.Component {
 export default Place
 
 export const pageQuery = graphql`
-   query placeLookup($lookup: String!, $wideMap: String!, $detailMap: String!) {
+   query placeLookup($lookup: String!, $wideMap: String!) {
     wideMap: file(relativePath: {eq: $wideMap}) {
       childImageSharp {
         fluid(maxWidth: 767) {
