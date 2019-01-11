@@ -83,4 +83,3 @@ query passage($lookup: String!) {
   }
 }
 `
-

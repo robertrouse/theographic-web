@@ -9,3 +9,7 @@ yarn-error.log
 .idea
 .env
 dev.txt
+/amplify
+aws-credentials.csv
+aws-exports.js
+.amplifyrc

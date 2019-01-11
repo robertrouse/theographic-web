@@ -139,13 +139,6 @@ export const pageQuery = graphql`
         }
       }
     }
-    detailMap: file(relativePath: {eq: $detailMap}) {
-      childImageSharp {
-        fluid(maxWidth: 767) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
     airtable(table: {eq: "places"}, data: {placeLookup: {eq: $lookup }}) {
       data {
         placeLookup
@@ -189,4 +182,3 @@ export const pageQuery = graphql`
     }
   }
 `
-
