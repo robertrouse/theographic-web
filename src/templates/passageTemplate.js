@@ -3,35 +3,18 @@ import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 
-function Word(props) {
-  //here we'll handle logic to insert links
-  return <Link>{props.wordData}&nbsp;</Link>;
-}
 
 function Verse(props) {
   const verse = props.verseData.data;
   const verseText = verse.verseText;
-  const words = verseText.split(" ").map((word)=> <Word wordData={word}/>);
+  const words = verseText.split(" ").map((word,i)=> <Link key={i} to={`/${word}`}>{word}&nbsp;</Link>);
 
   return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{words}</div>
 }
 
 function Verses(props) {
-  const chapters = props.chapterData.data;
-  const verses = chapters.verses.map((verse) => <Verse verseData={verse} />)
-  
-  return (
-    <div>
-      <h3>Chapter {chapters.chapterNum}</h3>
-      <div>{verses}</div>
-    </div>
-  )
-}
-
-function Chapters(props) {
-  const chapters = props.chapters;
-  // console.log(props);
-  return Object.keys(chapters).map((chapter) => <Verses chapterData={chapters[chapter]} />)
+  const verses = props.verses;
+  return Object.keys(verses).map((verse,i) => <Verse key={i} verseData={verses[verse]} />)
 }
 
 class Passage extends React.Component {
@@ -47,8 +30,8 @@ class Passage extends React.Component {
           <meta content="width=device-width, initial-scale=1" name="viewport" />
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.bookName}</h1>
-          <Chapters chapters={data.airtable.data.chapters}></Chapters>
+          <h1 className="heading">{data.airtable.data.book[0].data.bookName}&nbsp;{data.airtable.data.chapterNum}</h1>
+          <Verses verses={data.airtable.data.verses}></Verses>
           <div className="footer" />
         </div>
       </>
@@ -60,28 +43,28 @@ export default Passage
 
 export const pageQuery = graphql`
 query passage($lookup: String!) {
-  airtable(table: {eq: "books"}, data: {bookName: {eq: $lookup}}) {
+  airtable(table: {eq: "chapters"}, data: {chapterLookup: {eq: $lookup}}) {
     data {
-      bookName
-      chapters {
+      chapterNum
+      book{
+        data{
+          bookName
+        }
+      }
+      verses {
         data {
-          chapterNum
-          verses {
+          verseNum
+          verseText
+          people {
             data {
-              verseNum
-              verseText
-              people{
-                data{
-                  Aliases
-                  slug
-                }
-              }
-              places{
-                data{
-                  aliases
-                  slug
-                }
-              }
+              Aliases
+              slug
+            }
+          }
+          places {
+            data {
+              aliases
+              slug
             }
           }
         }

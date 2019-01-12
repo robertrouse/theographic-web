@@ -178,10 +178,16 @@ a:hover {
   justify-content:space-between;
 }
 
-/* .index-item {
-  display: inline-block;
-  width: 180px;
-} */
+.index-book{
+	display:grid;
+	display: -ms-grid;
+	grid-template-columns: repeat(auto-fit, 35px);
+	-ms-grid-columns: repeat(auto-fit, 35px);
+  grid-template-rows: repeat(auto, 35px);
+	-ms-grid-rows: repeat(auto, 35px);
+  grid-gap: auto;
+  justify-content:space-between;
+}
 
 /*********  DETAIL PAGES  *********************************************/
 .map {

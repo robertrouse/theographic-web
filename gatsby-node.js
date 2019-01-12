@@ -1,6 +1,4 @@
 /**
- * Implement Gatsby's Node APIs in this file.
- *
  * See: https://www.gatsbyjs.org/docs/node-apis/
  */
 
@@ -14,7 +12,7 @@ exports.onCreateNode = ({node, actions, getNode}) => {
     urlSlug = `/place/${node.data.slug}/`
   } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
     urlSlug = `/person/${node.data.slug}/`
-  } else if (node && node.internal.type === `Airtable` && node.table === `books`) {
+  } else if (node && node.internal.type === `Airtable` && node.table === `chapters`) {
     urlSlug = `/${node.data.slug}/`
   }
   createNodeField({node, name: `urlSlug`, value: urlSlug})
@@ -24,18 +22,17 @@ exports.createPages = ({graphql, actions}) => {
 
   const placesPages = makingPages(`src/templates/placeTemplate.js`, 'places', 'placeLookup', graphql, actions)
   const peoplePages = makingPages(`src/templates/personTemplate.js`, 'people', 'personLookup', graphql, actions)
-  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'books', 'bookName', graphql, actions)
+  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'chapters', 'chapterLookup', graphql, actions)
   
   return peoplePages,placesPages,passagePages;
 
 }
 
 function makingPages (templatePath, table, lookupName, graphql, actions) {
-  const {createPage, createRedirect} = actions
+  const {createPage} = actions
   return new Promise((resolve, reject) => {
     const template = path.resolve(templatePath)
 
-    // Query for all markdown "nodes" and for the slug we previously created.
     resolve(
       graphql(
         `
@@ -66,7 +63,7 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
 
         result.data.allAirtable.edges.forEach(edge => {
           createPage({
-            path: edge.node.fields.urlSlug, // required, we don't have frontmatter for this page hence separate if()
+            path: edge.node.fields.urlSlug, 
             component: template,
             context: {
               lookup: edge.node.data[lookupName],
@@ -79,5 +76,3 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
     )
   })
 }
-
-

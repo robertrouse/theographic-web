@@ -3,25 +3,37 @@ import { Link, graphql } from 'gatsby';
 import Layout from '../components/layout.js';
 import '../components/layout.css'
 
-function LinkList(props) {
-  const bookData = props.bookData.edges;
-  const bookList = bookData.map((book) => {
-      return <Link to={`/${book.node.data.slug}`} className="index-item">{book.node.data.bookName}</Link>
-  }
+function Book(props) {
+  const book=props.bookData.node.data;
+  console.log(book);
+  const chapters = book.chapters.map((chapter) => 
+    <Link to={`/${chapter.data.slug}`}>{chapter.data.chapterNum}</Link>
   );
+  
+  return (
+    <>
+    <h3>{book.bookName}</h3>
+    <div className="index-book">{chapters}</div>
+    </>
+  )
+}
+
+function Books(props) {
+  const bookData = props.bookData.edges;
+  const bookList = bookData.map((book) => <Book bookData={book} />);
+
   return (
     <div>
-      <h3>{bookData[0].node.data.testament}</h3>
-      <div className="index-group">{bookList}</div>
+      <h1>{bookData[0].node.data.testament}</h1>
+      <div>{bookList}</div>
     </div>
   )
 }
 
-function BookList(props) {
-  const testaments = props.books.group;
-  console.log(testaments);
+function Testaments(props) {
+  const testaments = props.testaments.group;
   testaments.sort((a, b) => b.edges[0].node.data.testament.localeCompare(a.edges[0].node.data.testament));
-  return  Object.keys(testaments).map((testament) => <LinkList bookData={testaments[testament]}/>)
+  return  Object.keys(testaments).map((testament) => <Books bookData={testaments[testament]}/>)
 }
 
 class Passages extends React.Component {
@@ -31,8 +43,7 @@ class Passages extends React.Component {
   return(
   <Layout>
     <div className="container">
-      <h1>Books of the Bible</h1>
-      <BookList books={data.allAirtable}/>
+      <Testaments testaments={data.allAirtable}/>
     </div>
     <div className="footer"></div>
   </Layout>)
@@ -52,6 +63,12 @@ export const query = graphql
               bookName
               slug
               testament
+              chapters {
+                data {
+                  chapterNum
+                  slug
+                }
+              }
             }
           }
         }

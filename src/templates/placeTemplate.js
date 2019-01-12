@@ -15,7 +15,6 @@ const groupBy = function (xs, key) {
 function DateGrouping (props) {
   const eventGroup = props.eventGroup
   const year = props.year
-
   const listItems = eventGroup.map((event) => <li key={event.data.eventName}><a href={`/event/${event.data.eventName}`}>{event.data.eventName}</a></li>)
   return (
     <div>
