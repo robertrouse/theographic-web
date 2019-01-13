@@ -6,13 +6,19 @@ import '../components/layout.css'
 
 function Verse(props) {
   const verse = props.verseData.data;
-  const words = verse.verseText.split(" ").map((word,i) => 
-    //placeholder to handle tagging logic
-    <Link key={i} to="#">{word} </Link>
+  const words = verse.verseText.split(" ").map((word, i) =>
+  //placeholder to handle tagging logic
+  {
+    if (i % 5 == 1) {
+      return( <Link key={i} to="#">{word} </Link>)
+    } else {
+      return (<>{word} </>)
+    }
+  }
   );
   words.join();
 
-  return  <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum} {words}</div>
+  return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum} {words}</div>
   // return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{verse.verseText}&nbsp;</div>
 }
 
@@ -21,10 +27,10 @@ function Verses(props) {
   const verses = chapters.verses.map((verse, i) => <Verse key={i} verseData={verse} />)
   return (
     <>
-    <div>
-      <h3>Chapter {chapters.chapterNum}</h3>
-      <div>{verses}</div>
-    </div>
+      <div>
+        <h3>Chapter {chapters.chapterNum}</h3>
+        <div>{verses}</div>
+      </div>
     </>
   )
 }
