@@ -3,21 +3,6 @@ import { Link, graphql } from 'gatsby';
 import Layout from '../components/layout.js';
 import '../components/layout.css'
 
-function Book(props) {
-  const book=props.bookData.node.data;
-  console.log(book);
-  const chapters = book.chapters.map((chapter) => 
-    <Link to={`/${chapter.data.slug}`}>{chapter.data.chapterNum}</Link>
-  );
-  
-  return (
-    <>
-    <h3>{book.bookName}</h3>
-    <div className="index-book">{chapters}</div>
-    </>
-  )
-}
-
 function Books(props) {
   const bookData = props.bookData.edges;
   const bookList = bookData.map((book) => 

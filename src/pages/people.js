@@ -6,11 +6,11 @@ import '../components/layout.css'
 function LinkList(props) {
   const letterData = props.letterData.edges;
   const alphaGroup = letterData[0].node.data.alphaGroup;
-  const letterList = letterData.map((letter) => {
+  const letterList = letterData.map((letter, i) => {
     if (letter.node.data.status === 'wip') {
       return <span className="index-item">{letter.node.data.name}</span>
     } else {
-      return <Link to = {`/person/${letter.node.data.personLookup}`} className="index-item">{letter.node.data.displayTitle}</Link>
+      return <Link key={i} to = {`/person/${letter.node.data.personLookup}`} className="index-item">{letter.node.data.displayTitle}</Link>
     }
 }
   );
@@ -24,7 +24,7 @@ function LinkList(props) {
 
 function AlphaList(props) {
   const letters = props.letters.group;
-    return  Object.keys(letters).map((letter) => <LinkList letterData={letters[letter]} />)
+    return  Object.keys(letters).map((letter, i) => <LinkList key={i} letterData={letters[letter]} />)
 }
 
 class PeoplePage extends React.Component {
