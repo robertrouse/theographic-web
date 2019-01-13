@@ -12,7 +12,7 @@ exports.onCreateNode = ({node, actions, getNode}) => {
     urlSlug = `/place/${node.data.slug}/`
   } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
     urlSlug = `/person/${node.data.slug}/`
-  } else if (node && node.internal.type === `Airtable` && node.table === `chapters`) {
+  } else if (node && node.internal.type === `Airtable` && node.table === `books`) {
     urlSlug = `/${node.data.slug}/`
   }
   createNodeField({node, name: `urlSlug`, value: urlSlug})
@@ -22,7 +22,7 @@ exports.createPages = ({graphql, actions}) => {
 
   const placesPages = makingPages(`src/templates/placeTemplate.js`, 'places', 'placeLookup', graphql, actions)
   const peoplePages = makingPages(`src/templates/personTemplate.js`, 'people', 'personLookup', graphql, actions)
-  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'chapters', 'chapterLookup', graphql, actions)
+  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'books', 'bookName', graphql, actions)
   
   return peoplePages,placesPages,passagePages;
 

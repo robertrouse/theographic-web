@@ -6,15 +6,32 @@ import '../components/layout.css'
 
 function Verse(props) {
   const verse = props.verseData.data;
-  const verseText = verse.verseText;
-  const words = verseText.split(" ").map((word,i)=> <Link key={i} to={`/${word}`}>{word}&nbsp;</Link>);
+  const words = verse.verseText.split(" ").map((word,i) => 
+    //placeholder to handle tagging logic
+    <Link key={i} to="#">{word} </Link>
+  );
+  words.join();
 
-  return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{words}</div>
+  return  <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum} {words}</div>
+  // return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{verse.verseText}&nbsp;</div>
 }
 
 function Verses(props) {
-  const verses = props.verses;
-  return Object.keys(verses).map((verse,i) => <Verse key={i} verseData={verses[verse]} />)
+  const chapters = props.chapterData.data;
+  const verses = chapters.verses.map((verse, i) => <Verse key={i} verseData={verse} />)
+  return (
+    <>
+    <div>
+      <h3>Chapter {chapters.chapterNum}</h3>
+      <div>{verses}</div>
+    </div>
+    </>
+  )
+}
+
+function Chapters(props) {
+  const chapters = props.chapters;
+  return Object.keys(chapters).map((chapter, i) => <Verses key={i} chapterData={chapters[chapter]} />)
 }
 
 class Passage extends React.Component {
@@ -30,8 +47,8 @@ class Passage extends React.Component {
           <meta content="width=device-width, initial-scale=1" name="viewport" />
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.book[0].data.bookName}&nbsp;{data.airtable.data.chapterNum}</h1>
-          <Verses verses={data.airtable.data.verses}></Verses>
+          <h1 className="heading">{data.airtable.data.bookName}</h1>
+          <Chapters chapters={data.airtable.data.chapters}></Chapters>
           <div className="footer" />
         </div>
       </>
@@ -43,28 +60,28 @@ export default Passage
 
 export const pageQuery = graphql`
 query passage($lookup: String!) {
-  airtable(table: {eq: "chapters"}, data: {chapterLookup: {eq: $lookup}}) {
+  airtable(table: {eq: "books"}, data: {bookName: {eq: $lookup}}) {
     data {
-      chapterNum
-      book{
-        data{
-          bookName
-        }
-      }
-      verses {
+      bookName
+      chapters {
         data {
-          verseNum
-          verseText
-          people {
+          chapterNum
+          verses {
             data {
-              Aliases
-              slug
-            }
-          }
-          places {
-            data {
-              aliases
-              slug
+              verseNum
+              verseText
+              people{
+                data{
+                  Aliases
+                  slug
+                }
+              }
+              places{
+                data{
+                  aliases
+                  slug
+                }
+              }
             }
           }
         }
