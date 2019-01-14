@@ -7,19 +7,33 @@ import '../components/layout.css'
 function Verse(props) {
   const verse = props.verseData.data;
   const words = verse.verseText.split(" ").map((word, i) =>
-  //placeholder to handle tagging logic
-  {
-    if (i % 5 == 1) {
-      return( <Link key={i} to="#">{word} </Link>)
-    } else {
-      return (<>{word} </>)
+    {
+      var person = '';
+      var place = '';
+
+      if (verse.people) {
+        person = verse.people.filter(names => 
+          names.data.Aliases.split(",").indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
+        );
+      }
+      if (verse.places) {
+        place = verse.places.filter(names => 
+          names.data.kjvName.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
+        );
+      }
+
+      if (person.length > 0) {
+        return( <Link key={i} to={`/person/${person[0].data.slug}`}>{word} </Link> )
+      } else if (place.length > 0) {
+        return( <Link key={i} to={`/place/${place[0].data.slug}`}>{word} </Link> )
+      } else {
+        return (<>{word} </>)
+      }
     }
-  }
   );
   words.join();
 
-  return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum} {words}</div>
-  // return <div key={verse.verseNum} id={verse.osisRef}>{verse.verseNum}&nbsp;{verse.verseText}&nbsp;</div>
+  return <div key={props.key} id={verse.osisRef}>{verse.verseNum} {words}</div>
 }
 
 function Verses(props) {
@@ -84,6 +98,7 @@ query passage($lookup: String!) {
               }
               places{
                 data{
+                  kjvName
                   aliases
                   slug
                 }
