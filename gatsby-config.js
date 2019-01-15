@@ -66,7 +66,7 @@ module.exports = {
           },
           {
             baseId: 'app5UK4s70d5PwupX',
-            tableName: 'Events',
+            tableName: 'events',
             tableView: 'Grid view',
             tableLinks: ['participants','participantGroups', 'placeOccurred', 'startYear','versesDescribed'],
           }

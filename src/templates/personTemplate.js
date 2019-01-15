@@ -107,6 +107,7 @@ function VerseList (props) {
   }
   return listOfVerses
 }
+
 function ConditionalAliases(props){
   if(props.aliases){
     return <div className="container"><strong>Also called: </strong>{props.aliases}</div>

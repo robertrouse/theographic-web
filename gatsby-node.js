@@ -12,6 +12,8 @@ exports.onCreateNode = ({node, actions, getNode}) => {
     urlSlug = `/place/${node.data.slug}/`
   } else if (node && node.internal.type === `Airtable` && node.table === `people`) {
     urlSlug = `/person/${node.data.slug}/`
+  } else if (node && node.internal.type === `Airtable` && node.table === `events`) {
+    urlSlug = `/period/${node.data.slug}/`
   } else if (node && node.internal.type === `Airtable` && node.table === `books`) {
     urlSlug = `/${node.data.slug}/`
   }
@@ -22,9 +24,10 @@ exports.createPages = ({graphql, actions}) => {
 
   const placesPages = makingPages(`src/templates/placeTemplate.js`, 'places', 'placeLookup', graphql, actions)
   const peoplePages = makingPages(`src/templates/personTemplate.js`, 'people', 'personLookup', graphql, actions)
+  const periodPages = makingPages(`src/templates/periodTemplate.js`, 'events', 'eventGroup', graphql, actions)
   const passagePages = makingPages(`src/templates/passageTemplate.js`, 'books', 'bookName', graphql, actions)
   
-  return peoplePages,placesPages,passagePages;
+  return peoplePages,placesPages,periodPages,passagePages;
 
 }
 
@@ -57,11 +60,11 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
           result.errors.forEach(error => {
             console.log(error)
           })
-
           reject(result.errors)
         }
-
-        result.data.allAirtable.edges.forEach(edge => {
+        
+        var uniqueItems = [...new Set(result.data.allAirtable.edges)]
+        uniqueItems.forEach(edge => {
           createPage({
             path: edge.node.fields.urlSlug, 
             component: template,
