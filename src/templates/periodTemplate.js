@@ -5,26 +5,29 @@ import '../components/layout.css'
 
 function Event(props) {
   const event = props.eventData.node.data;
-  console.log(event);
-  const people = event.participants.map((person, i) =>
-    <>
-      {i > 0 && ', '}
-      <Link key={i} to={`/person/${person.data.slug}`}>{person.data.displayTitle}</Link>
-    </>
+  const people = Object.is(event.participants, undefined) ? [] : 
+    (event.participants.map((person, i) =>
+      <>
+        {i > 0 && ', '}
+        <Link key={i} to={`/person/${person.data.slug}`}>{person.data.displayTitle}</Link>
+      </>
+    )
   );
 
-  const places = event.placeOccurred.map((place, i) =>
-  <>
-    {i > 0 && ', '}
-    <Link key={i} to={`/place/${place.data.slug}`}>{place.data.displayTitle}</Link>
-  </>
-);
+  const places = Object.is(event.placeOccurred, undefined) ? [] :
+    (event.placeOccurred.map((place, i) =>
+    <>
+      {i > 0 && ', '}
+      <Link key={i} to={`/place/${place.data.slug}`}>{place.data.displayTitle}</Link>
+    </>
+    )
+  );
 
   return (
     <>
       <div>{event.eventName}</div>
       <div>{people}</div>
-      <div>{places}</div>
+      <div>{event.places && (places)}</div>
     </>
   )
 }
