@@ -5,7 +5,7 @@ import '../components/layout.css'
 
 function Event(props) {
   const event = props.eventData.node.data;
-  const people = Object.is(event.participants, undefined) ? [] : 
+  const people = (event.participants == null) ? false : 
     (event.participants.map((person, i) =>
       <>
         {i > 0 && ', '}
@@ -13,8 +13,8 @@ function Event(props) {
       </>
     )
   );
-
-  const places = Object.is(event.placeOccurred, undefined) ? [] :
+  console.log(event.placeOccurred);
+  const places = (event.placeOccurred == null) ? false :
     (event.placeOccurred.map((place, i) =>
     <>
       {i > 0 && ', '}
@@ -25,9 +25,9 @@ function Event(props) {
 
   return (
     <>
-      <div>{event.eventName}</div>
-      <div>{people}</div>
-      <div>{event.places && (places)}</div>
+      <div><b>{event.eventName}</b></div>
+      {people && (<div>People: {people}</div>)}
+      {places && (<div>Places: {places}</div>)}
     </>
   )
 }
