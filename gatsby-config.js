@@ -35,7 +35,8 @@ module.exports = {
           {
             baseId: 'app5UK4s70d5PwupX',
             tableName: 'periods',
-            tableView: 'eraGroups',
+            tableView: 'Grid view',
+            tableLinks: ['peopleBorn', 'peopleDied', 'events','booksWritten'],
           },
           {
             baseId: 'app5UK4s70d5PwupX',

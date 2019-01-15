@@ -2,6 +2,7 @@ import React from 'react'
 import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
+import VerseList from '../components/VerseList'
 
 function Event(props) {
   const event = props.eventData.node.data;
@@ -13,7 +14,6 @@ function Event(props) {
       </>
     )
   );
-  console.log(event.placeOccurred);
   const places = (event.placeOccurred == null) ? false :
     (event.placeOccurred.map((place, i) =>
     <>
@@ -28,6 +28,7 @@ function Event(props) {
       <div><b>{event.eventName}</b></div>
       {people && (<div>People: {people}</div>)}
       {places && (<div>Places: {places}</div>)}
+      <div>Passages: <VerseList verses={event.versesDescribed} /></div>
     </>
   )
 }
@@ -78,9 +79,7 @@ export default Period
 export const pageQuery = graphql
 `
 query period($lookup: String!) {
-  allAirtable(
-    filter: {table: {eq: "events"}, data: {eventGroup: {eq: $lookup}}}, 
-    sort: {fields: [data___sequence], order: ASC}) {
+  allAirtable(filter: {table: {eq: "events"}, data: {eventGroup: {eq: $lookup}}}, sort: {fields: [data___sequence], order: ASC}) {
     group(field: data___yearGroup) {
       edges {
         node {
@@ -104,7 +103,19 @@ query period($lookup: String!) {
             }
             versesDescribed {
               data {
+                verseNum
                 osisRef
+                book {
+                  data {
+                    bookOrder
+                    osisName
+                  }
+                }
+                chapter {
+                  data {
+                    chapterNum
+                  }
+                }
               }
             }
           }
