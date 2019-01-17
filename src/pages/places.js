@@ -16,7 +16,7 @@ function LinkList(props) {
   );
   return (
     <div>
-      <h3>{alphaGroup}</h3>
+      <h3 id={alphaGroup}>{alphaGroup}</h3>
       <div className="index-group">{letterList}</div>
     </div>
   )

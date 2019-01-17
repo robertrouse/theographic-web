@@ -42,7 +42,7 @@ function Verses(props) {
   return (
     <>
       <div>
-        <h3>Chapter {chapters.chapterNum}</h3>
+        <h3 id={chapters.chapterNum}>Chapter {chapters.chapterNum}</h3>
         <div>{verses}</div>
       </div>
     </>
@@ -90,6 +90,7 @@ query passage($lookup: String!) {
             data {
               verseNum
               verseText
+              osisRef
               people{
                 data{
                   Aliases
