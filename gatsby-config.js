@@ -4,6 +4,19 @@ module.exports = {
   },
   plugins: [
     {
+      resolve: "gatsby-source-graphql",
+      options: {
+        typeName: "Neo4j",
+        fieldName: "neo4j",
+        url: "http://157.230.95.117:7474/graphql/",
+        headers: {
+          //Authorization: `Basic ${process.env.NEO4J_KEY}`,
+          Authorization: "Basic dGhlb2RldjpiaWJsZWdyYXBo",
+          //Authorization: process.env.NEO4J_KEY,
+        },
+      },
+    },
+    {
       resolve: 'gatsby-source-airtable',
       options: {
         apiKey: process.env.AIRTABLE_API_KEY,
