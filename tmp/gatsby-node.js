@@ -39,21 +39,13 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
     resolve(
       graphql(
         `
-          {
-            allAirtable(filter: { table: { eq: "${table}" }} ) {
-              edges {
-                node {
-                  data {
-                    ${lookupName}
-                    slug
-                  }
-                  fields {
-                    urlSlug
-                  }
-                }
-              }
+        {
+          neo4j {
+            ${lookupName} {
+              slug
             }
           }
+        }
         `
       ).then(result => {
         if (result.errors) {
@@ -69,8 +61,8 @@ function makingPages (templatePath, table, lookupName, graphql, actions) {
             path: edge.node.fields.urlSlug, 
             component: template,
             context: {
-              lookup: edge.node.data[lookupName],
-              wideMap: edge.node.data[lookupName] + "_wide.png"
+              lookupName: edge.data[lookupName],
+              wideMap: edge.data[lookupName].slug + "_wide.png"
             }
           })
         })

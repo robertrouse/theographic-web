@@ -78,37 +78,6 @@ class Passage extends React.Component {
 
 export default Passage
 
-export const pageQuery = graphql`
-query passage($lookup: String!) {
-  airtable(table: {eq: "books"}, data: {bookName: {eq: $lookup}}) {
-    data {
-      bookName
-      chapters {
-        data {
-          chapterNum
-          verses {
-            data {
-              verseNum
-              verseText
-              osisRef
-              people{
-                data{
-                  Aliases
-                  slug
-                }
-              }
-              places{
-                data{
-                  kjvName
-                  aliases
-                  slug
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`
+// export const pageQuery = graphql`
+
+// `

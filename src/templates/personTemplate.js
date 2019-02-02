@@ -194,64 +194,6 @@ class Person extends React.Component {
 
 export default Person
 
-export const pageQuery = graphql`
-query personLookup($lookup: String!) {
-   airtable(table: {eq: "people"}, data: {personLookup: {eq: $lookup }}) {
-      data {
-        personLookup
-        displayTitle
-        dictionaryText
-        aliases
-        father{
-          data{
-            personLookup
-            displayTitle
-           }
-        }   
-        hasBeenTo{
-          data{
-            placeLookup
-            displayTitle
-          }
-        }
-        events{
-          data{
-            eventName
-            startYear{
-              data {
-                year
-              }
-            }
-          }
-        }
-        personalNetwork{
-          data{
-            personLookup
-            displayTitle
-          }
-        }
-        memberOf{
-          data{
-            groupName
-           }
-        }
-        verses{
-          data{
-            verseNum
-            book{
-              data{
-                bookOrder
-                osisName
-              }
-            }
-            chapter{
-              data{
-                chapterNum
-              }
-            }
-          }
-        }
-      }
-  }
-}
-`
+// export const pageQuery = graphql`
+
+// `

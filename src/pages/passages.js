@@ -4,24 +4,22 @@ import Layout from '../components/layout.js';
 import '../components/layout.css'
 
 function Books(props) {
-  const bookData = props.bookData.edges;
-  const bookList = bookData.map((book) => 
-    <Link to={`/${book.node.data.slug}`}>{book.node.data.bookName}</Link>
-    // <Book bookData={book} />
+  const bookData = props.bookData.books;
+  const bookList = bookData.map((book,i) => 
+    <Link to={`/${book.slug}`} key={i}>{book.title}</Link>
   );
 
   return (
     <div>
-      <h3>{bookData[0].node.data.testament}</h3>
+      <h3>{props.bookData.title}</h3>
       <div className="index-group">{bookList}</div>
     </div>
   )
 }
 
 function Testaments(props) {
-  const testaments = props.testaments.group;
-  testaments.sort((a, b) => b.edges[0].node.data.testament.localeCompare(a.edges[0].node.data.testament));
-  return  Object.keys(testaments).map((testament) => <Books bookData={testaments[testament]}/>)
+  const testaments = props.testaments;
+  return  Object.keys(testaments).map((testament,i) => <Books bookData={testaments[testament]} key={i}/>)
 }
 
 class Passages extends React.Component {
@@ -32,7 +30,7 @@ class Passages extends React.Component {
   <Layout>
     <div className="container">
       <h1>Books of the Bible</h1>
-      <Testaments testaments={data.allAirtable}/>
+      <Testaments testaments={data.neo4j.Testament}/>
     </div>
     <div className="footer"></div>
   </Layout>)
@@ -44,22 +42,13 @@ export default Passages
 export const query = graphql
   `
   {
-    allAirtable(filter: {table: {eq: "books"}}, sort: {fields: [data___bookOrder], order: ASC}) {
-      group(field: data___testament) {
-        edges {
-          node {
-            data {
-              bookName
-              slug
-              testament
-              chapters {
-                data {
-                  chapterNum
-                  slug
-                }
-              }
-            }
-          }
+    neo4j {
+      Testament (orderBy:title_desc){
+        title
+        books (orderBy:bookOrder_asc){
+          title
+          slug
+          bookOrder
         }
       }
     }

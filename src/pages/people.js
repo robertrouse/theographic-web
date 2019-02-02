@@ -3,14 +3,22 @@ import { Link, graphql } from 'gatsby';
 import Layout from '../components/layout.js';
 import '../components/layout.css'
 
+// Taken from https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-a-array-of-objects?rq=1
+const groupBy = function (xs, key) {
+  return xs.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x)
+    return rv
+  }, {})
+}
+
 function LinkList(props) {
-  const letterData = props.letterData.edges;
-  const alphaGroup = letterData[0].node.data.alphaGroup;
+  const letterData = props.letterData;
+  const alphaGroup = letterData[0].firstLetter;
   const letterList = letterData.map((letter, i) => {
-    if (letter.node.data.status === 'wip') {
-      return <span className="index-item">{letter.node.data.name}</span>
+    if (letter.status === 'wip') {
+      return <span key ={i} className="index-item">{letter.name}</span>
     } else {
-      return <Link key={i} to = {`/person/${letter.node.data.personLookup}`} className="index-item">{letter.node.data.displayTitle}</Link>
+      return <Link key={i} to = {`/person/${letter.slug}`} className="index-item">{letter.title}</Link>
     }
 }
   );
@@ -23,8 +31,10 @@ function LinkList(props) {
 }
 
 function AlphaList(props) {
-  const letters = props.letters.group;
-    return  Object.keys(letters).map((letter, i) => <LinkList key={i} letterData={letters[letter]} />)
+  const letterData = props.letters.Person;
+  const listAlpha = letterData.map(person => { return {firstLetter: person.name.charAt(0).toUpperCase(), ...person}});
+  const letters = groupBy(listAlpha, `firstLetter`);
+  return  Object.keys(letters).map((letter, i) => <LinkList key={i} letterData={letters[letter]} />)
 }
 
 class PeoplePage extends React.Component {
@@ -35,7 +45,7 @@ class PeoplePage extends React.Component {
   <Layout>
     <div className="container">
       <h1>All People in the Bible</h1>
-      <AlphaList letters={data.allAirtable}/>
+      <AlphaList letters={data.neo4j}/>
     </div>
     <div className="footer"></div>
   </Layout>)
@@ -47,19 +57,12 @@ export default PeoplePage
 export const query = graphql
   `
   {
-    allAirtable(filter: { table: { eq: "people" }} ) {
-      group(field:data___alphaGroup){
-        edges {
-        	node {
-            data {
-              personLookup
-              displayTitle
-              name
-              status
-            	alphaGroup
-          	}
-          } 
-        }
+    neo4j {
+      Person(orderBy: title_asc) {
+        title
+        name
+        slug
+        status
       }
     }
   }

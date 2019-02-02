@@ -13,6 +13,7 @@ type Book {
 	id: String!
 	bookOrder: Int
 	osisRef: String!
+	slug: String!
 	title: String!
 	shortName: String!
 	division: [Division] @relation(name:"CONTAINS")

@@ -76,52 +76,7 @@ class Period extends React.Component {
 
 export default Period
 
-export const pageQuery = graphql
-`
-query period($lookup: String!) {
-  allAirtable(filter: {table: {eq: "events"}, data: {eventGroup: {eq: $lookup}}}, sort: {fields: [data___sequence], order: ASC}) {
-    group(field: data___yearGroup) {
-      edges {
-        node {
-          data {
-            eventName
-            eventGroup
-            sequence
-            slug
-            yearGroup
-            participants {
-              data {
-                displayTitle
-                slug
-              }
-            }
-            placeOccurred {
-              data {
-                displayTitle
-                slug
-              }
-            }
-            versesDescribed {
-              data {
-                verseNum
-                osisRef
-                book {
-                  data {
-                    bookOrder
-                    osisName
-                  }
-                }
-                chapter {
-                  data {
-                    chapterNum
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`
+// export const pageQuery = graphql
+// `
+
+// `

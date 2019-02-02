@@ -129,55 +129,6 @@ class Place extends React.Component {
 
 export default Place
 
-export const pageQuery = graphql`
-   query placeLookup($lookup: String!, $wideMap: String!) {
-    wideMap: file(relativePath: {eq: $wideMap}) {
-      childImageSharp {
-        fluid(maxWidth: 767) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    airtable(table: {eq: "places"}, data: {placeLookup: {eq: $lookup }}) {
-      data {
-        placeLookup
-        displayTitle
-        dictionaryText
-        placeID
-        kjvName
-        hasBeenHere{
-          data{
-            personLookup
-            displayTitle
-          }
-        }
-        eventsHere{
-          data{
-            eventName
-            startYear{
-              data {
-                year
-              }
-            }
-          }
-        }
-        verses{
-          data{
-            verseNum
-            book{
-              data{
-                bookOrder
-                osisName
-              }
-            }
-            chapter{
-              data{
-                chapterNum
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
+// export const pageQuery = graphql`
+   
+// `

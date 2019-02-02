@@ -23,14 +23,15 @@ export default PeriodsPage
 export const query = graphql
 `
 {
-  allAirtable(filter: { table: { eq: "events" }} ) {
-    edges {
-      node {
-        data {
-          eventName
-          eventGroup
+  neo4j {
+    EventGroup{
+      title
+      slug
+      events{
+        yearsOccurred{
+          year
         }
-      } 
+      }
     }
   }
 }
