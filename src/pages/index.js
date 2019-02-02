@@ -8,7 +8,6 @@ import logo from '../images/theographic-logo.png'
 class IndexPage extends React.Component {
 
   render() {
-    const { data } = this.props
     return (
       <Layout>
         <div className="home-container">
