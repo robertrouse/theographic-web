@@ -54,15 +54,14 @@ class PlacesPage extends React.Component {
 
 export default PlacesPage
 
-export const query = graphql
-  `
-  {
-    neo4j {
-      Place(orderBy: name_asc) {
-        name
-        slug
-        status
-      }
+export const query = graphql`
+{
+  neo4j {
+    Place(orderBy: name_asc) {
+      name
+      slug
+      status
     }
   }
-  `
+}
+`
