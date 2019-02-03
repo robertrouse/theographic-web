@@ -9,9 +9,9 @@ exports.createPages = ({graphql, actions}) => {
   const placesPages = makingPages(`src/templates/placeTemplate.js`, 'Place', '/place/', graphql, actions)
   // const peoplePages = makingPages(`src/templates/personTemplate.js`, 'Person', '/person/', graphql, actions)
   // const periodPages = makingPages(`src/templates/periodTemplate.js`, 'EventGroup', '/period/', graphql, actions)
-  // const passagePages = makingPages(`src/templates/passageTemplate.js`, 'Book', '/', graphql, actions)
+  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'Book', '/', graphql, actions)
   
-  return placesPages; //,peoplePages,periodPages,passagePages;
+  return placesPages, passagePages; //,peoplePages,periodPages;
 }
 
 function makingPages (templatePath, entityType, urlPrefix, graphql, actions) {

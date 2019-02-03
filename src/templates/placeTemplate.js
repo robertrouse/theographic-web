@@ -27,7 +27,6 @@ import '../components/layout.css'
 
 function PeopleList (props) {
   const people = props.people || []
-  console.log(people)
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return people.map((person, i) => <React.Fragment key={i}>
     {i > 0 && ', '}

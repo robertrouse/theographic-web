@@ -5,27 +5,26 @@ import '../components/layout.css'
 
 
 function Verse(props) {
-  const verse = props.verseData.data;
+  const verse = props.verseData;
   const words = verse.verseText.split(" ").map((word, i) =>
     {
       var person = '';
       var place = '';
 
-      if (verse.people) {
+      if (verse.people.length > 0) {
         person = verse.people.filter(names => 
-          names.data.Aliases.split(",").indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
+          names.name.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
         );
       }
-      if (verse.places) {
+      if (verse.places.length > 0) {
         place = verse.places.filter(names => 
-          names.data.kjvName.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
+          names.name.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
         );
       }
-
       if (person.length > 0) {
-        return( <Link key={i} to={`/person/${person[0].data.slug}`}>{word} </Link> )
+        return( <Link key={i} to={`/person/${person[0].slug}`}>{word} </Link> )
       } else if (place.length > 0) {
-        return( <Link key={i} to={`/place/${place[0].data.slug}`}>{word} </Link> )
+        return( <Link key={i} to={`/place/${place[0].slug}`}>{word} </Link> )
       } else {
         return (<>{word} </>)
       }
@@ -33,16 +32,16 @@ function Verse(props) {
   );
   words.join();
 
-  return <div key={props.key} id={verse.osisRef}>{verse.verseNum} {words}</div>
+  return <div key={props.key} id={verse.osisRef}>{verse.verseNum} {verse.verseText}</div>
 }
 
 function Verses(props) {
-  const chapters = props.chapterData.data;
-  const verses = chapters.verses.map((verse, i) => <Verse key={i} verseData={verse} />)
+  const chapter = props.chapterData;
+  const verses = chapter.verses.map((verse, i) => <Verse key={i} verseData={verse} />)
   return (
     <>
       <div>
-        <h3 id={chapters.chapterNum}>Chapter {chapters.chapterNum}</h3>
+        <h3 id={chapter.chapterNum}>{chapter.title}</h3>
         <div>{verses}</div>
       </div>
     </>
@@ -62,13 +61,13 @@ class Passage extends React.Component {
       <>
         <Helmet>
           <meta charSet="utf-8" />
-          <title>{data.airtable.data.bookName}</title>
-          <meta content="{data.airtable.data.bookName}" property="og:title" />
+          <title>{data.neo4j.Book.title}</title>
+          <meta content="{data.neo4j.Book.title}" property="og:title" />
           <meta content="width=device-width, initial-scale=1" name="viewport" />
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.airtable.data.bookName}</h1>
-          <Chapters chapters={data.airtable.data.chapters}></Chapters>
+          <h1 className="heading">{data.neo4j.Book[0].title}</h1>
+          <Chapters chapters={data.neo4j.Book[0].chapters}></Chapters>
           <div className="footer" />
         </div>
       </>
@@ -78,6 +77,31 @@ class Passage extends React.Component {
 
 export default Passage
 
-// export const pageQuery = graphql`
-
-// `
+export const pageQuery = graphql`
+query ($lookupName: String!) {
+  neo4j {
+    Book(orderBy: bookOrder_asc, filter: {slug: $lookupName}) {
+      title
+      bookOrder
+      chapters(orderBy: chapterNum_asc) {
+        title
+        chapterNum
+        verses(orderBy: verseNum_asc) {
+          verseNum
+          verseText
+          osisRef
+          people {
+            name
+            title
+            slug
+          }
+          places {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+}
+`
