@@ -16,7 +16,7 @@ type Book {
 	slug: String!
 	title: String!
 	shortName: String!
-	division: [Division] @relation(name:"CONTAINS")
+	division: [Division] @relation(name:"CONTAINS", direction:IN)
 	chapters: [Chapter] @relation(name: "CONTAINS")
 }
 
@@ -26,15 +26,15 @@ type Chapter {
 	chapterNum: Int
 	osisRef: String!
 	slug: String!
-	book: [Book] @relation(name: "CONTAINS")
+	book: [Book] @relation(name: "CONTAINS", direction:IN)
 	verses: [Verse] @relation(name: "CONTAINS")
-	writer: [Person] @relation(name: "WROTE")
+	writer: [Person] @relation(name: "WROTE", direction:IN)
 }
 
 type Verse {
 	id: String!
 	osisRef: String!
-	chapter: [Chapter] @relation(name:"CONTAINS")
+	chapter: [Chapter] @relation(name:"CONTAINS", direction:IN)
 	title: String!
 	verseId: Int
 	verseNum: Int
@@ -53,7 +53,7 @@ type Person {
 	title: String!
 	slug: String!
 	status: String!
-	verses: [Verse] @relation(name:"MENTIONS")
+	verses: [Verse] @relation(name:"MENTIONS", direction:IN)
 	birthYear: [Year] @relation(name:"BORN_IN")
 	bithPlace: [Place] @relation(name:"BORN_IN")
 	deathYear: [Year] @relation(name:"DIED_IN")
@@ -70,7 +70,7 @@ type Person {
 type PeopleGroup {
 	name: String!
 	id: String!
-	members: [Person] @relation(name:"MEMBER_OF")
+	members: [Person] @relation(name:"MEMBER_OF", direction:IN)
 }
 
 type Place {
@@ -86,11 +86,11 @@ type Place {
 	slug: String!
 	status: String!
 	comments: String!
-	events: [Event] @relation(name:"OCCURRED_IN")
-	peopleBorn: [Person] @relation(name:"BORN_IN")
-	peopleDied: [Person] @relation(name:"DIED_IN")
-	hasBeenHere: [Person] @relation(name:"HAS_BEEN_TO")
-	verses: [Verse] @relation(name:"MENTIONS")
+	events: [Event] @relation(name:"OCCURRED_IN", direction:IN)
+	peopleBorn: [Person] @relation(name:"BORN_IN", direction:IN)
+	peopleDied: [Person] @relation(name:"DIED_IN", direction:IN)
+	hasBeenHere: [Person] @relation(name:"HAS_BEEN_TO", direction:IN)
+	verses: [Verse] @relation(name:"MENTIONS", direction:IN)
 }
 
 type Event {
@@ -101,10 +101,10 @@ type Event {
  	duration: String!
  	sequence: Int,
  	yearsOccurred: [Year] @relation(name:"OCCURRED_IN")
- 	participants: [Person] @relation(name:"PARTICIPATED_IN")
+ 	participants: [Person] @relation(name:"PARTICIPATED_IN", direction:IN)
  	placeOccurred: [Place] @relation(name:"OCCURRED_IN")
- 	eventGroup: [EventGroup] @relation(name:"INCLUDES")
- 	verses: [Verse] @relation(name:"DESCRIBES")
+ 	eventGroup: [EventGroup] @relation(name:"INCLUDES", direction:IN)
+ 	verses: [Verse] @relation(name:"DESCRIBES", direction:IN)
 }
 
 type EventGroup {
@@ -117,7 +117,7 @@ type Year {
 	id: String!
 	year: Int
 	formattedYear: String!
-	events: [Event] @relation(name:"OCCURRED_IN")
-	peopleBorn: [Person] @relation(name:"BORN_IN")
-	peopleDied: [Person] @relation(name:"DIED_IN")
+	events: [Event] @relation(name:"OCCURRED_IN", direction:IN)
+	peopleBorn: [Person] @relation(name:"BORN_IN", direction:IN)
+	peopleDied: [Person] @relation(name:"DIED_IN", direction:IN)
 }

@@ -21,6 +21,8 @@ function Verse(props) {
           names.name.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
         );
       }
+      console.log(person.length)
+
       if (person.length > 0) {
         return( <Link key={i} to={`/person/${person[0].slug}`}>{word} </Link> )
       } else if (place.length > 0) {
@@ -32,7 +34,7 @@ function Verse(props) {
   );
   words.join();
 
-  return <div key={props.key} id={verse.osisRef}>{verse.verseNum} {verse.verseText}</div>
+  return <div key={props.key} id={verse.osisRef}>{verse.verseNum} {words}</div>
 }
 
 function Verses(props) {
