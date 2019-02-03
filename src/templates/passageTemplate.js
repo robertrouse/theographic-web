@@ -43,7 +43,7 @@ function Verses(props) {
   return (
     <>
       <div>
-        <h3 id={chapter.chapterNum}>{chapter.title}</h3>
+        <h3 id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
         <div>{verses}</div>
       </div>
     </>
