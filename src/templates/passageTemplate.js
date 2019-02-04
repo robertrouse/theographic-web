@@ -21,7 +21,6 @@ function Verse(props) {
           names.name.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
         );
       }
-      console.log(person.length)
 
       if (person.length > 0) {
         return( <Link key={i} to={`/person/${person[0].slug}`}>{word} </Link> )
