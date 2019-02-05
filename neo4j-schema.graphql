@@ -110,6 +110,8 @@ type Event {
 type EventGroup {
 	title: String!
 	slug: String!
+	sortKey: Float @cypher(statement:"MATCH(this)-[:INCLUDES]->(e:Event)-[:OCCURRED_IN]->(y:Year) RETURN y.year + toFloat(e.sequence)/100 AS sort ORDER BY sort asc LIMIT 1")
+	years: [Year] @cypher(statement:"MATCH(this)-[:INCLUDES]->(:Event)-[:OCCURRED_IN]->(y:Year) RETURN DISTINCT y ORDER BY y.year asc")
 	events: [Event] @relation(name:"INCLUDES")
 }
 
