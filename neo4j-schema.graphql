@@ -50,7 +50,6 @@ type Person {
 	description: String!
 	personId: Int
 	id: String!
-	title: String!
 	slug: String!
 	status: String!
 	verses: [Verse] @relation(name:"MENTIONS", direction:IN)
