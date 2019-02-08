@@ -58,8 +58,7 @@ export const query = graphql
   `
   {
     neo4j {
-      Person(orderBy: title_asc) {
-        title
+      Person(orderBy: name_asc) {
         name
         slug
         status

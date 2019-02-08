@@ -30,7 +30,7 @@ function PeopleList (props) {
   // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
   return people.map((person, i) => <React.Fragment key={i}>
     {i > 0 && ', '}
-    <a href={`/person/${person.slug}/`}>{person.title}</a>
+    <a href={`/person/${person.slug}/`}>{person.name}</a>
   </React.Fragment>)
 }
 
@@ -135,7 +135,7 @@ query ($lookupName: String!, $wideMap: String!) {
       name
       description
       hasBeenHere {
-        title
+        name
         slug
       }
       verses {

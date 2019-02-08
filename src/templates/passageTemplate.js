@@ -93,7 +93,6 @@ query ($lookupName: String!) {
           osisRef
           people {
             name
-            title
             slug
           }
           places {
