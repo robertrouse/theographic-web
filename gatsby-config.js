@@ -10,7 +10,7 @@ module.exports = {
         fieldName: "neo4j",
         url: "http://68.183.135.124:7474/graphql/",
         headers: {
-          Authorization: `Basic ${process.env.NEO$J_KEY}`
+          Authorization: `Basic ${process.env.NEO4J_KEY}`
         },
       },
     },
