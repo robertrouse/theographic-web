@@ -12,6 +12,13 @@ class PeriodsPage extends React.Component {
       <Layout>
         <div className="container">
           <h1>Timeline of the Bible</h1>
+          <div><i>The data for this page is under development.</i></div>
+          <div>&nbsp;</div>
+          {data.neo4j.EventGroup.map(group => (
+            <div>
+              {group.events[0].yearsOccurred[0].formattedYear} <Link to={'/period/'+group.slug}>{group.title}</Link>
+            </div>
+          ))}
         </div>
         <div className="footer"></div>
       </Layout>)
@@ -24,12 +31,15 @@ export const query = graphql
 `
 {
   neo4j {
-    EventGroup{
+    EventGroup(orderBy:sortKey_asc){
       title
       slug
-      events{
+      sortKey
+      events(orderBy:sequence_asc){
+        sequence
         yearsOccurred{
           year
+          formattedYear
         }
       }
     }
