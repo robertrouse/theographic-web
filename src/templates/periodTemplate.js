@@ -40,10 +40,11 @@ class Period extends React.Component {
                         </>
                       )}
                     </div>
-                    <div>Passages: 
+                    <div>Passages: {event.verses &&
                       <Link to={event.verses[0].osisRef.split('.')[0].toLowerCase() + '#' + event.verses[0].osisRef}>
                         {event.verses[0].title}-{event.verses[event.verses.length-1].osisRef.split('.')[2]}
                       </Link>
+                      }
                     </div>
                   </div>
                   </>
