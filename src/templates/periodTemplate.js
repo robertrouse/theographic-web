@@ -2,36 +2,6 @@ import React from 'react'
 import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
-import VerseList from '../components/VerseList'
-
-// function Event(props) {
-//   const event = props.eventData.node.data;
-//   const people = (event.participants == null) ? false : 
-//     (event.participants.map((person, i) =>
-//       <>
-//         {i > 0 && ', '}
-//         <Link key={i} to={`/person/${person.data.slug}`}>{person.data.displayTitle}</Link>
-//       </>
-//     )
-//   );
-//   const places = (event.placeOccurred == null) ? false :
-//     (event.placeOccurred.map((place, i) =>
-//     <>
-//       {i > 0 && ', '}
-//       <Link key={i} to={`/place/${place.data.slug}`}>{place.data.displayTitle}</Link>
-//     </>
-//     )
-//   );
-
-//   return (
-//     <>
-//       <div><b>{event.eventName}</b></div>
-//       {people && (<div>People: {people}</div>)}
-//       {places && (<div>Places: {places}</div>)}
-//       <div>Passages: <VerseList verses={event.versesDescribed} /></div>
-//     </>
-//   )
-// }
 
 class Period extends React.Component {
 
@@ -49,11 +19,39 @@ class Period extends React.Component {
           <h1 className="heading">{data.neo4j.EventGroup[0].title}</h1>
           {data.neo4j.EventGroup[0].years.map(year => (
             <>
-            <div className="year-label">{year.formattedYear}</div>
-            <div></div>
+            <div className="year-row">
+              <div className="year-label">{year.formattedYear}</div>
+              <div className="year-content">
+                {year.events.map( event => (
+                  <>
+                  <div>
+                    <div>{event.title}</div>
+                    <div>People: {event.participants.map((person,i) =>
+                        <>
+                        {i > 0 && ', '}
+                        <Link key={i} to={'/person/' + person.slug}>{person.name}</Link>
+                        </>
+                      )}
+                    </div>
+                    <div>Place(s): {event.placeOccurred.map((place,i) =>
+                        <>
+                        {i > 0 && ', '}
+                        <Link key={i} to={'/place/' + place.slug}>{place.name}</Link>
+                        </>
+                      )}
+                    </div>
+                    <div>Passages: 
+                      <Link to={event.verses[0].osisRef.split('.')[0].toLowerCase() + '#' + event.verses[0].osisRef}>
+                        {event.verses[0].title}-{event.verses[event.verses.length-1].osisRef.split('.')[2]}
+                      </Link>
+                    </div>
+                  </div>
+                  </>
+                ))}
+              </div>
+            </div>
             </>
           ))}
-          
           <div className="footer" />
         </div>
       </>
@@ -71,7 +69,7 @@ query ($lookupName: String!){
       years(orderBy: year_asc) {
         formattedYear
         year
-        events(orderBy: sequence_asc) {
+        events(orderBy: sequence_asc, filter: {eventGroup_single: {slug: $lookupName}}) {
           title
           sequence
           placeOccurred(orderBy: name_asc) {

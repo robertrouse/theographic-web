@@ -18,7 +18,7 @@ function LinkList(props) {
     if (letter.status === 'wip') {
       return <span key ={i} className="index-item">{letter.name}</span>
     } else {
-      return <Link key={i} to = {`/person/${letter.slug}`} className="index-item">{letter.title}</Link>
+      return <Link key={i} to = {`/person/${letter.slug}`} className="index-item">{letter.name}</Link>
     }
 }
   );
