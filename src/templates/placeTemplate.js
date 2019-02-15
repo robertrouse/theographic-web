@@ -3,36 +3,7 @@ import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import Img from 'gatsby-image';
 import '../components/layout.css'
-
-// function DateGrouping (props) {
-//   const eventGroup = props.eventGroup
-//   const year = props.year
-//   const listItems = eventGroup.map((event) => <li key={event.data.eventName}><a href={`/event/${event.data.eventName}`}>{event.data.eventName}</a></li>)
-//   return (
-//     <div>
-//       <div className="year-label">{year} A.D.</div>
-//       <ol>{listItems}</ol>
-//     </div>
-//   )
-// }
-
-//TODO deal with B.C. times as negative
-// function EventList (props) {
-//   const events = props.events || []
-//   const listItems = events.map(event => { return {year: event.data.startYear[0].data.year, ...event}})
-//     .sort((event1, event2) => Number.parseInt(event1.year) - Number.parseInt(event2.year))
-//   const grouped = groupBy(listItems, `year`)
-//   return Object.keys(grouped).map((year) => <DateGrouping key={year} year={year} eventGroup={grouped[year]}/>)
-// }
-
-function PeopleList (props) {
-  const people = props.people || []
-  // Taken from https://stackoverflow.com/questions/23618744/rendering-comma-separated-list-of-links
-  return people.map((person, i) => <React.Fragment key={i}>
-    {i > 0 && ', '}
-    <a href={`/person/${person.slug}/`}>{person.name}</a>
-  </React.Fragment>)
-}
+import EventList from '../components/EventList'
 
 class Place extends React.Component {
 
@@ -54,7 +25,7 @@ class Place extends React.Component {
 
           <div className="div-block"/>
           <h3 className="heading-3">Timeline</h3>
-          {data.neo4j.timeline.length > 0 &&<EventList eventData = {data.neo4j.timeline}/>}
+          {data.neo4j.timeline.length > 0 && <EventList eventData = {data.neo4j.timeline}/>}
 
           <div className="footer"/>
         </div>
@@ -90,7 +61,7 @@ query ($lookupName: String!, $wideMap: String!) {
     timeline: EventGroup(orderBy: sortKey_asc, filter: {events_some: {placeOccurred_single: {slug: $lookupName}}}) {
       title
       sortKey
-      years(orderBy: year_asc) {
+      years(orderBy: year_asc, filter: {events_some: {placeOccurred_single: {slug: $lookupName}}}) {
         formattedYear
         year
         events(orderBy: sequence_asc, filter: {placeOccurred_some: {slug: $lookupName}}) {

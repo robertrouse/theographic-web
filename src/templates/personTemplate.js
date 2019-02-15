@@ -2,7 +2,7 @@ import React from 'react'
 import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
-import EventList from '../components/EventList';
+import EventList from '../components/EventList'
 
 // Taken from https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-a-array-of-objects?rq=1
 const groupBy = function (xs, key) {
@@ -63,7 +63,7 @@ query ($lookupName: String!) {
     timeline: EventGroup(orderBy: sortKey_asc, filter: {events_some: {participants_single: {slug: $lookupName}}}) {
       title
       sortKey
-      years(orderBy: year_asc) {
+      years(orderBy: year_asc, filter: {events_some: {placeOccurred_single: {slug: $lookupName}}}) {
         formattedYear
         year
         events(orderBy: sequence_asc, filter: {participants_some: {slug: $lookupName}}) {
