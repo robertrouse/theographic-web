@@ -7,10 +7,10 @@ const EventList = (props) => {
     {return(
     data.map((eventGroup,i) => (
         <>
-        <div>{eventGroup.title}</div>
+        <div className="div-block"/>
+        <h4>{eventGroup.title}</h4>
         {eventGroup.years.map((year,i) => (
             <>
-            <div className="div-block"/>
             <div className="year-row">
               <div className="year-label">{year.formattedYear}</div>
               <div className="year-content">
