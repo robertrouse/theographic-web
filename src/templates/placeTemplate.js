@@ -51,9 +51,10 @@ class Place extends React.Component {
           {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
           <p className="container">{data.neo4j.Place[0].description}</p>
           <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
-          
+
           <div className="div-block"/>
-          <h3>Timeline</h3>
+          <h3 className="heading-3">Timeline</h3>
+          {data.neo4j.timeline.length > 0 &&<EventList eventData = {data.neo4j.timeline}/>}
 
           <div className="footer"/>
         </div>
@@ -84,6 +85,27 @@ query ($lookupName: String!, $wideMap: String!) {
       verses {
         osisRef
         title
+      }
+    }
+    timeline: EventGroup(orderBy: sortKey_asc, filter: {events_some: {placeOccurred_single: {slug: $lookupName}}}) {
+      title
+      sortKey
+      years(orderBy: year_asc) {
+        formattedYear
+        year
+        events(orderBy: sequence_asc, filter: {placeOccurred_single: {slug: $lookupName}}) {
+          title
+          sequence
+          verses(orderBy: verseId_asc, filter: {places_single: {slug: $lookupName}}) {
+            verseId
+            osisRef
+            title
+          }
+          participants(orderBy: name_asc) {
+            name
+            slug
+          }
+        }
       }
     }
   }

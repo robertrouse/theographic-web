@@ -60,7 +60,7 @@ query ($lookupName: String!) {
         slug
       }
     }
-    timeline: EventGroup(orderBy: sortKey_asc, filter: {events_every: {participants_single: {slug: $lookupName}}}) {
+    timeline: EventGroup(orderBy: sortKey_asc, filter: {events_some: {participants_single: {slug: $lookupName}}}) {
       title
       sortKey
       years(orderBy: year_asc) {
