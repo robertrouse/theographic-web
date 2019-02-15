@@ -1,29 +1,20 @@
 import React from 'react'
-import { graphql, Link } from 'gatsby'
-import { Helmet } from 'react-helmet'
-import '../components/layout.css'
+import { Link } from 'gatsby'
 
-class Period extends React.Component {
-
-  render() {
-    const { data } = this.props
-    return (
-      <>
-        <Helmet>
-          <meta charSet="utf-8" />
-          <title>{data.neo4j.EventGroup[0].title}</title>
-          <meta content="{data.neo4j.EventGroup[0].title}" property="og:title" />
-          <meta content="width=device-width, initial-scale=1" name="viewport" />
-        </Helmet>
-        <div className="container">
-          <h1 className="heading">{data.neo4j.EventGroup[0].title}</h1>
-          {data.neo4j.EventGroup[0].years.map(year => (
+const EventList = (props) => {
+    const data = props.eventData
+    console.log(data)
+    {return(
+    data.map((eventGroup,i) => (
+        <>
+        <div>{eventGroup.title}</div>
+        {eventGroup.years.map((year,i) => (
             <>
             <div className="div-block"/>
             <div className="year-row">
               <div className="year-label">{year.formattedYear}</div>
               <div className="year-content">
-                {year.events.map( event => (
+                {year.events.map((event,i) => (
                   <>
                   <div>
                     <div>{event.title}</div>
@@ -57,42 +48,10 @@ class Period extends React.Component {
             </div>
             </>
           ))}
-          <div className="footer" />
-        </div>
-      </>
+        </>
+        )
     )
-  }
+    )}
 }
 
-export default Period
-
-export const pageQuery = graphql `
-query ($lookupName: String!){
-  neo4j {
-    EventGroup(filter:{slug: $lookupName}) {
-      title
-      years(orderBy: year_asc) {
-        formattedYear
-        year
-        events(orderBy: sequence_asc, filter: {eventGroup_single: {slug: $lookupName}}) {
-          title
-          sequence
-          placeOccurred(orderBy: name_asc) {
-            name
-            slug
-          }
-          participants(orderBy: name_asc) {
-            name
-            slug
-          }
-          verses(orderBy: verseId_asc) {
-            verseId
-            osisRef
-            title
-          }
-        }
-      }
-    }
-  }
-}
-`
+export default EventList

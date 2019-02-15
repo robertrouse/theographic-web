@@ -34,61 +34,6 @@ function PeopleList (props) {
   </React.Fragment>)
 }
 
-// function BookList (props) {
-//   if(!props.verses) return <div></div>
-//   const verses = props.verses.map(v => {
-//     return {
-//       book: v.data.book[0].data.osisName,
-//       osisRef: v.data.osisRef,
-//       bookCannonicalOrder: v.data.book[0].data.bookOrder,
-//       chapter: v.data.chapter[0].data.chapterNum,
-//       verse: v.data.verseNum
-//     }
-//   })
-//   const groupedBooks = groupBy(verses, 'book')
-//   const sortedGroup = Object.keys(groupedBooks).sort((book1, book2) => book1.bookCannonicalOrder - book2.bookCannonicalOrder)
-//   return sortedGroup.map(book => {
-//     return <div key={book}>{book}<VerseList verses={groupedBooks[book]}/></div>
-//   })
-// }
-
-// function VerseList (props) {
-//   const listOfVerses = []
-//   let firstOfAdjacentVerses = null
-//   let numberOfAdjacentVerses = 0
-//   let firstVerse = true
-//   for (let verse of props.verses) {
-//     if (!firstOfAdjacentVerses) {
-//       firstOfAdjacentVerses = verse
-//       continue
-//     }
-//     if (verse.chapter === firstOfAdjacentVerses.chapter && Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses + 1 === Number.parseInt(verse.verse)) {
-//       numberOfAdjacentVerses++
-//     } else {
-//       const key = `${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}`
-//       if (numberOfAdjacentVerses) {
-//         listOfVerses.push(<a key={key}
-//                              href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{`${firstVerse ? ' ' : ', '}${verse.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
-//         numberOfAdjacentVerses = 0
-//       }
-//       else {
-//         listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>{key}</a>)
-//       }
-//       firstOfAdjacentVerses = verse
-//       firstVerse = false
-//     }
-//   }
-//   const key = `${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}`
-//   if (numberOfAdjacentVerses) {
-//     listOfVerses.push(<a key={key}
-//                          href={`/verse/${firstOfAdjacentVerses.Osis_Ref}`}>{`${firstVerse ? ' ' : ', '}${firstOfAdjacentVerses.chapter}:${firstOfAdjacentVerses.verse}-${Number.parseInt(firstOfAdjacentVerses.verse) + numberOfAdjacentVerses}`}</a>)
-//   }
-//   else {
-//     listOfVerses.push(<a key={key} href={`/verse/${firstOfAdjacentVerses.osisRef}`}>{key}</a>)
-//   }
-//   return listOfVerses
-// }
-
 class Place extends React.Component {
 
   render () {
@@ -105,13 +50,11 @@ class Place extends React.Component {
           <h1 className="heading">{data.neo4j.Place[0].name}</h1>
           {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
           <p className="container">{data.neo4j.Place[0].description}</p>
-          <div className="text-block">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
-          <h3 className="heading-3">Related People</h3>
-          <p><PeopleList people={data.neo4j.Place[0].hasBeenHere}/></p>
-          <h3>Related Events</h3>
-          {/* <EventList events={data.airtable.data.eventsHere}/> */}
-          <h3>Verses</h3>
-          {/* <BookList verses={data.airtable.data.verses}/> */}
+          <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
+          
+          <div className="div-block"/>
+          <h3>Timeline</h3>
+
           <div className="footer"/>
         </div>
       </>
