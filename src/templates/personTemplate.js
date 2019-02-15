@@ -66,10 +66,10 @@ query ($lookupName: String!) {
       years(orderBy: year_asc) {
         formattedYear
         year
-        events(orderBy: sequence_asc, filter: {participants_single: {slug: $lookupName}}) {
+        events(orderBy: sequence_asc, filter: {participants_some: {slug: $lookupName}}) {
           title
           sequence
-          verses(orderBy: verseId_asc, filter: {people_single: {slug: $lookupName}}) {
+          verses(orderBy: verseId_asc) {
             verseId
             osisRef
             title

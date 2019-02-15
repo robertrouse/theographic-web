@@ -93,10 +93,10 @@ query ($lookupName: String!, $wideMap: String!) {
       years(orderBy: year_asc) {
         formattedYear
         year
-        events(orderBy: sequence_asc, filter: {placeOccurred_single: {slug: $lookupName}}) {
+        events(orderBy: sequence_asc, filter: {placeOccurred_some: {slug: $lookupName}}) {
           title
           sequence
-          verses(orderBy: verseId_asc, filter: {places_single: {slug: $lookupName}}) {
+          verses(orderBy: verseId_asc) {
             verseId
             osisRef
             title
