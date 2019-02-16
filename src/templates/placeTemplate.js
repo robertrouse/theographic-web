@@ -58,28 +58,23 @@ query ($lookupName: String!, $wideMap: String!) {
         title
       }
     }
-    timeline: EventGroup(orderBy: sortKey_asc, filter: {events_some: {placeOccurred_some: {slug: $lookupName}}}) {
+    timeline: Event(orderBy:sortKey_asc, filter: {placeOccurred_some: {slug: $lookupName}}) {
       title
-      sortKey
-      years(orderBy: year_asc) {
+      sequence
+      year: yearsOccurred(orderBy: year_asc, first: 1) {
         formattedYear
-        year
-        events(orderBy: sequence_asc, filter: {placeOccurred_some: {slug: $lookupName}}) {
-          title
-          sequence
-          eventGroup{
-            title
-          }
-          verses(orderBy: verseId_asc) {
-            verseId
-            osisRef
-            title
-          }
-          participants(orderBy: name_asc) {
-            name
-            slug
-          }
-        }
+      }
+      eventGroup{
+        title
+      }
+      verses(orderBy: verseId_asc) {
+        verseId
+        osisRef
+        title
+      }
+      participants(orderBy: name_asc) {
+        name
+        slug
       }
     }
   }

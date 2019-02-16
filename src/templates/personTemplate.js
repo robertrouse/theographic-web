@@ -52,32 +52,27 @@ query ($lookupName: String!) {
         slug
       }
     }
-    timeline: EventGroup(orderBy: sortKey_asc, filter: {events_some: {participants_single: {slug: $lookupName}}}) {
+    timeline: Event(orderBy:sortKey_asc, filter: {participants_some: {slug: $lookupName}}) {
       title
-      sortKey
-      years(orderBy: year_asc) {
+      sequence
+      year: yearsOccurred(orderBy: year_asc, first: 1) {
         formattedYear
-        year
-        events(orderBy: sequence_asc, filter: {participants_some: {slug: $lookupName}}) {
-          title
-          sequence
-          eventGroup{
-            title
-          }
-          verses(orderBy: verseId_asc) {
-            verseId
-            osisRef
-            title
-          }
-          placeOccurred(orderBy: name_asc) {
-            name
-            slug
-          }
-          participants(orderBy: name_asc, filter: {slug_not : $lookupName}) {
-            name
-            slug
-          }
-        }
+      }
+      eventGroup {
+        title
+      }
+      verses(orderBy: verseId_asc) {
+        verseId
+        osisRef
+        title
+      }
+      placeOccurred(orderBy: name_asc) {
+        name
+        slug
+      }
+      participants(orderBy: name_asc, filter: {slug_not: $lookupName}) {
+        name
+        slug
       }
     }
   }

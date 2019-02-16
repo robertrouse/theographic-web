@@ -98,6 +98,7 @@ type Event {
  	startDate: String!
  	precision: String!
  	duration: String!
+	sortKey: Float @cypher(statement:"MATCH(this)-[:OCCURRED_IN]->(y:Year) RETURN y.year + toFloat(this.sequence)/100 AS sort ORDER BY sort asc LIMIT 1")
  	sequence: Int,
  	yearsOccurred: [Year] @relation(name:"OCCURRED_IN")
  	participants: [Person] @relation(name:"PARTICIPATED_IN", direction:IN)
