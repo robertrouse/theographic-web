@@ -18,9 +18,9 @@ npm install --global gatsby-cli
 npm install
 ```
 
-3. Set airtable API key in an environment variable. (e-mail robert@viz.bible to obtain a key)
+3. Set the Neo4j API key in an environment variable. (e-mail robert@viz.bible to obtain a key)
 ``` sh
-export AIRTABLE_API_KEY=your_api_key
+export NEO4J_KEY=your_api_key
 ```
 
 ## Develop
