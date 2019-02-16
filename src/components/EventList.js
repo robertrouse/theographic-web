@@ -3,7 +3,7 @@ import { Link } from 'gatsby'
 
 const EventList = (props) => {
     const data = props.eventData
-    console.log(data)
+    //TODO: filter function to make sure the child event groups match the parent. Makes sure one thing isn't in multiple years.
     {return(
     data.map((eventGroup,i) => (
         <>
@@ -12,13 +12,13 @@ const EventList = (props) => {
         {eventGroup.years.map((year,i) => (
             <>
             <div className="year-row">
-              <div className="year-label">{year.formattedYear}</div>
+              {year.events.length > 0 && <div className="year-label">{year.formattedYear}</div>}
               <div className="year-content">
                 {year.events.map((event,i) => (
                   <>
                   <div>
                     <div>{event.title}</div>
-                    {event.participants.length > 0 &&
+                    {event.participants && event.participants.length > 0 &&
                     <div>People: {event.participants.map((person,i) =>
                         <>
                         {i > 0 && ', '}
@@ -26,7 +26,7 @@ const EventList = (props) => {
                         </>
                       )}
                     </div>}
-                    {event.placeOccurred.length > 0 &&
+                    {event.placeOccurred && event.placeOccurred.length > 0 &&
                     <div>Place(s): {event.placeOccurred.map((place,i) =>
                         <>
                         {i > 0 && ', '}
