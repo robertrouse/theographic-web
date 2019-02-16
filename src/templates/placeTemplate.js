@@ -61,6 +61,7 @@ query ($lookupName: String!, $wideMap: String!) {
     timeline: Event(orderBy:sortKey_asc, filter: {placeOccurred_some: {slug: $lookupName}}) {
       title
       sequence
+      sortKey
       year: yearsOccurred(orderBy: year_asc, first: 1) {
         formattedYear
       }

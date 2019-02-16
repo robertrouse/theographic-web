@@ -55,6 +55,7 @@ query ($lookupName: String!) {
     timeline: Event(orderBy:sortKey_asc, filter: {participants_some: {slug: $lookupName}}) {
       title
       sequence
+      sortKey
       year: yearsOccurred(orderBy: year_asc, first: 1) {
         formattedYear
       }
