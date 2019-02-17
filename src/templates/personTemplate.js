@@ -12,7 +12,7 @@ class Person extends React.Component {
       <>
         <Helmet>
           <meta charSet="utf-8"/>
-          <title>People</title>
+          <title>{data.neo4j.Person[0].name}</title>
           <meta content="{data.neo4j.Person[0].name}" property="og:title"/>
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
         </Helmet>
