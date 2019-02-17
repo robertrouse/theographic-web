@@ -47,10 +47,8 @@ const EventList = (props) => {
                       <div>Passages:
                       <Link to={event.verses[0].osisRef.split('.')[0].toLowerCase() + '#' + event.verses[0].osisRef}>
                           {event.verses[0].title}-
-                          {event.verses[0].osisRef.split('.')[1] != event.verses[event.verses.length - 1].osisRef.split('.')[1] &&
+                          {(event.verses[0].osisRef.split('.')[1] != event.verses[event.verses.length - 1].osisRef.split('.')[1]) &&
                             event.verses[event.verses.length - 1].osisRef.split('.')[1] + ":"
-                          }
-                            
                           }
                           {event.verses[event.verses.length - 1].osisRef.split('.')[2]}
                         </Link>
