@@ -5,7 +5,6 @@ import '../components/layout.css'
 
 const Verse = (props) => {
   const verseData = props.verseData
-  console.log(verseData)
   const text = verseData.verseText.split(' ')
   verseData.tokens.length > 0 && verseData.tokens.map((token, i) => (
     <>
