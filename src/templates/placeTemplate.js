@@ -1,7 +1,7 @@
 import React from 'react'
 import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
-import Img from 'gatsby-image';
+import Img from 'gatsby-image'
 import '../components/layout.css'
 import EventList from '../components/EventList'
 

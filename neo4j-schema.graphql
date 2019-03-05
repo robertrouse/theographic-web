@@ -27,8 +27,15 @@ type Chapter {
 	osisRef: String!
 	slug: String!
 	book: [Book] @relation(name: "CONTAINS", direction:IN)
+	paragraphs: [Paragraph] @relation(name: "CONTAINS")
 	verses: [Verse] @relation(name: "CONTAINS")
 	writer: [Person] @relation(name: "WROTE", direction:IN)
+}
+
+type Paragraph {
+	id: String!
+	chapter: [Chapter] @relation(name:"CONTAINS", direction:IN)
+	verses: [Verse] @relation(name:"CONTAINS")
 }
 
 type Verse {
@@ -39,9 +46,19 @@ type Verse {
 	verseId: Int
 	verseNum: Int
 	verseText: String!
+	tokens: [Token] @relation(name:"CONTAINS")
 	people: [Person] @relation(name:"MENTIONS")
 	places: [Place] @relation(name:"MENTIONS")
 	eventDescribed: [Event] @relation(name:"DESCRIBES")
+}
+
+type Token {
+	id: String!
+	token: String!
+	versePos: Int
+	tokenLength: Int
+	person: [Person] @relation(name:"MENTIONS")
+	place: [Place] @relation(name:"MENTIONS")
 }
 
 type Person {

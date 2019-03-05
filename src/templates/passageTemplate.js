@@ -3,59 +3,29 @@ import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 
-
-function Verse(props) {
-  const verse = props.verseData;
-  const words = verse.verseText.split(" ").map((word, i) =>
-    {
-      var person = '';
-      var place = '';
-
-      if (verse.people.length > 0) {
-        person = verse.people.filter(names => 
-          names.name.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
-        );
-      }
-      if (verse.places.length > 0) {
-        place = verse.places.filter(names => 
-          names.name.indexOf(word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")) > -1
-        );
-      }
-
-      if (person.length > 0) {
-        return( <Link key={i} to={`/person/${person[0].slug}`}>{word} </Link> )
-      } else if (place.length > 0) {
-        return( <Link key={i} to={`/place/${place[0].slug}`}>{word} </Link> )
-      } else {
-        return (<>{word} </>)
-      }
-    }
-  );
-  words.join();
-
-  return <div key={props.key} id={verse.osisRef}>{verse.verseNum} {words}</div>
-}
-
-function Verses(props) {
-  const chapter = props.chapterData;
-  const verses = chapter.verses.map((verse, i) => <Verse key={i} verseData={verse} />)
-  return (
+const Verse = (props) => {
+  const verseData = props.verseData
+  console.log(verseData)
+  const text = verseData.verseText.split(' ')
+  verseData.tokens.length > 0 && verseData.tokens.map((token, i) => (
     <>
-      <div>
-        <h3 id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
-        <div>{verses}</div>
-      </div>
+    {token.person.length > 0 &&
+      text.splice(token.versePos,token.tokenLength, <Link key={i} to={token.person[0].slug}>{token.token}</Link>)
+    }
+    {token.place.length > 0 &&
+      text.splice(token.versePos,token.tokenLength, <Link key ={i} to={token.place[0].slug}>{token.token}</Link>)
+    }
     </>
+  ))
+
+  return (
+  <>
+    {' '}<span>{verseData.verseNum}</span>{' '}{verseData.verseText}
+  </>
   )
 }
 
-function Chapters(props) {
-  const chapters = props.chapters;
-  return Object.keys(chapters).map((chapter, i) => <Verses key={i} chapterData={chapters[chapter]} />)
-}
-
 class Passage extends React.Component {
-
   render() {
     const { data } = this.props
     return (
@@ -68,7 +38,22 @@ class Passage extends React.Component {
         </Helmet>
         <div className="container">
           <h1 className="heading">{data.neo4j.Book[0].title}</h1>
-          <Chapters chapters={data.neo4j.Book[0].chapters}></Chapters>
+
+          {data.neo4j.Book[0].chapters.map(chapter=>(
+            <>
+            <h3 id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
+            {chapter.paragraphs.map(para => (
+              <p>
+                {para.verses.map(verse => (
+                  <Verse verseData={verse} />
+                  // <>
+                  // {' ' + verse.verseNum + ' '} {verse.verseText}
+                  // </>
+                ))}
+              </p>
+            ))}
+            </>
+          ))}
           <div className="footer" />
         </div>
       </>
@@ -87,21 +72,28 @@ query ($lookupName: String!) {
       chapters(orderBy: chapterNum_asc) {
         title
         chapterNum
-        verses(orderBy: verseNum_asc) {
-          verseNum
-          verseText
-          osisRef
-          people {
-            name
-            slug
-          }
-          places {
-            name
-            slug
+        paragraphs(orderBy: id_asc) {
+          id
+          verses(orderBy: verseNum_asc) {
+            verseNum
+            verseText
+            osisRef
+            tokens {
+              token
+              tokenLength
+              versePos
+              person {
+                slug
+              }
+              place {
+                slug
+              }
+            }
           }
         }
       }
     }
   }
 }
+
 `
