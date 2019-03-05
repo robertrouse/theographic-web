@@ -20,7 +20,7 @@ const Verse = (props) => {
 
   return (
   <>
-    {' '}<span>{verseData.verseNum}</span>{' '}{verseData.verseText}
+    {' '}<span id={verseData.verseNum}>{verseData.verseNum}</span>{' '}{verseData.verseText}
   </>
   )
 }
