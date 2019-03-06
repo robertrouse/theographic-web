@@ -9,17 +9,22 @@ const Verse = (props) => {
   verseData.tokens.length > 0 && verseData.tokens.map((token, i) => (
     <>
     {token.person.length > 0 &&
-      text.splice(token.versePos,token.tokenLength, <Link key={i} to={token.person[0].slug}>{token.token}</Link>)
+      text.splice(token.versePos,token.tokenLength, <Link key={i} to={'/person/' + token.person[0].slug}>{token.token}</Link>)
     }
     {token.place.length > 0 &&
-      text.splice(token.versePos,token.tokenLength, <Link key ={i} to={token.place[0].slug}>{token.token}</Link>)
+      text.splice(token.versePos,token.tokenLength, <Link key ={i} to={'/place/' + token.place[0].slug}>{token.token}</Link>)
     }
     </>
   ))
 
   return (
   <>
-    {' '}<span id={verseData.verseNum}>{verseData.verseNum}</span>{' '}{verseData.verseText}
+    {' '}<span id={verseData.verseNum}>{verseData.verseNum}</span>{' '}
+    {text.map(word => (
+      <>
+      {word}{' '}
+      </>
+    ))}
   </>
   )
 }
