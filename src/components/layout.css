@@ -234,6 +234,14 @@ a:hover {
   font-size: 10px;
 }
 
+.verse-num{
+  background:lightgray;
+  border-radius:15px;
+  padding: 3px 8px 3px 8px;
+  width:20px;
+  color:#777777;
+}
+
 
 /*********  RESPONSIVE  *********************************************/
 

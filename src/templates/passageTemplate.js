@@ -19,7 +19,7 @@ const Verse = (props) => {
 
   return (
   <>
-    {' '}<span id={verseData.verseNum}>{verseData.verseNum}</span>{' '}
+    {' '}<span id={verseData.verseNum} className="verse-num">{verseData.verseNum}</span>{' '}
     {text.map(word => (
       <>
       {word}{' '}
@@ -50,9 +50,6 @@ class Passage extends React.Component {
               <p>
                 {para.verses.map(verse => (
                   <Verse verseData={verse} />
-                  // <>
-                  // {' ' + verse.verseNum + ' '} {verse.verseText}
-                  // </>
                 ))}
               </p>
             ))}
