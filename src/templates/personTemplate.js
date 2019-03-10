@@ -17,7 +17,7 @@ class Person extends React.Component {
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.neo4j.Person[0].name}</h1>
+          <h1 className="sticky-title">{data.neo4j.Person[0].name}</h1>
 
           <p className="container">{data.neo4j.Person[0].description}</p>
           <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>

@@ -11,7 +11,7 @@ class PeriodsPage extends React.Component {
     return (
       <Layout>
         <div className="container">
-          <h1>Timeline of the Bible</h1>
+          <h1 className="sticky-title">Timeline of the Bible</h1>
           <div><i>The data for this page is under development.</i></div>
           <div>&nbsp;</div>
           {data.neo4j.EventGroup.map(group => (

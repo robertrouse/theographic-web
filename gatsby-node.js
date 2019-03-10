@@ -11,7 +11,7 @@ exports.createPages = ({graphql, actions}) => {
   const periodPages = makingPages(`src/templates/periodTemplate.js`, 'EventGroup', '/period/', graphql, actions)
   const passagePages = makingPages(`src/templates/passageTemplate.js`, 'Book', '/', graphql, actions)
   
-  return placesPages, passagePages; //,peoplePages,periodPages;
+  return placesPages, passagePages, peoplePages, periodPages;
 }
 
 function makingPages (templatePath, entityType, urlPrefix, graphql, actions) {

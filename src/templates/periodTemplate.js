@@ -16,7 +16,7 @@ class Period extends React.Component {
           <meta content="width=device-width, initial-scale=1" name="viewport" />
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.neo4j.EventGroup[0].title}</h1>
+          <h1 className="sticky-title">{data.neo4j.EventGroup[0].title}</h1>
           {data.neo4j.EventGroup[0].years.map(year => (
             <>
             <div className="div-block"/>

@@ -6,27 +6,7 @@ import '../components/layout.css'
 const Verse = (props) => {
   const verseData = props.verseData
   const text = verseData.verseText.split(' ')
-  verseData.tokens.length > 0 && verseData.tokens.map((token, i) => (
-    <>
-    {token.person.length > 0 &&
-      text.splice(token.versePos,token.tokenLength, <Link key={i} to={'/person/' + token.person[0].slug}>{token.token}</Link>)
-    }
-    {token.place.length > 0 &&
-      text.splice(token.versePos,token.tokenLength, <Link key ={i} to={'/place/' + token.place[0].slug}>{token.token}</Link>)
-    }
-    </>
-  ))
 
-  return (
-  <>
-    {' '}<span id={verseData.verseNum} className="verse-num">{verseData.verseNum}</span>{' '}
-    {text.map(word => (
-      <>
-      {word}{' '}
-      </>
-    ))}
-  </>
-  )
 }
 
 class Passage extends React.Component {
@@ -36,20 +16,34 @@ class Passage extends React.Component {
       <>
         <Helmet>
           <meta charSet="utf-8" />
-          <title>{data.neo4j.Book.title}</title>
-          <meta content="{data.neo4j.Book.title}" property="og:title" />
+          <title>{data.neo4j.Book[0].title}</title>
+          <meta content="{data.neo4j.Book[0].title}" property="og:title" />
           <meta content="width=device-width, initial-scale=1" name="viewport" />
         </Helmet>
         <div className="container">
-          <h1 className="heading">{data.neo4j.Book[0].title}</h1>
+          <h1 className="sticky-title">{data.neo4j.Book[0].title}</h1>
 
           {data.neo4j.Book[0].chapters.map(chapter=>(
             <>
-            <h3 id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
+            <h3 className="sticky-sub" id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
             {chapter.paragraphs.map(para => (
               <p>
                 {para.verses.map(verse => (
-                  <Verse verseData={verse} />
+                  <>
+                  {" "}<span className="verse-num">{verse.verseNum}</span>
+                  {verse.tokens.map(token => (
+                    <>
+                    {" "}{token.oParen == "1" && "("}
+                    {
+                    token.italic == "1" ? <i>{token.token}</i> :
+                    token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
+                    token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
+                    token.token
+                    }
+                    {token.punc}{token.cParen == "1" && ")"}
+                    </>
+                  ))}
+                  </>
                 ))}
               </p>
             ))}
@@ -79,9 +73,12 @@ query ($lookupName: String!) {
             verseNum
             verseText
             osisRef
-            tokens {
+            tokens (orderBy: versePos_asc){
               token
-              tokenLength
+              oParen
+              cParen
+              punc
+              italic
               versePos
               person {
                 slug

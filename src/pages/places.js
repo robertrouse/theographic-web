@@ -24,7 +24,7 @@ function LinkList(props) {
   );
   return (
     <div>
-      <h3 id={alphaGroup}>{alphaGroup}</h3>
+      <h3 className="sticky-sub" id={alphaGroup}>{alphaGroup}</h3>
       <div className="index-group">{letterList}</div>
     </div>
   )
@@ -44,7 +44,7 @@ class PlacesPage extends React.Component {
     return (
       <Layout>
         <div className="container">
-          <h1>All Places in the Bible</h1>
+          <h1 className="sticky-title">All Places in the Bible</h1>
           <AlphaList letters={data.neo4j} />
         </div>
         <div className="footer"></div>

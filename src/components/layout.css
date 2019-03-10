@@ -7,7 +7,7 @@ body {
 }
 
 h1 {
-  margin: 50px 0 20px 0;
+  margin: 40px 0 20px 0;
   font-family: Georgia, Times, 'Times New Roman', serif;
   font-size: 38px;
   line-height: 44px;
@@ -23,6 +23,24 @@ h3 {
   border-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #adadad;
+}
+
+.sticky-title {
+  background-image: url('../images/handmadepaper.png');
+  position: -webkit-sticky;  
+  position: sticky;
+  top: 0px; 
+  padding-top:10px;
+  z-index:100;
+}
+
+.sticky-sub {
+  background-image: url('../images/handmadepaper.png');
+  position: -webkit-sticky;  
+  position: sticky;
+  top: 50px; 
+  padding-top:10px;
+  z-index:10;
 }
 
 p {
@@ -238,6 +256,7 @@ a:hover {
   background:lightgray;
   border-radius:15px;
   padding: 3px 8px 3px 8px;
+  position: relative;
   width:20px;
   color:#777777;
 }

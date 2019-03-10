@@ -56,7 +56,12 @@ type Token {
 	id: String!
 	token: String!
 	versePos: Int
-	tokenLength: Int
+	oParen: String!
+	cParen: String!
+	italic: String!
+	punc: String!
+	paragraph: [Paragraph] @relation(name:"CONTAINS", direction:IN)
+	verse: [Verse] @relation(name:"CONTAINS", direction:IN)
 	person: [Person] @relation(name:"MENTIONS")
 	place: [Place] @relation(name:"MENTIONS")
 }
@@ -64,6 +69,7 @@ type Token {
 type Person {
 	gender: String!
 	name: String!
+	alsoCalled: [Token] @cypher(statement:"MATCH(this)<-[:MENTIONS]-(t:Token) RETURN DISTINCT t.Token ORDER BY COUNT(t)")
 	description: String!
 	personId: Int
 	id: String!
@@ -93,6 +99,7 @@ type Place {
 	id: String!
 	placeId: Int
 	name: String!
+	alsoCalled: [Token] @cypher(statement:"MATCH(this)<-[:MENTIONS]-(t:Token) RETURN DISTINCT t.Token ORDER BY COUNT(t)")
 	latitude: Int
 	longitude: Int
 	precision: String!
