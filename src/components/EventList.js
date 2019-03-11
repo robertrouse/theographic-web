@@ -14,7 +14,6 @@ const EventList = (props) => {
   const yearKeys = data.map(event => { return {yearGroup: event.year[0].formattedYear, ...event}});
   const years = groupBy(yearKeys, `yearGroup`)
 
-  {
     return (
       Object.keys(years).map((year, i) => (
         <>
@@ -47,7 +46,7 @@ const EventList = (props) => {
                       <div>Passages:
                       <Link to={event.verses[0].osisRef.split('.')[0].toLowerCase() + '#' + event.verses[0].osisRef}>
                           {event.verses[0].title}-
-                          {(event.verses[0].osisRef.split('.')[1] != event.verses[event.verses.length - 1].osisRef.split('.')[1]) &&
+                          {(event.verses[0].osisRef.split('.')[1] !== event.verses[event.verses.length - 1].osisRef.split('.')[1]) &&
                             event.verses[event.verses.length - 1].osisRef.split('.')[1] + ":"
                           }
                           {event.verses[event.verses.length - 1].osisRef.split('.')[2]}
@@ -62,7 +61,7 @@ const EventList = (props) => {
         </>
       )
     )
-  )}
+  )
 }
 
 export default EventList

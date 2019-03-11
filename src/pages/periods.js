@@ -27,8 +27,7 @@ class PeriodsPage extends React.Component {
 
 export default PeriodsPage
 
-export const query = graphql
-`
+export const query = graphql `
 {
   neo4j {
     EventGroup(orderBy:sortKey_asc){

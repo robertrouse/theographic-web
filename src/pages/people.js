@@ -54,8 +54,7 @@ class PeoplePage extends React.Component {
 
 export default PeoplePage
 
-export const query = graphql
-  `
+export const query = graphql `
   {
     neo4j {
       Person(orderBy: name_asc) {

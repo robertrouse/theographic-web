@@ -3,12 +3,6 @@ import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 
-const Verse = (props) => {
-  const verseData = props.verseData
-  const text = verseData.verseText.split(' ')
-
-}
-
 class Passage extends React.Component {
   render() {
     const { data } = this.props
@@ -32,19 +26,20 @@ class Passage extends React.Component {
                   <>
                   {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
                   {verse.tokens.map(token => {
-                    if (token.paragraph[0].id == para.id )
+                    if (token.paragraph[0].id === para.id )
                     return (
                       <>
-                        {" "}{token.oParen == "1" && "("}
+                        {" "}{token.oParen === "1" && "("}
                         {
-                        token.italic == "1" ? <i>{token.token}</i> :
+                        token.italic === "1" ? <i>{token.token}</i> :
                         token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
                         token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
                         token.token
                         }
-                        {token.punc}{token.cParen == "1" && ")"}
+                        {token.punc}{token.cParen === "1" && ")"}
                       </>
                       )
+                    return false
                     }
                   )}
                   </>

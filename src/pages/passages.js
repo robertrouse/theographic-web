@@ -39,8 +39,7 @@ class Passages extends React.Component {
 
 export default Passages
 
-export const query = graphql
-  `
+export const query = graphql `
   {
     neo4j {
       Testament (orderBy:title_desc){
