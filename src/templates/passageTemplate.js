@@ -30,19 +30,23 @@ class Passage extends React.Component {
               <p>
                 {para.verses.map(verse => (
                   <>
-                  {" "}<span className="verse-num">{verse.verseNum}</span>
-                  {verse.tokens.map(token => (
-                    <>
-                    {" "}{token.oParen == "1" && "("}
-                    {
-                    token.italic == "1" ? <i>{token.token}</i> :
-                    token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
-                    token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
-                    token.token
+                  {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
+                  {verse.tokens.map(token => {
+                    if (token.paragraph[0].id == para.id )
+                    return (
+                      <>
+                        {" "}{token.oParen == "1" && "("}
+                        {
+                        token.italic == "1" ? <i>{token.token}</i> :
+                        token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
+                        token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
+                        token.token
+                        }
+                        {token.punc}{token.cParen == "1" && ")"}
+                      </>
+                      )
                     }
-                    {token.punc}{token.cParen == "1" && ")"}
-                    </>
-                  ))}
+                  )}
                   </>
                 ))}
               </p>
@@ -80,6 +84,9 @@ query ($lookupName: String!) {
               punc
               italic
               versePos
+              paragraph {
+                id
+              }
               person {
                 slug
               }

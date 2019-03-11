@@ -280,6 +280,9 @@ a:hover {
     font-style: italic;
     font-weight: 400;
   }
+  .sticky-sub {
+    top: 34px; 
+  }
 
   .nav-home {
     width: auto;
