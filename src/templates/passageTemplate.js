@@ -29,14 +29,14 @@ class Passage extends React.Component {
                     if (token.paragraph[0].id === para.id )
                     return (
                       <>
-                        {" "}{token.oParen === "1" && "("}
+                        {" "}{token.oParen && "("}
                         {
-                        token.italic === "1" ? <i>{token.token}</i> :
+                        token.italic ? <i>{token.token}</i> :
                         token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
                         token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
                         token.token
                         }
-                        {token.punc}{token.cParen === "1" && ")"}
+                        {token.punc}{token.cParen && ")"}
                       </>
                       )
                     return false
