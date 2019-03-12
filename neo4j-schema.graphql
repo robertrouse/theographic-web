@@ -156,10 +156,10 @@ type QueryType {
 	searchVerses(input:String!): [Verse] @cypher(statement:"CALL db.index.fulltext.queryNodes(\\\"verses\\\", $input + \\\"~3\\\") YIELD node RETURN node")
 	searchPeople(input:String!): [Person] @cypher(statement:"CALL db.index.fulltext.queryNodes(\\\"people\\\", $input + \\\"~3\\\") YIELD node RETURN node")
 	"""
-		CALL db.index.fulltext.queryNodes('tokens', 'jesus') YIELD node AS t, score AS tScore
-		MATCH(p:Person)-[:MENTIONS]-(t) WITH (count(t) * tScore) AS newScore, p
+		CALL db.index.fulltext.queryNodes('tokens', 'jesus') YIELD node AS t, score
+		MATCH(p:Person)-[:MENTIONS]-(t) WITH (count(t) * score) AS newScore, p
 		ORDER BY newScore DESCENDING
-		RETURN DISTINCT p,newScore
+		RETURN DISTINCT p
 	"""
 	searchPlaces(input:String!): [Place] @cypher(statement:"CALL db.index.fulltext.queryNodes(\\\"places\\\", $input + \\\"~3\\\") YIELD node RETURN node")
 }
