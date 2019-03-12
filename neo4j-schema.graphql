@@ -147,3 +147,19 @@ type Year {
 	peopleBorn: [Person] @relation(name:"BORN_IN", direction:IN)
 	peopleDied: [Person] @relation(name:"DIED_IN", direction:IN)
 }
+
+schema {
+   query: QueryType
+}
+
+type QueryType {
+	searchVerses(input:String!): [Verse] @cypher(statement:"CALL db.index.fulltext.queryNodes(\\\"verses\\\", $input + \\\"~3\\\") YIELD node RETURN node")
+	searchPeople(input:String!): [Person] @cypher(statement:"CALL db.index.fulltext.queryNodes(\\\"people\\\", $input + \\\"~3\\\") YIELD node RETURN node")
+	"""
+		CALL db.index.fulltext.queryNodes('tokens', 'jesus') YIELD node AS t, score AS tScore
+		MATCH(p:Person)-[:MENTIONS]-(t) WITH (count(t) * tScore) AS newScore, p
+		ORDER BY newScore DESCENDING
+		RETURN DISTINCT p,newScore
+	"""
+	searchPlaces(input:String!): [Place] @cypher(statement:"CALL db.index.fulltext.queryNodes(\\\"places\\\", $input + \\\"~3\\\") YIELD node RETURN node")
+}
