@@ -84,6 +84,7 @@ type Person {
 	writerOf: [Chapter] @relation(name:"WROTE")
 	participantIn: [Event] @relation(name:"PARTICIPATED_IN")
 	hasBeenTo: [Place] @relation(name:"HAS_BEEN_TO")
+	partnerOf: [Person] @relation(name:"PARTNER_OF")
 	parentOf: [Person] @relation(name:"PARENT_OF")
 	childOf: [Person] @relation(name:"CHILD_OF")
 	knows: [Person] @relation(name:"KNOWS")
