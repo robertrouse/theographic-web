@@ -72,7 +72,7 @@ query ($lookupName: String!) {
             verseNum
             verseText
             osisRef
-            tokens (orderBy: versePos_asc){
+            tokens (orderBy: versePos_asc, filter:{paragraph:{id_not:""}, versePos_gte:0}){
               token
               oParen
               cParen
