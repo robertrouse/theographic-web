@@ -8,10 +8,7 @@ module.exports = {
       options: {
         typeName: "neo4j",
         fieldName: "neo4j",
-        url: "http://68.183.135.124:7474/graphql/",
-        headers: {
-          Authorization: `Basic ${process.env.NEO4J_KEY}`
-        },
+        url: "https://theographic-api.robertrouse.now.sh/"
       },
     },
       'gatsby-plugin-react-helmet',
