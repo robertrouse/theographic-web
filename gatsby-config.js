@@ -8,7 +8,7 @@ module.exports = {
       options: {
         typeName: "neo4j",
         fieldName: "neo4j",
-        url: "https://theographic-api.robertrouse.now.sh/"
+        url: "https://theographic-api.herokuapp.com/"
       },
     },
       'gatsby-plugin-react-helmet',
