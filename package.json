@@ -1,8 +1,8 @@
 {
-  "name": "gatsby-starter-default",
-  "description": "Gatsby default starter",
-  "version": "1.0.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "name": "Theographic",
+  "description": "A Knowledge Graph of the Bible",
+  "version": "0.1",
+  "author": "Robert Rouse <robert@viz.bible>",
   "dependencies": {
     "gatsby": "^2.9.11",
     "gatsby-image": "^2.1.4",
@@ -43,6 +43,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "url": "https://github.com/robertrouse/theographic"
   }
 }
