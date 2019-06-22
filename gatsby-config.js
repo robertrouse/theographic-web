@@ -8,7 +8,8 @@ module.exports = {
       options: {
         typeName: "neo4j",
         fieldName: "neo4j",
-        url: "https://theographic-api.herokuapp.com/"
+        url: "https://theographic-api.robertrouse.now.sh/"
+        //url: "https://theographic-api.herokuapp.com/"
         // url: "http://localhost:4000"
       },
     },
