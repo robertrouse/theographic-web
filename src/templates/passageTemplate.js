@@ -66,7 +66,7 @@ query ($lookupName: String!) {
       chapters(orderBy: chapterNum_asc) {
         title
         chapterNum
-        paragraphs(orderBy: id_asc) {
+        paragraphs(orderBy: id_asc, filter:{introFlag:false}) {
           id
           verses(orderBy: verseNum_asc) {
             verseNum
