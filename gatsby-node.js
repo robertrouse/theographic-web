@@ -4,52 +4,79 @@
 
 const path = require(`path`)
 
-exports.createPages = ({graphql, actions}) => {
+exports.createPages = ({ actions, graphql }) => {
+  const { createPage } = actions
 
-  const placesPages = makingPages(`src/templates/placeTemplate.js`, 'Place', '/place/', graphql, actions)
-  const peoplePages = makingPages(`src/templates/personTemplate.js`, 'Person', '/person/', graphql, actions)
-  const periodPages = makingPages(`src/templates/periodTemplate.js`, 'EventGroup', '/period/', graphql, actions)
-  const passagePages = makingPages(`src/templates/passageTemplate.js`, 'Book', '/', graphql, actions)
-  
-  return placesPages, passagePages, peoplePages, periodPages;
-}
+  return graphql(`
+  {
+    neo4j {
+      Book {
+        slug
+      }
+      Person {
+        slug
+      }
+      Place {
+        slug
+      }
+      EventGroup {
+        slug
+      }
+    }
+  }  
+  `).then(result => {
+    if (result.errors) {
+      result.errors.forEach(e => console.error(e.toString()))
+      return Promise.reject(result.errors)
+    }
 
-function makingPages (templatePath, entityType, urlPrefix, graphql, actions) {
-  const {createPage} = actions
-  return new Promise((resolve, reject) => {
-    const template = path.resolve(templatePath)
-
-    resolve(
-      graphql(
-        `
-        {
-          neo4j {
-            table: ${entityType} {
-              slug
-            }
-          }
+    //passages
+    const books = result.data.neo4j.Book
+    books.forEach(edge => {
+      createPage({
+        path: edge.slug, 
+        component: path.resolve(`src/templates/passageTemplate.js`),
+        context: {
+          lookupName: edge.slug
         }
-        `
-      ).then(result => {
-        if (result.errors) {
-          result.errors.forEach(error => {
-            console.log(error)
-          })
-          reject(result.errors)
-        }
-        var uniqueItems = [...new Set(result.data.neo4j.table)]
-        uniqueItems.forEach(edge => {
-          createPage({
-            path: urlPrefix + edge.slug, 
-            component: template,
-            context: {
-              lookupName: edge.slug,
-              wideMap: edge.slug + "_wide.png"
-            }
-          })
-        })
-        return
       })
-    )
+    })
+
+    //places
+    const places = result.data.neo4j.Place
+    places.forEach(edge => {
+      createPage({
+        path: 'place/' + edge.slug, 
+        component: path.resolve(`src/templates/placeTemplate.js`),
+        context: {
+          lookupName: edge.slug,
+          wideMap: edge.slug + '_wide.png'
+        }
+      })
+    })
+
+    //people
+    const people = result.data.neo4j.Person
+    people.forEach(edge => {
+      createPage({
+        path: 'person/' + edge.slug, 
+        component: path.resolve(`src/templates/personTemplate.js`),
+        context: {
+          lookupName: edge.slug
+        }
+      })
+    })
+
+    //periods
+    const periods = result.data.neo4j.EventGroup
+    periods.forEach(edge => {
+      createPage({
+        path: 'period/' + edge.slug, 
+        component: path.resolve(`src/templates/periodTemplate.js`),
+        context: {
+          lookupName: edge.slug
+        }
+      })
+    })
   })
 }
