@@ -1,4 +1,4 @@
-# Description
+## Description
 
 Theographic is a [knowledge graph](https://www.youtube.com/watch?v=mmQl6VGvX-c) of the Bible, weaving data about people, places, and periods of time into the tapestry of God's story. This data enables smarter search algorithms, new apps, and exciting research potential. It's an open-source project to share information about the scriptures in our digital world. **Learn more at [this link](https://www.notion.so/theographic/About-Theographic-bb40cb93b1ac43bd98252abce225d530)**.
 
