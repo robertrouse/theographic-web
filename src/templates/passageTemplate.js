@@ -19,7 +19,10 @@ class Passage extends React.Component {
 
           {data.neo4j.Book[0].chapters.map(chapter=>(
             <>
-            <h3 className="sticky-sub" id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
+            <div className="sticky-sub" >
+              <h3 id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
+            </div>
+            
             {chapter.paragraphs.map(para => (
               <p>
                 {para.verses.map(verse => (

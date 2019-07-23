@@ -24,9 +24,14 @@ class Place extends React.Component {
           <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
 
           <div className="div-block"/>
-          <h3 className="heading-3">Timeline</h3>
-          {data.neo4j.timeline.length > 0 && <EventList eventData = {data.neo4j.timeline}/>}
-
+          
+          {data.neo4j.timeline.length > 0 && (
+            <>
+              <h3 className="heading-3">Timeline</h3>
+              <EventList eventData = {data.neo4j.timeline}/>
+            </>
+            )
+          }  
           <div className="footer"/>
         </div>
       </>

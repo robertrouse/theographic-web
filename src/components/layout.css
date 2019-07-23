@@ -212,11 +212,31 @@ a:hover {
   font-size: 1.9em;
 }
 
+.year-row {
+  display:flex;
+}
+
+.year-content {
+  max-width: 700px;
+}
+
 .year-label {
-  margin-bottom: 5px;
-  padding-top: 10px;
+  width:75px;
   font-size: 18px;
   font-weight: 700;
+  margin-top: 20px;
+}
+
+.event-label {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.event-tags > span {
+  width: 25px;
+  display: inline-block;
+  text-align: center;
 }
 
 .verse-list {

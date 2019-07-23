@@ -23,37 +23,41 @@ const EventList = (props) => {
             <div className="year-content">
               {years[year].map((event, i) => (
                 <>
-                  <div className="div-block"/>
-                  <div>
-                    <div>{event.title}</div>
-                    {event.participants && event.participants.length > 0 &&
-                      <div>👥 People: {event.participants.map((person, i) =>
-                        <>
-                          {i > 0 && ', '}
-                          <Link key={i} to={'/person/' + person.slug}>{person.name}</Link>
-                        </>
-                      )}
-                      </div>}
-                    {event.placeOccurred && event.placeOccurred.length > 0 &&
-                      <div>📍 Place(s): {event.placeOccurred.map((place, i) =>
-                        <>
-                          {i > 0 && ', '}
-                          <Link key={i} to={'/place/' + place.slug}>{place.name}</Link>
-                        </>
-                      )}
-                      </div>}
-                    {event.verses.length > 0 &&
-                      <div>📖 Passages:
+                  <div className="event-label">{event.title}</div>
+                  {event.verses.length > 0 &&
+                    <div className="event-tags">
+                      <span role="img" aria-label="passages">📖</span>&nbsp;
                       <Link to={event.verses[0].osisRef.split('.')[0].toLowerCase() + '#' + event.verses[0].osisRef}>
-                          {event.verses[0].title}-
-                          {(event.verses[0].osisRef.split('.')[1] !== event.verses[event.verses.length - 1].osisRef.split('.')[1]) &&
-                            event.verses[event.verses.length - 1].osisRef.split('.')[1] + ":"
-                          }
-                          {event.verses[event.verses.length - 1].osisRef.split('.')[2]}
-                        </Link>
-                      </div>
-                    }
-                  </div>
+                        {event.verses[0].title}-
+                        {(event.verses[0].osisRef.split('.')[1] !== event.verses[event.verses.length - 1].osisRef.split('.')[1]) &&
+                          event.verses[event.verses.length - 1].osisRef.split('.')[1] + ":"
+                        }
+                        {event.verses[event.verses.length - 1].osisRef.split('.')[2]}
+                      </Link>
+                    </div>
+                  }
+                  {event.participants && event.participants.length > 0 &&
+                    <div className="event-tags">
+                      <span role="img" aria-label="people">👥</span>&nbsp;
+                      {event.participants.map((person, i) =>
+                      <>
+                        {i > 0 && ', '}
+                        <Link key={i} to={'/person/' + person.slug}>{person.name}</Link>
+                      </>
+                    )}
+                    </div>
+                  }
+                  {event.placeOccurred && event.placeOccurred.length > 0 &&
+                    <div className="event-tags">
+                      <span role="img" aria-label="places">📍</span>&nbsp;
+                      {event.placeOccurred.map((place, i) =>
+                      <>
+                        {i > 0 && ', '}
+                        <Link key={i} to={'/place/' + place.slug}>{place.name}</Link>
+                      </>
+                    )}
+                    </div>
+                  }
                 </>
               ))}
             </div>
