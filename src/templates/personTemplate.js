@@ -94,7 +94,7 @@ class Person extends React.Component {
             {data.neo4j.wrote.map((book, i) =>
                       <>
                         {i > 0 && ', '}
-                        <Link key={i} to={'/passage/' + book.slug}>{book.title}</Link>
+                        <Link key={i} to={book.slug}>{book.title}</Link>
                       </>
                     )
             }
