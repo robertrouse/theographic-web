@@ -20,7 +20,7 @@ class Passage extends React.Component {
           {data.neo4j.Book[0].chapters.map(chapter=>(
             <>
             <div className="sticky-sub" >
-              <h3 id={chapter.chapterNum}>Chapter {chapter.chapterNum}</h3>
+              <h3 id={chapter.osisRef}>Chapter {chapter.chapterNum}</h3>
             </div>
             
             {chapter.paragraphs.map(para => (
@@ -69,6 +69,7 @@ query ($lookupName: String!) {
       chapters(orderBy: chapterNum_asc) {
         title
         chapterNum
+        osisRef
         paragraphs(orderBy: id_asc, filter:{introFlag:false}) {
           id
           verses(orderBy: verseNum_asc) {

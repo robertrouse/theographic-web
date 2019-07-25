@@ -1,0 +1,7 @@
+.cache
+node_modules
+yarn-error.log
+/public
+.DS_Store
+.env
+aws-credentials.csv

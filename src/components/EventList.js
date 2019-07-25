@@ -44,7 +44,7 @@ const EventList = (props) => {
                         {i > 0 && ', '}
                         <Link key={i} to={'/person/' + person.slug}>{person.name}</Link>
                       </>
-                    )}
+                      )}
                     </div>
                   }
                   {event.placeOccurred && event.placeOccurred.length > 0 &&

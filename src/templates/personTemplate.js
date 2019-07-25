@@ -1,5 +1,5 @@
 import React from 'react'
-import { graphql } from 'gatsby'
+import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 import EventList from '../components/EventList'
@@ -8,19 +8,98 @@ class Person extends React.Component {
 
   render () {
     const {data} = this.props
+    const person = data.neo4j.Person[0]
     return (
       <>
         <Helmet>
           <meta charSet="utf-8"/>
-          <title>{data.neo4j.Person[0].name}</title>
-          <meta content="{data.neo4j.Person[0].name}" property="og:title"/>
+          <title>{person.name}</title>
+          <meta content="{person.name}" property="og:title"/>
           <meta content="width=device-width, initial-scale=1" name="viewport"/>
         </Helmet>
         <div className="container">
-          <h1 className="sticky-title">{data.neo4j.Person[0].name}</h1>
-
-          <p className="container">{data.neo4j.Person[0].description}</p>
-          <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
+          <h1 className="sticky-title">{person.name}</h1>
+          {person.alsoCalled && (
+            <div>{person.alsoCalled.map((alias, i) => <>{i > 0 && ', '}{alias}</>)}</div>
+          )}
+          {person.description && (
+            <>
+            <p className="container">{person.description}</p>
+            <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
+            <div className="div-block"/>
+            </>
+          )}
+          {person.childOf.length > 0 && (
+            <>
+            <div>
+              <b>Parents: </b>
+              <Link to={'/person/' + person.childOf[0].slug}>{person.childOf[0].name}</Link>
+              {person.childOf[1] && (<>, <Link to={'/person/' + person.childOf[1].slug}>{person.childOf[1].name}</Link></>)}
+            </div>
+            </>
+          )}
+          {person.partnerOf.length > 0 && (
+            <>
+            <div>
+              <b>Partners: </b>
+              {person.partnerOf.map((partner, i) =>
+                        <>
+                          {i > 0 && ', '}
+                          <Link key={i} to={'/person/' + partner.slug}>{partner.name}</Link>
+                        </>
+                      )
+              }
+            </div>
+            </>
+          )}
+          {person.parentOf.length > 0 && (
+            <>
+            <b>Children: </b>
+            {person.parentOf.map((child, i) =>
+                      <>
+                        {i > 0 && ', '}
+                        <Link key={i} to={'/person/' + child.slug}>{child.name}</Link>
+                      </>
+                    )
+            }
+            </>
+          )}
+          {person.memberOf.length > 0 && (
+            <div>
+            <b>Member of: </b>
+            {person.memberOf.map((group, i) => <>{i > 0 && ', '}{group.name}</>)}
+            </div>
+          )}
+          {(person.birthYear.length > 0 || person.birthPlace.length > 0) && (
+            <>
+            <div>
+              <b>Born: </b>
+              {person.birthPlace.length > 0 && (<Link to={'/place/' + person.birthPlace[0].slug}>{person.birthPlace[0].name}</Link>)}
+              {person.birthYear.length > 0 && (<>{' ' + person.birthYear[0].formattedYear}</>)}
+            </div>
+            </>
+          )}
+          {(person.deathYear.length > 0 || person.deathPlace.length > 0) && (
+            <>
+            <div>
+              <b>Died: </b>
+              {person.deathPlace.length > 0 && (<Link to={'/place/' + person.deathPlace[0].slug}>{person.deathPlace[0].name}</Link>)}
+              {person.deathYear.length > 0 && (<>{' ' + person.deathYear[0].formattedYear}</>)}
+            </div>
+            </>
+          )}
+          {data.neo4j.wrote.length > 0 && (
+            <>
+            <b>Wrote (or contributed to): </b>
+            {data.neo4j.wrote.map((book, i) =>
+                      <>
+                        {i > 0 && ', '}
+                        <Link key={i} to={'/passage/' + book.slug}>{book.title}</Link>
+                      </>
+                    )
+            }
+            </>
+          )}
 
           <div className="div-block"/>
           {data.neo4j.timeline.length > 0 && (
@@ -45,13 +124,46 @@ query ($lookupName: String!) {
     Person(filter: {slug: $lookupName}) {
       slug
       name
+      alsoCalled
       description
       gender
+      birthYear{
+        formattedYear
+      }
+      birthPlace{
+        name
+        slug
+      }
+      deathYear{
+        formattedYear
+      }
+      deathPlace{
+        name
+        slug
+      }
       parentOf {
         name
         slug
       }
       childOf {
+        name
+        gender
+        slug
+      }
+      partnerOf {
+        name
+        slug
+      }
+      memberOf{
+        name
+      }
+    }
+    wrote: Book(orderBy:bookOrder_asc, filter:{chapters_some:{writer:{slug:$lookupName}}}){
+      bookOrder
+      title
+      osisRef
+      slug
+      writers{
         name
         slug
       }
