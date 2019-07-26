@@ -88,10 +88,10 @@ class Person extends React.Component {
             </div>
             </>
           )}
-          {data.neo4j.wrote.length > 0 && (
+          {person.writerOf.length > 0 && (
             <>
             <b>Wrote (or contributed to): </b>
-            {data.neo4j.wrote.map((book, i) =>
+            {person.writerOf.map((book, i) =>
                       <>
                         {i > 0 && ', '}
                         <Link key={i} to={book.slug}>{book.title}</Link>
@@ -157,17 +157,17 @@ query ($lookupName: String!) {
       memberOf{
         name
       }
-    }
-    wrote: Book(orderBy:bookOrder_asc, filter:{chapters_some:{writer:{slug:$lookupName}}}){
-      bookOrder
-      title
-      osisRef
-      slug
-      writers{
-        name
+      writerOf(orderBy:bookOrder_asc){
+        bookOrder
+        title
         slug
+        writers{
+          name
+          slug
+        }
       }
     }
+
     timeline: Event(orderBy:sortKey_asc, filter: {participants_some: {slug: $lookupName}}) {
       title
       sequence
