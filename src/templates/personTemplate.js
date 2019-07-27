@@ -1,5 +1,6 @@
 import React from 'react'
 import { graphql, Link } from 'gatsby'
+import ReactMarkdown from 'react-markdown'
 import { Helmet } from 'react-helmet'
 import '../components/layout.css'
 import EventList from '../components/EventList'
@@ -24,7 +25,7 @@ class Person extends React.Component {
           )}
           {person.description && (
             <>
-            <p className="container">{person.description}</p>
+            <ReactMarkdown source={person.description} />
             <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
             <div className="div-block"/>
             </>

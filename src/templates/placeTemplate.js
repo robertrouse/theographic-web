@@ -1,6 +1,7 @@
 import React from 'react'
 import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
+import ReactMarkdown from 'react-markdown'
 import Img from 'gatsby-image'
 import '../components/layout.css'
 import EventList from '../components/EventList'
@@ -20,7 +21,7 @@ class Place extends React.Component {
         <div className="container">
           <h1 className="sticky-title">{data.neo4j.Place[0].name}</h1>
           {data.wideMap && (<Img fluid={data.wideMap.childImageSharp.fluid} className="map"/>)}
-          <p className="container">{data.neo4j.Place[0].description}</p>
+          <ReactMarkdown source={data.neo4j.Place[0].description} />
           <div className="citation">M.G. Easton M.A., D.D., Illustrated Bible Dictionary, Third Edition</div>
 
           <div className="div-block"/>

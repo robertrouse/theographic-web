@@ -9,9 +9,7 @@ module.exports = {
         typeName: "neo4j",
         fieldName: "neo4j",
         // url: "https://theographic-api.robertrouse.now.sh/"
-        // url: "https://theographic-api.herokuapp.com/"
         url: "http://68.183.135.124:4000/"
-        // url: "http://localhost:4000"
       },
     },
       'gatsby-plugin-react-helmet',
