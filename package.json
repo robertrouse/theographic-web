@@ -1,7 +1,7 @@
 {
   "name": "Theographic",
   "description": "A Knowledge Graph of the Bible",
-  "version": "1.0",
+  "version": "0.1.0",
   "author": "Robert Rouse <robert@viz.bible>",
   "dependencies": {
     "@mdx-js/mdx": "^1.1.0",
