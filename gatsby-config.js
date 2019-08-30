@@ -8,8 +8,7 @@ module.exports = {
       options: {
         typeName: "neo4j",
         fieldName: "neo4j",
-        // url: "https://theographic-api.robertrouse.now.sh/"
-        url: "http://68.183.135.124:4000/"
+        url: "https://api.viz.bible/"
       },
     },
       'gatsby-plugin-react-helmet',
