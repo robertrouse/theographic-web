@@ -205,6 +205,14 @@ a:hover {
   margin-bottom: 30px;
 }
 
+.map-marker {
+  padding: 10px;
+  color: #000;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 6px;
+}
+
 .year-header {
   border-width: 2px;
   border-bottom-style: solid;

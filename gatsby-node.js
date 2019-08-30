@@ -49,8 +49,7 @@ exports.createPages = ({ actions, graphql }) => {
         path: 'place/' + edge.slug, 
         component: path.resolve(`src/templates/placeTemplate.js`),
         context: {
-          lookupName: edge.slug,
-          wideMap: edge.slug + '_wide.png'
+          lookupName: edge.slug
         }
       })
     })
