@@ -28,7 +28,7 @@ class Place extends React.Component {
           <h1 className="sticky-title">{place.name}</h1>
           <MapGL
             style={{ width: '100%', height: '400px' }}
-            mapStyle='mapbox://styles/bibleviz/cjo1k4dhp24ai2spqxfcrsssy'
+            mapStyle='mapbox://styles/bibleviz/ck0cuh5fm06ws1cpmp54hvmtl'
             accessToken={MAPBOX_ACCESS_TOKEN}
             latitude={MAP_LAT}
             longitude={MAP_LNG}
