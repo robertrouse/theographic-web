@@ -15,6 +15,17 @@ class Place extends React.Component {
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYmlibGV2aXoiLCJhIjoiY2pjOTVhazJ1MDlqbzMzczFoamd3MzFnOSJ9.7k1RJ5oh-LNaYuADxsgx4Q'
     const MAP_LAT = place.latitude
     const MAP_LNG = place.longitude
+    const ZOOM_LVL = ['Region','Water'].includes(place.featureType) ? 4 : 
+                     place.featureType == 'Island'? 5 : 7.5
+
+    const style = {
+      padding: '5px',
+      color: '#000',
+      cursor: 'pointer',
+      background: '#fff',
+      borderRadius: '6px',
+      fontSize: '14px'
+    };
 
     return (
       <>
@@ -32,10 +43,10 @@ class Place extends React.Component {
             accessToken={MAPBOX_ACCESS_TOKEN}
             latitude={MAP_LAT}
             longitude={MAP_LNG}
-            zoom={5}
+            zoom={ZOOM_LVL}
           >
             <Marker longitude={MAP_LNG} latitude={MAP_LAT}>
-              <div className="map-marker">{place.name}</div>
+              <div style={style}>{place.name}</div>
             </Marker>
           </MapGL>
           <Markdown source={place.description} />
@@ -67,6 +78,7 @@ query ($lookupName: String!) {
       description
       latitude
       longitude
+      featureType
       hasBeenHere {
         name
         slug

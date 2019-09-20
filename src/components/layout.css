@@ -201,8 +201,9 @@ a:hover {
 }
 
 /*********  DETAIL PAGES  *********************************************/
-.map {
+.mapboxgl-map {
   margin-bottom: 30px;
+  border: 1px solid #b5cbd6;
 }
 
 .map-marker {
