@@ -19,8 +19,7 @@ function SearchResults( {searchInput} ) {
 
   return (
     <>
-
-        {loading && <LinearProgress />}
+        {loading && <LinearProgress color="secondary" />}
         {error && <p>Error: ${error.message}</p>}
 
         {searchInput.length <= 2 &&
@@ -50,7 +49,7 @@ class SearchPane extends React.Component {
 
   render() {
     return (
-      <Container m={2} maxWidth="sm">
+      <Container maxWidth="sm">
         <TextField
           id="search-input"
           margin="dense"
@@ -59,6 +58,7 @@ class SearchPane extends React.Component {
           onChange={this.searchInputChange}
           autoFocus="true"
           fullWidth="true"
+          color="primary"
         />
         <SearchResults searchInput={this.state.searchInput} ></SearchResults>
       </Container>
