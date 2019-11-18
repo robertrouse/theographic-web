@@ -31,51 +31,51 @@ exports.createPages = ({ actions, graphql }) => {
     }
 
     //passages
-    const books = result.data.neo4j.Book
-    books.forEach(edge => {
-      createPage({
-        path: edge.slug, 
-        component: path.resolve(`src/templates/passageTemplate.js`),
-        context: {
-          lookupName: edge.slug
-        }
-      })
-    })
+    // const books = result.data.neo4j.Book
+    // books.forEach(edge => {
+    //   createPage({
+    //     path: edge.slug, 
+    //     component: path.resolve(`src/templates/passageTemplate.js`),
+    //     context: {
+    //       lookupName: edge.slug
+    //     }
+    //   })
+    // })
 
-    //places
-    const places = result.data.neo4j.Place
-    places.forEach(edge => {
-      createPage({
-        path: 'place/' + edge.slug, 
-        component: path.resolve(`src/templates/placeTemplate.js`),
-        context: {
-          lookupName: edge.slug
-        }
-      })
-    })
+    // //places
+    // const places = result.data.neo4j.Place
+    // places.forEach(edge => {
+    //   createPage({
+    //     path: 'place/' + edge.slug, 
+    //     component: path.resolve(`src/templates/placeTemplate.js`),
+    //     context: {
+    //       lookupName: edge.slug
+    //     }
+    //   })
+    // })
 
-    //people
-    const people = result.data.neo4j.Person
-    people.forEach(edge => {
-      createPage({
-        path: 'person/' + edge.slug, 
-        component: path.resolve(`src/templates/personTemplate.js`),
-        context: {
-          lookupName: edge.slug
-        }
-      })
-    })
+    // //people
+    // const people = result.data.neo4j.Person
+    // people.forEach(edge => {
+    //   createPage({
+    //     path: 'person/' + edge.slug, 
+    //     component: path.resolve(`src/templates/personTemplate.js`),
+    //     context: {
+    //       lookupName: edge.slug
+    //     }
+    //   })
+    // })
 
-    //periods
-    const periods = result.data.neo4j.EventGroup
-    periods.forEach(edge => {
-      createPage({
-        path: 'period/' + edge.slug, 
-        component: path.resolve(`src/templates/periodTemplate.js`),
-        context: {
-          lookupName: edge.slug
-        }
-      })
-    })
+    // //periods
+    // const periods = result.data.neo4j.EventGroup
+    // periods.forEach(edge => {
+    //   createPage({
+    //     path: 'period/' + edge.slug, 
+    //     component: path.resolve(`src/templates/periodTemplate.js`),
+    //     context: {
+    //       lookupName: edge.slug
+    //     }
+    //   })
+    // })
   })
 }

@@ -16,7 +16,7 @@ class Place extends React.Component {
     const MAP_LAT = place.latitude
     const MAP_LNG = place.longitude
     const ZOOM_LVL = ['Region','Water'].includes(place.featureType) ? 4 : 
-                     place.featureType == 'Island'? 5 : 7.5
+                     place.featureType === 'Island'? 5 : 7.5
 
     const style = {
       padding: '5px',
