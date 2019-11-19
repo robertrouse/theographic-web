@@ -12,18 +12,9 @@ class IndexPage extends React.Component {
       <Layout>
         <div className="home-container">
           <div className="logo-home">
-            <img src={logo} alt="Logo" className="logo-home" width="550px" height="257px" />
+            <img src={logo} alt="Logo" className="logo-home" width="100%" height="auto" />
           </div>
           <SearchPane></SearchPane>
-          {/* <div className="nav-home">
-            <Link to="/people" className="home-cat">People</Link>
-            <div className="home-edges"></div>
-            <Link to="/places" className="home-cat">Places</Link>
-            <div className="home-edges"></div>
-            <Link to="/periods" className="home-cat">Periods</Link>
-            <div className="home-edges"></div>
-            <Link to="/passages" className="home-cat">Passages</Link>
-          </div> */}
         </div>
         <div className="footer"></div>
       </Layout>)
