@@ -3,19 +3,15 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
+import { Typography, Container, Paper, InputBase, IconButton, LinearProgress } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import CancelIcon from '@material-ui/icons/Cancel';
-import LinearProgress from '@material-ui/core/LinearProgress';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
 import PlacesCards from './PlacesCards';
 import VersesCards from './VersesCards';
-import { Typography } from '@material-ui/core';
+
 
 
 export default function SearchPane() {
