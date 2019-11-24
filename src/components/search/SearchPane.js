@@ -1,72 +1,80 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import Container from '@material-ui/core/Container';
-import TextField from '@material-ui/core/TextField';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import gql from 'graphql-tag';
+
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import CancelIcon from '@material-ui/icons/Cancel';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
 import PlacesCards from './PlacesCards';
 import VersesCards from './VersesCards';
+import { Typography } from '@material-ui/core';
 
-function SearchResults( {searchInput} ) {
 
-  const { loading, error, data } = useQuery(SEARCH_QUERY, { 
+export default function SearchPane() {
+
+  const classes = useStyles();
+  const [searchInput, setSearch] = useState('');
+  const { loading, data } = useQuery(SEARCH_QUERY, { 
     variables: { "input": searchInput },
     skip: searchInput.length < 3,
   });
 
-  return (
-    <>
-        {loading && <LinearProgress color="secondary" />}
-        {error && <p>Error: ${error.message}</p>}
-
-        {searchInput.length <= 2 &&
-            <SearchHints></SearchHints>
-        }
-        {data && data.searchPeople.length > 0 &&
-            <PeopleCards people={data.searchPeople}></PeopleCards>
-        }
-        {data && data.searchPlaces.length > 0 && 
-            <PlacesCards places={data.searchPlaces}></PlacesCards>
-        }
-        {data && data.searchVerses.length > 0 && 
-            <VersesCards verses={data.searchVerses}></VersesCards>
-        }                  
-    </>
-  );
-};
-
-class SearchPane extends React.Component {
-  state = {
-    searchInput: '',
-  };
-
-  searchInputChange = (e) => {
-      this.setState({ searchInput: e.target.value })
-  };
-
-  render() {
     return (
       <Container maxWidth="sm">
-        <TextField
-          id="search-input"
-          margin="dense"
-          variant="outlined"
-          value={this.state.searchInput}
-          onChange={this.searchInputChange}
-          autoFocus="true"
-          fullWidth="true"
-          color="primary"
-        />
-        <SearchResults searchInput={this.state.searchInput} ></SearchResults>
+        <Paper component="form" className={classes.searchBar}>
+          <div className={classes.searchIcon}>
+            <SearchIcon />
+          </div>
+          <InputBase
+            className={classes.input}
+            placeholder="Search the Bible"
+            inputProps={{ 'aria-label': 'Search the Bible' }}
+            fullwidth="true"
+            value={searchInput}
+            onChange={(e) => { setSearch(e.target.value) }}
+          />
+          {searchInput.length > 0 &&
+            <IconButton 
+              className={classes.iconButton}
+              aria-label="clear" 
+              onClick={() => { setSearch('') }} >
+              <CancelIcon />
+            </IconButton>
+          }
+        </Paper>
+        <div>
+          {loading && <LinearProgress color="secondary"/>}
+          {searchInput.length > 2 && (!data || data.searchVerses.length === 0) && !loading &&
+            <div className={classes.results}>
+              <Typography>No results found.</Typography>
+            </div>
+          }
+          <div className={classes.results}>
+            {searchInput.length <= 2 &&
+                <SearchHints></SearchHints>
+            }
+            {data && data.searchPeople.length > 0 &&
+                <PeopleCards people={data.searchPeople}></PeopleCards>
+            }
+            {data && data.searchPlaces.length > 0 && 
+                <PlacesCards places={data.searchPlaces}></PlacesCards>
+            }
+            {data && data.searchVerses.length > 0 && 
+                <VersesCards verses={data.searchVerses}></VersesCards>
+            }   
+          </div>               
+      </div>
       </Container>
     );
   }
-}
-
-export default SearchPane
 
 const SEARCH_QUERY = gql`
 query searchResults ($input:String!) {
@@ -98,3 +106,32 @@ query searchResults ($input:String!) {
     }
 }
 `
+
+const useStyles = makeStyles(theme => ({
+  searchBar: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    height: 45,
+  },
+  input: {
+    marginLeft: theme.spacing(6),
+    flex: 1,
+  },
+  iconButton: {
+    padding: 10,
+  },
+  searchIcon: {
+    width: theme.spacing(5),
+    height: '100%',
+    color: theme.palette.text.secondary,
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  results:{
+    marginTop: theme.spacing(3),
+  },
+}));
