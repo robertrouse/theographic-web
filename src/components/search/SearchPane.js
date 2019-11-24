@@ -58,7 +58,7 @@ export default function SearchPane() {
             </div>
           }
           <div className={classes.results}>
-            {searchInput.length <= 2 &&
+            {(searchInput.length <= 2 || !data || data.searchVerses.length === 0) &&
                 <SearchHints></SearchHints>
             }
             {data && data.searchPeople.length > 0 &&
