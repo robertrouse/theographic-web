@@ -13,7 +13,9 @@ class VersesCards extends React.Component {
             spacing={2}
             direction="column"
         >
-                <Grid item>Verses</Grid>
+                <Grid item>
+                    <Typography variant="button" display="block" >Verses</Typography>
+                </Grid>
                 {this.props.verses.map(verse => {
                     // startEndArray = verse.verseText.split(this.props.query);
                     return (

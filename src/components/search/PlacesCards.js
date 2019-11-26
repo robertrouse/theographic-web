@@ -16,7 +16,9 @@ class PlacesCard extends React.Component {
                 spacing={2}
                 direction="column"
             >
-                <Grid item>Places</Grid>
+                <Grid item>
+                    <Typography variant="button" display="block" >Places</Typography>
+                </Grid>
 
                 {this.props.places.map(place => {
                     // startEndArray = verse.verseText.split(this.props.query);

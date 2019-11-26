@@ -13,7 +13,9 @@ class PeopleCards extends React.Component {
                 spacing={2}
                 direction="column"
             >
-                <Grid item>People</Grid>
+                <Grid item>
+                    <Typography variant="button" display="block" >People</Typography>
+                </Grid>
                 {this.props.people.map(person => {
                     // startEndArray = verse.verseText.split(this.props.query);
                     return (

@@ -18,14 +18,16 @@ export default function SearchPane() {
 
   const classes = useStyles();
   const [searchInput, setSearch] = useState('');
+  const searchUpdate = ( newInput = '' ) => {
+    setSearch(newInput)
+  }
   const { loading, data } = useQuery(SEARCH_QUERY, { 
     variables: { "input": searchInput },
     skip: searchInput.length < 3,
   });
-
     return (
       <Container maxWidth="sm">
-        <Paper component="form" className={classes.searchBar}>
+        <Paper component="form" elevation={3} className={classes.searchBar}>
           <div className={classes.searchIcon}>
             <SearchIcon />
           </div>
@@ -55,7 +57,7 @@ export default function SearchPane() {
           }
           <div className={classes.results}>
             {(searchInput.length <= 2 || !data || data.searchVerses.length === 0) &&
-                <SearchHints></SearchHints>
+                <SearchHints searchUpdate={ searchUpdate } searchInput={ searchInput }></SearchHints>
             }
             {data && data.searchPeople.length > 0 &&
                 <PeopleCards people={data.searchPeople}></PeopleCards>
