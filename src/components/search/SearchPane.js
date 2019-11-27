@@ -4,8 +4,7 @@ import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Container, Paper, InputBase, IconButton, LinearProgress } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { Search as SearchIcon, Cancel as CancelIcon} from '@material-ui/icons';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
@@ -34,9 +33,9 @@ export default function SearchPane() {
           <InputBase
             className={classes.input}
             placeholder="Search the Bible"
-            inputProps={{ 'aria-label': 'Search the Bible' }}
-            fullwidth="true"
             value={searchInput}
+            inputProps={{ 'aria-label': 'Search the Bible' }}
+            fullwidth={true}
             onChange={(e) => { setSearch(e.target.value) }}
           />
           {searchInput.length > 0 &&

@@ -19,6 +19,9 @@ const theme = createMuiTheme({
       default: `#fff`,
     },
   },
+  typography: {
+    fontFamily: "'Arial', sans-serif"
+  }
   spacing: 8,
 });
 

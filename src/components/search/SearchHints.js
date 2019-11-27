@@ -1,38 +1,97 @@
 import React from 'react';
+import { Link } from 'gatsby';
+
+import { makeStyles } from '@material-ui/core/styles';
+import { MenuBook, FormatQuote, PeopleAlt, Place } from '@material-ui/icons';
+import { List, ListSubheader, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Divider } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
 export default function SearchHints ({ searchUpdate }) {
-    
+    const classes = useStyles();
     return (
-        <div>
-            <div>Try searching for...</div>
-            <hr/>
-            <div>
-                <div>
-                    <div><span aria-label="book" role="img">📖</span> Bible References</div>
-                </div>
-                <div onClick={() => {searchUpdate('Prov 25:2')}} >Prov 25:2</div>
-                <div onClick={() => {searchUpdate('Acts 13')}} >Acts 13</div>
-                <div onClick={() => {searchUpdate('John 3:16')}} >John 3:16</div>
-            </div>
-            <hr/>
-            <div>
-                <div>❞ Words or phrases</div>
-                <div onClick={() => {searchUpdate('in the beginning')}} >in the beginning</div>
-                <div onClick={() => {searchUpdate('search the scriptures')}} >search the scriptures</div>
-            </div>
-            <hr/>
-            <div>
-                <div><span aria-label="people" role="img">👥</span> People</div>
-                <div onClick={() => {searchUpdate('Abraham')}} >Abraham</div>
-                <div onClick={() => {searchUpdate('Saul')}} >Saul</div>
-                <div onClick={() => {searchUpdate('Zechariah')}} >Zechariah</div>
-            </div>
-            <hr/>
-            <div>
-                <div><span aria-label="places" role="img">📍</span> Places</div>
-                <div onClick={() => {searchUpdate('Bethlehem')}} >Bethlehem</div>
-                <div onClick={() => {searchUpdate('Antioch')}} >Antioch</div>
-            </div>
-        </div>
+        <List subheader={<ListSubheader>Try searching for...</ListSubheader>}>
+            <ListItem>
+                <ListItemIcon>
+                    <MenuBook className={classes.icon}/> 
+                </ListItemIcon>
+                <ListItemText primary="Bible References" />
+                <ListItemSecondaryAction>
+                    <Link to="/passages"><Typography variant="button">Browse</Typography></Link>
+                </ListItemSecondaryAction>
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Prov 25:2')}}>Prov 25:2</Link>} />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Acts 13')}}>Acts 13</Link>} />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('John 3:16')}}>John 3:16</Link>} />
+            </ListItem>
+
+            <Divider variant="middle"/>
+
+            <ListItem>
+                <ListItemIcon>
+                    <FormatQuote className={classes.icon}/>
+                </ListItemIcon>
+                <ListItemText primary="Words or phrases" />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('in the beginning')}}>in the beginning</Link>} />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('search the scriptures')}}>search the scriptures</Link>} />
+            </ListItem>
+
+            <Divider variant="middle"/>
+
+            <ListItem>
+                <ListItemIcon>
+                    <PeopleAlt className={classes.icon}/> 
+                </ListItemIcon>
+                <ListItemText primary="People" />
+                <ListItemSecondaryAction>
+                    <Link to="/people"><Typography variant="button">Browse</Typography></Link>
+                </ListItemSecondaryAction>
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Abraham')}}>Abraham</Link>} />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Saul')}}>Saul</Link>} />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Zechariah')}}>Zechariah</Link>} />
+            </ListItem>
+
+            <Divider variant="middle"/>
+
+            <ListItem>
+                <ListItemIcon>
+                    <Place className={classes.icon}/> 
+                </ListItemIcon>
+                <ListItemText primary="Places" />
+                <ListItemSecondaryAction>
+                    <Link to="/places"><Typography variant="button">Browse</Typography></Link>
+                </ListItemSecondaryAction>
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Bethlehem')}}>Bethlehem</Link>} />
+            </ListItem>
+            <ListItem class={classes.item}>
+                <ListItemText inset primary={<Link to={'#'} onClick={() => {searchUpdate('Antioch')}}>Antioch</Link>} />
+            </ListItem>
+
+        </List>
     );
 }
+
+const useStyles = makeStyles(theme => ({
+    item: {
+        paddingLeft:16,
+    },
+    divider:{
+        
+    }
+  }));
