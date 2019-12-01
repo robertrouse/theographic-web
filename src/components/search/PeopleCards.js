@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { Link } from 'gatsby';
 
 class PeopleCards extends React.Component {
 
@@ -22,7 +23,9 @@ class PeopleCards extends React.Component {
                         <Grid item>
                             <Card key={"container" + person.slug}>
                                 <CardContent>
-                                    <Typography>{person.name}</Typography>
+                                    <Link to={'/person/' + person.slug}>
+                                        <Typography>{person.name}</Typography>
+                                    </Link>
                                     <Typography>
                                         {person.verseCount + " verses. First mentioned in " + person.verses[0].fullRef}
                                     </Typography>

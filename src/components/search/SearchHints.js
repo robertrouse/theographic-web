@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'gatsby';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { MenuBook, FormatQuote, PeopleAlt, Place } from '@material-ui/icons';
-import { List, ListSubheader, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Divider } from '@material-ui/core';
+import { MenuBook, FormatQuote, PeopleAlt, Place, KeyboardArrowRight } from '@material-ui/icons';
+import { List, ListSubheader, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Divider, Button } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 
 export default function SearchHints ({ searchUpdate }) {
@@ -17,7 +17,7 @@ export default function SearchHints ({ searchUpdate }) {
                 </ListItemIcon>
                 <ListItemText primary="Bible References" />
                 <ListItemSecondaryAction>
-                    <Link to="/passages"><Typography variant="button">Browse</Typography></Link>
+                    <Button href="/passages" disableRipple>Browse<KeyboardArrowRight /></Button>
                 </ListItemSecondaryAction>
             </ListItem>
             <ListItem  className={classes.padding}>
@@ -54,7 +54,7 @@ export default function SearchHints ({ searchUpdate }) {
                 </ListItemIcon>
                 <ListItemText primary="People" />
                 <ListItemSecondaryAction>
-                    <Link to="/people"><Typography variant="button">Browse</Typography></Link>
+                    <Button href="/people" disableRipple>Browse<KeyboardArrowRight /></Button>
                 </ListItemSecondaryAction>
             </ListItem>
             <ListItem  className={classes.padding}>
@@ -76,7 +76,7 @@ export default function SearchHints ({ searchUpdate }) {
                 </ListItemIcon>
                 <ListItemText primary="Places" />
                 <ListItemSecondaryAction>
-                    <Link to="/places"><Typography variant="button">Browse</Typography></Link>
+                    <Button href="/placces" disableRipple>Browse<KeyboardArrowRight /></Button>
                 </ListItemSecondaryAction>
             </ListItem>
             <ListItem  className={classes.padding}>

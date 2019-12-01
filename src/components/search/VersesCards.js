@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { Link } from 'gatsby';
 
 class VersesCards extends React.Component {
 
@@ -22,7 +23,9 @@ class VersesCards extends React.Component {
                         <Grid item>
                             <Card key={"container" + verse.verseId}>
                                 <CardContent>
-                                    <Typography>{verse.fullRef}</Typography>
+                                    <Link to={verse.osisRef.toLowerCase().split('.')[0] + '/#' + verse.osisRef}>
+                                        <Typography>{verse.fullRef}</Typography>
+                                    </Link>
                                     <Typography>{verse.verseText}</Typography>
                                 </CardContent>
                             </Card>
