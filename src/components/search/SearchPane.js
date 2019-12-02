@@ -97,7 +97,7 @@ export default function SearchPane() {
             >
               <Tab label="All" {...a11yProps(0)} />
               { showVerses && <Tab label="Verses" {...a11yProps(1)} /> }
-              { showPlaces && <Tab label="People" {...a11yProps(2)} /> }
+              { showPeople && <Tab label="People" {...a11yProps(2)} /> }
               { showPlaces && <Tab label="Places" {...a11yProps(3)} /> }
             </Tabs>
           </AppBar> }
