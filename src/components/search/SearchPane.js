@@ -89,21 +89,23 @@ export default function SearchPane() {
         <div>
           {loading && <LinearProgress color="secondary"/>}
 
-          {showAll && <Box>
-            <Tabs 
-              value={activeTab} 
-              onChange={updateTabs} 
-              aria-label="search results tabs"
-              indicatorColor="secondary"
-              textColor="primary"
-              // variant="fullWidth"
-            >
-              <Tab label="All" {...a11yProps(0)} className={classes.tab} disableRipple />
-              { showVerses && <Tab label="Verses" className={classes.tab} {...a11yProps(1)} disableRipple /> }
-              { showPeople && <Tab label="People" className={classes.tab} {...a11yProps(2)} disableRipple /> }
-              { showPlaces && <Tab label="Places" className={classes.tab} {...a11yProps(3)} disableRipple /> }
-            </Tabs>
-          </Box> }
+          {showAll && 
+            <Box className={classes.results}>
+              <Tabs 
+                value={activeTab} 
+                onChange={updateTabs} 
+                aria-label="search results tabs"
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+              >
+                <Tab label="All" {...a11yProps(0)} className={classes.tab} disableRipple />
+                { showVerses && <Tab label="Verses" className={classes.tab} {...a11yProps(1)} disableRipple /> }
+                { showPeople && <Tab label="People" className={classes.tab} {...a11yProps(2)} disableRipple /> }
+                { showPlaces && <Tab label="Places" className={classes.tab} {...a11yProps(3)} disableRipple /> }
+              </Tabs>
+            </Box> 
+          }
  
 
           {showNone &&
@@ -112,21 +114,25 @@ export default function SearchPane() {
             </div>
           }
 
-          { !showAll && !loading && <SearchHints searchUpdate={ searchUpdate } searchInput={ searchInput }></SearchHints> }
+          { !showAll && !loading && 
+            <Box className={classes.results}>
+              <SearchHints searchUpdate={ searchUpdate } searchInput={ searchInput } />
+            </Box> 
+          }
 
           <TabPanel value={activeTab} index={0} className={classes.results}>
-            { showPeople && <PeopleCards people={data.searchPeople}></PeopleCards> }
-            { showPlaces && <PlacesCards places={data.searchPlaces}></PlacesCards> }
-            { showVerses && <VersesCards verses={data.searchVerses}></VersesCards> }   
+            { showPeople && <PeopleCards people={data.searchPeople} /> }
+            { showPlaces && <PlacesCards places={data.searchPlaces} /> }
+            { showVerses && <VersesCards verses={data.searchVerses} /> }   
           </TabPanel> 
           <TabPanel value={activeTab} index={1} className={classes.results}>
-            { showVerses && <VersesCards verses={data.searchVerses}></VersesCards> }   
+            { showVerses && <VersesCards verses={data.searchVerses} /> }   
           </TabPanel>
           <TabPanel value={activeTab} index={2} className={classes.results}>
-            { showPeople && <PeopleCards people={data.searchPeople}></PeopleCards> }
+            { showPeople && <PeopleCards people={data.searchPeople} /> }
           </TabPanel>
           <TabPanel value={activeTab} index={3} className={classes.results}>
-            { showPlaces && <PlacesCards places={data.searchPlaces}></PlacesCards> }
+            { showPlaces && <PlacesCards places={data.searchPlaces} /> }
           </TabPanel>
       </div>
       </Container>
@@ -193,6 +199,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(4),
   },
   tab:{
-    minWidth:100,
+    minWidth:0,
   }
 }));

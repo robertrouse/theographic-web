@@ -20,8 +20,8 @@ const theme = createMuiTheme({
     },
   },
   typography: {
-    fontFamily: "'Arial', sans-serif"
-  }
+    fontFamily: "'Arial', sans-serif",
+  },
   spacing: 8,
 });
 

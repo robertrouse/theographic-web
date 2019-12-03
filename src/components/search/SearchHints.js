@@ -3,7 +3,7 @@ import { Link } from 'gatsby';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { FormatQuote, KeyboardArrowRight } from '@material-ui/icons';
-import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@material-ui/core';
+import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button, Typography } from '@material-ui/core';
 
 export default function SearchHints ({ searchUpdate }) {
     const classes = useStyles();
@@ -15,7 +15,7 @@ export default function SearchHints ({ searchUpdate }) {
                     <span role="img" aria-label="book">📖</span>
                 </ListItemIcon>
                 <ListItemText 
-                    primary="Bible references" 
+                    primary="Bible references"
                     secondary={<>
                         Examples:&nbsp;
                         <Link to={'#prov_25_2'} onClick={() => {searchUpdate('Prov 25:2')}}>Prov&nbsp;25:2</Link>{', '}
