@@ -1,10 +1,10 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, AppBar, Tabs, Tab, Box } from '@material-ui/core';
+import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box } from '@material-ui/core';
 import { Search as SearchIcon, Cancel as CancelIcon} from '@material-ui/icons';
 
 import SearchHints from './SearchHints';
@@ -89,18 +89,21 @@ export default function SearchPane() {
         <div>
           {loading && <LinearProgress color="secondary"/>}
 
-          {showAll && <AppBar position="static">
+          {showAll && <Box>
             <Tabs 
               value={activeTab} 
               onChange={updateTabs} 
               aria-label="search results tabs"
+              indicatorColor="secondary"
+              textColor="primary"
+              // variant="fullWidth"
             >
-              <Tab label="All" {...a11yProps(0)} />
-              { showVerses && <Tab label="Verses" {...a11yProps(1)} /> }
-              { showPeople && <Tab label="People" {...a11yProps(2)} /> }
-              { showPlaces && <Tab label="Places" {...a11yProps(3)} /> }
+              <Tab label="All" {...a11yProps(0)} className={classes.tab} disableRipple />
+              { showVerses && <Tab label="Verses" className={classes.tab} {...a11yProps(1)} disableRipple /> }
+              { showPeople && <Tab label="People" className={classes.tab} {...a11yProps(2)} disableRipple /> }
+              { showPlaces && <Tab label="Places" className={classes.tab} {...a11yProps(3)} disableRipple /> }
             </Tabs>
-          </AppBar> }
+          </Box> }
  
 
           {showNone &&
@@ -189,4 +192,7 @@ const useStyles = makeStyles(theme => ({
   results:{
     marginTop: theme.spacing(4),
   },
+  tab:{
+    minWidth:100,
+  }
 }));

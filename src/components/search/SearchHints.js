@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'gatsby';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { MenuBook, FormatQuote, PeopleAlt, Place, KeyboardArrowRight } from '@material-ui/icons';
-import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button, Container } from '@material-ui/core';
+import { FormatQuote, KeyboardArrowRight } from '@material-ui/icons';
+import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@material-ui/core';
 
 export default function SearchHints ({ searchUpdate }) {
     const classes = useStyles();
@@ -15,7 +15,7 @@ export default function SearchHints ({ searchUpdate }) {
                     <span role="img" aria-label="book">📖</span>
                 </ListItemIcon>
                 <ListItemText 
-                    primary="Bible References" 
+                    primary="Bible references" 
                     secondary={<>
                         Examples:&nbsp;
                         <Link to={'#prov_25_2'} onClick={() => {searchUpdate('Prov 25:2')}}>Prov&nbsp;25:2</Link>{', '}
@@ -23,7 +23,7 @@ export default function SearchHints ({ searchUpdate }) {
                         <Link to={'#john_3_16'} onClick={() => {searchUpdate('John 3:16')}}>John&nbsp;3:16</Link>
                     </>}
                 />
-                <Button component={Link} to="/passages" disableRipple>Browse<KeyboardArrowRight /></Button>
+                <Button component={Link} to="/passages" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
             </ListItem>
 
             <Divider variant="middle"/>
@@ -55,10 +55,10 @@ export default function SearchHints ({ searchUpdate }) {
                         Examples:&nbsp;
                         <Link to={'#abraham'} onClick={() => {searchUpdate('Abraham')}}>Abraham</Link>{', '}
                         <Link to={'#saul'} onClick={() => {searchUpdate('Saul')}}>Saul</Link>{', '}
-                        <Link to={'#saul'} onClick={() => {searchUpdate('Saul')}}>Saul</Link>
+                        <Link to={'#zechariah'} onClick={() => {searchUpdate('Zechariah')}}>Zechariah</Link>
                     </>}
                 />
-                <Button component={Link} to="/people" disableRipple>Browse<KeyboardArrowRight /></Button>
+                <Button component={Link} to="/people" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
             </ListItem>
 
             <Divider variant="middle"/>
@@ -76,22 +76,16 @@ export default function SearchHints ({ searchUpdate }) {
                         <Link to={'#antioch'} onClick={() => {searchUpdate('Antioch')}}>Antioch</Link>
                     </>}
                 />
-                <Button component={Link} to="/places" disableRipple>Browse<KeyboardArrowRight /></Button>
+                <Button component={Link} to="/places" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
             </ListItem>
         </List>
     );
 }
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        marginTop:15,
-        marginBottom:15,
-    },
-    padding:{
-        paddingTop:0,
-        paddingBottom:0,
-    },
     icon: {
         color:"#000",
+        minWidth: 36,
+        marginTop: 6,
     }
   }));
