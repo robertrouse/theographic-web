@@ -93,9 +93,8 @@ a:hover {
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
-  width: 550px;
-  min-height: 150px;
-  max-height: 257px;
+  width: 475px;
+  height: 222px;
 }
 
 .home-container {
@@ -330,6 +329,7 @@ a:hover {
   }
 
   .logo-home {
-    width: 100%;
+    width: 300px;
+    height: 140px;
   }
 }

@@ -31,16 +31,16 @@ exports.createPages = ({ actions, graphql }) => {
     }
 
     //passages
-    const books = result.data.neo4j.Book
-    books.forEach(edge => {
-      createPage({
-        path: edge.slug, 
-        component: path.resolve(`src/templates/passageTemplate.js`),
-        context: {
-          lookupName: edge.slug
-        }
-      })
-    })
+    // const books = result.data.neo4j.Book
+    // books.forEach(edge => {
+    //   createPage({
+    //     path: edge.slug, 
+    //     component: path.resolve(`src/templates/passageTemplate.js`),
+    //     context: {
+    //       lookupName: edge.slug
+    //     }
+    //   })
+    // })
 
     //places
     const places = result.data.neo4j.Place
