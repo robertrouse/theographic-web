@@ -28,23 +28,7 @@ class Passage extends React.Component {
                 {para.verses.map(verse => (
                   <>
                   {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
-                  {verse.tokens.map(token => {
-                    if (token.paragraph[0].id === para.id )
-                    return (
-                      <>
-                        {" "}{token.oParen && "("}
-                        {
-                        token.italic ? <i>{token.token}</i> :
-                        token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
-                        token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
-                        token.token
-                        }
-                        {token.punc}{token.cParen && ")"}
-                      </>
-                      )
-                    return false
-                    }
-                  )}
+                  {verse.verseText}
                   </>
                 ))}
               </p>
@@ -76,23 +60,6 @@ query ($lookupName: String!) {
             verseNum
             verseText
             osisRef
-            tokens (orderBy: versePos_asc, filter:{versePos_gte:0}){
-              token
-              oParen
-              cParen
-              punc
-              italic
-              versePos
-              paragraph {
-                id
-              }
-              person {
-                slug
-              }
-              place {
-                slug
-              }
-            }
           }
         }
       }
