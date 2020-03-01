@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { Link } from 'gatsby';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box } from '@material-ui/core';
-import { Search as SearchIcon, Cancel as CancelIcon} from '@material-ui/icons';
+import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box, Button } from '@material-ui/core';
+import { Search as SearchIcon, Cancel as CancelIcon, KeyboardArrowRight} from '@material-ui/icons';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
@@ -63,6 +64,8 @@ export default function SearchPane() {
   const showPeople = (data && data.searchPeople.length > 0 && !loading);
   const showPlaces = (data && data.searchPlaces.length > 0 && !loading);
   const showAll = (showVerses || showPeople || showPlaces);
+  const showOne = [showVerses, showPeople, showPlaces].filter(Boolean).length === 1;
+ 
   const showNone = (searchInput.length > 2 && !showAll && !loading);
 
     return (
@@ -89,7 +92,7 @@ export default function SearchPane() {
         <div>
           {loading && <LinearProgress color="secondary"/>}
 
-          {showAll && 
+          {showAll && !showOne &&
             <Box className={classes.results}>
               <Tabs 
                 value={activeTab} 
@@ -120,19 +123,42 @@ export default function SearchPane() {
             </Box> 
           }
 
+{/* TODO: add method to fetch more on clicks below. */}
           <TabPanel value={activeTab} index={0} className={classes.results}>
-            { showPeople && <PeopleCards people={data.searchPeople} /> }
-            { showPlaces && <PlacesCards places={data.searchPlaces} /> }
-            { showVerses && <VersesCards verses={data.searchVerses} /> }   
+            { showPeople && <PeopleCards people={data.searchPeople.slice(0,2)} /> }
+            { showPeople && data.searchPeople[2] &&
+              <Button disableRipple color = "primary" onClick = {() => {setTab(2)}}>
+                More People<KeyboardArrowRight />
+              </Button>
+            }
+
+            { showPlaces && <PlacesCards places={data.searchPlaces.slice(0,2)} /> }
+            { showPeople && data.searchPlaces[2] &&
+              <Button disableRipple color = "primary" onClick = {() => {setTab(3)}}>
+                More Places<KeyboardArrowRight />
+              </Button>
+            }
+
+            { showVerses && <VersesCards verses={data.searchVerses.slice(0,10)} /> }  
+{/* This also has to go in the verses cards list to fetch more. */}
+            { showPeople && 
+              <Button disableRipple color = "primary" onClick = {() => {setTab(1)}}>
+                More Verses<KeyboardArrowRight />
+              </Button>
+            }
+
           </TabPanel> 
           <TabPanel value={activeTab} index={1} className={classes.results}>
             { showVerses && <VersesCards verses={data.searchVerses} /> }   
+            {/* TODO: add "more" button to show next 10 on click.*/}
           </TabPanel>
           <TabPanel value={activeTab} index={2} className={classes.results}>
             { showPeople && <PeopleCards people={data.searchPeople} /> }
+            {/* TODO: remove limit when clicking this tab*/}
           </TabPanel>
           <TabPanel value={activeTab} index={3} className={classes.results}>
             { showPlaces && <PlacesCards places={data.searchPlaces} /> }
+            {/* TODO: remove limit when clicking this tab*/}
           </TabPanel>
       </div>
       </Container>
@@ -141,7 +167,7 @@ export default function SearchPane() {
 
 const SEARCH_QUERY = gql`
 query searchResults ($input:String!) {
-    searchPeople(input:$input, first:2){
+    searchPeople(input:$input, first:3){
         name  
         verseCount
         slug
@@ -151,7 +177,7 @@ query searchResults ($input:String!) {
             osisRef
         }
     }
-    searchPlaces(input:$input, first:2){
+    searchPlaces(input:$input, first:3){
         name
         verseCount
         slug
@@ -161,7 +187,7 @@ query searchResults ($input:String!) {
             osisRef
         }
     }              
-    searchVerses(input:$input, first:10){
+    searchVerses(input:$input, first:11){
         verseText  
         verseId
         fullRef

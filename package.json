@@ -45,7 +45,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "gatsby build",
-    "develop": "gatsby develop",
+    "develop": "gatsby develop -p 8001",
     "start": "npm run develop",
     "format": "prettier --write \"src/**/*.js\""
   },
