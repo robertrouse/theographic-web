@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { Location } from '@reach/router';
 import { Link } from 'gatsby';
 import PropTypes from 'prop-types';
-import { useQuery, fetchMore } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box, Button } from '@material-ui/core';
-import { Search as SearchIcon, Cancel as CancelIcon, KeyboardArrowRight} from '@material-ui/icons';
+import { Search as SearchIcon, Cancel as CancelIcon, KeyboardArrowRight, SwitchVideo} from '@material-ui/icons';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
@@ -47,15 +48,32 @@ function a11yProps(index) {
 export default function SearchPane() {
 
   const classes = useStyles();
+  const fetchVerses = () => {
+    // need some logic here to check if last one reached and if tabs switched, etc.
+    fetchMore({
+      variables: {
+        versesLimit: 10,
+        versesOffset: data.searchVerses.length
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return Object.assign({}, prev, {
+          searchVerses: [...prev.searchVerses, ...fetchMoreResult.searchVerses]
+        });
+      }
+    })
+  }
+
   const [activeTab, setTab] = useState(0);
   // add logic to run verses fetch and check for existing length (can double offset on second click)
   const updateTabs = ( event, newTab ) => { 
     setTab( newTab ) ;
-    if (newTab === 2) {
+    if (newTab === 1) { fetchVerses() }
+    if (newTab === 2 && data.searchPeople.length <= 3) {
       fetchMore({
         variables: {
           peopleLimit: -1,
-          peopleOffset: 3
+          peopleOffset: data.searchPeople.length
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -66,11 +84,11 @@ export default function SearchPane() {
       })
     }
 
-    if (newTab === 3) {
+    if (newTab === 3 && data.searchPlaces.length <= 3) {
       fetchMore({
         variables: {
           placesLimit: -1,
-          placesOffset: 3
+          placesOffset: data.searchPlaces.length
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -95,10 +113,11 @@ export default function SearchPane() {
         "peopleOffset": 0,
         "placesLimit": 3,
         "placesOffset": 0,
-        "versesLimit": 11,
+        "versesLimit": 10,
         "versesOffset": 0
       },
     skip: searchInput.length < 3,
+    // notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network"
   });
 
@@ -188,30 +207,36 @@ export default function SearchPane() {
               </Button>
             }
 
-            { showVerses && <VersesCards verses={data.searchVerses.slice(0,10)} /> }  
-{/* This also has to go in the verses cards list to fetch more. */}
-            { showPeople && 
+            { showVerses && <VersesCards verses={data.searchVerses} /> }  
+{/* TODO: work on maintaining scroll position */}
+            { showVerses && 
               <Button 
                 disableRipple 
                 color = "primary" 
-                onClick = {() => {setTab(1)}}
+                onClick = { () => fetchVerses() }
               >
-                More Verses<KeyboardArrowRight />
+                Load More
               </Button>
             }
 
           </TabPanel> 
           <TabPanel value={activeTab} index={1} className={classes.results}>
             { showVerses && <VersesCards verses={data.searchVerses} /> }   
-            {/* TODO: add "more" button to show next 10 on click.*/}
+            { showVerses && 
+              <Button 
+                disableRipple 
+                color = "primary" 
+                onClick = { () => fetchVerses() }
+              >
+                Load More
+              </Button>
+            }
           </TabPanel>
           <TabPanel value={activeTab} index={2} className={classes.results}>
             { showPeople && <PeopleCards people={data.searchPeople} /> }
-            {/* TODO: remove limit when clicking this tab*/}
           </TabPanel>
           <TabPanel value={activeTab} index={3} className={classes.results}>
             { showPlaces && <PlacesCards places={data.searchPlaces} /> }
-            {/* TODO: remove limit when clicking this tab*/}
           </TabPanel>
       </div>
       </Container>
