@@ -117,7 +117,7 @@ export default function SearchPane() {
         "versesOffset": 0
       },
     skip: searchInput.length < 3,
-    // notifyOnNetworkStatusChange: true,
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network"
   });
 

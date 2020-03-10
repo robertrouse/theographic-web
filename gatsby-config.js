@@ -34,13 +34,5 @@ module.exports = {
         icon: 'src/images/og-square-100.png', 
       },
     },
-    {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: "UA-34750687-3",
-        head: false,
-        respectDNT: true,
-      },
-    },
   ],
 }
