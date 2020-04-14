@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, graphql } from 'gatsby';
 import Layout from '../components/layout.js';
-import '../components/layout.css'
+import '../components/layout.css';
 
 function Books(props) {
   const bookData = props.bookData.books;

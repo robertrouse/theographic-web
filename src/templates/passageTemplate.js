@@ -1,6 +1,7 @@
 import React from 'react'
 import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
+import Markdown from 'react-markdown'
 import '../components/layout.css'
 
 class Passage extends React.Component {
@@ -28,7 +29,7 @@ class Passage extends React.Component {
                 {para.verses.map(verse => (
                   <>
                   {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
-                  {verse.verseText}
+                  <Markdown source={verse.mdText} />
                   </>
                 ))}
               </p>
@@ -58,7 +59,7 @@ query ($lookupName: String!) {
           id
           verses(orderBy: verseNum_asc) {
             verseNum
-            verseText
+            mdText
             osisRef
           }
         }
