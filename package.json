@@ -24,6 +24,7 @@
     "gatsby-source-graphql": "^2.4.0",
     "gatsby-transformer-sharp": "^2.4.4",
     "graphql": "^14.6.0",
+    "isomorphic-fetch": "^2.2.1",
     "mapbox-gl": "^1.9.1",
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",
