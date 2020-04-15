@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'Theographic',
+    title: 'Theographic: A Knowledge Graph of the Bible',
   },
   plugins: [
     {

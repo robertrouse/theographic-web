@@ -29,7 +29,11 @@ class Passage extends React.Component {
                 {para.verses.map(verse => (
                   <>
                   {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
-                  <Markdown source={verse.mdText} />
+                  <Markdown 
+                    source={verse.mdText} 
+                    disallowedTypes={['paragraph']}
+                    unwrapDisallowed={true}
+                  />
                   </>
                 ))}
               </p>

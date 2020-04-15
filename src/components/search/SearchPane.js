@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box, Button } from '@material-ui/core';
-import { Search as SearchIcon, Cancel as CancelIcon, KeyboardArrowRight, SwitchVideo} from '@material-ui/icons';
+import { Search as SearchIcon, Cancel as CancelIcon, KeyboardArrowRight} from '@material-ui/icons';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
