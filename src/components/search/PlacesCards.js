@@ -24,8 +24,8 @@ class PlacesCard extends React.Component {
                 {this.props.places.map(place => {
                     // startEndArray = verse.verseText.split(this.props.query);
                     return (
-                        <Grid item>
-                            <Card key={"container" + place.slug}>
+                        <Grid item key={"container" + place.slug}>
+                            <Card>
                                 <CardContent>
                                     <Link to={'/place/' + place.slug}>
                                         <Typography>{place.name}</Typography>

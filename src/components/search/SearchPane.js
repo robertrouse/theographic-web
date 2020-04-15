@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { Location } from '@reach/router';
+import { Link } from 'gatsby';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box } from '@material-ui/core';
-import { Search as SearchIcon, Cancel as CancelIcon} from '@material-ui/icons';
+import { Typography, Container, Paper, InputBase, IconButton, LinearProgress, Tabs, Tab, Box, Button } from '@material-ui/core';
+import { Search as SearchIcon, Cancel as CancelIcon, KeyboardArrowRight} from '@material-ui/icons';
 
 import SearchHints from './SearchHints';
 import PeopleCards from './PeopleCards';
@@ -46,23 +48,85 @@ function a11yProps(index) {
 export default function SearchPane() {
 
   const classes = useStyles();
+  const fetchVerses = () => {
+    // need some logic here to check if last one reached and if tabs switched, etc.
+    fetchMore({
+      variables: {
+        versesLimit: 10,
+        versesOffset: data.searchVerses.length
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return Object.assign({}, prev, {
+          searchVerses: [...prev.searchVerses, ...fetchMoreResult.searchVerses]
+        });
+      }
+    })
+  }
+
   const [activeTab, setTab] = useState(0);
-  const updateTabs = ( event, newTab ) => { setTab( newTab ) };
+  // add logic to run verses fetch and check for existing length (can double offset on second click)
+  const updateTabs = ( event, newTab ) => { 
+    setTab( newTab ) ;
+    if (newTab === 1) { fetchVerses() }
+    if (newTab === 2 && data.searchPeople.length <= 3) {
+      fetchMore({
+        variables: {
+          peopleLimit: -1,
+          peopleOffset: data.searchPeople.length
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return Object.assign({}, prev, {
+            searchPeople: [...prev.searchPeople, ...fetchMoreResult.searchPeople]
+          });
+        }
+      })
+    }
+
+    if (newTab === 3 && data.searchPlaces.length <= 3) {
+      fetchMore({
+        variables: {
+          placesLimit: -1,
+          placesOffset: data.searchPlaces.length
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return Object.assign({}, prev, {
+            searchPlaces: [...prev.searchPlaces, ...fetchMoreResult.searchPlaces]
+          });
+        }
+      })
+    }
+    
+  };
   const [searchInput, setSearch] = useState('');
   const searchUpdate = ( newInput = '' ) => { 
       setSearch( newInput) ;
       setTab( 0 );
     };
 
-  const { loading, data } = useQuery(SEARCH_QUERY, { 
-    variables: { "input": searchInput },
+  const { loading, data, fetchMore } = useQuery(SEARCH_QUERY, { 
+    variables: { 
+        "input": searchInput,
+        "peopleLimit": 3,
+        "peopleOffset": 0,
+        "placesLimit": 3,
+        "placesOffset": 0,
+        "versesLimit": 10,
+        "versesOffset": 0
+      },
     skip: searchInput.length < 3,
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network"
   });
 
   const showVerses = (data && data.searchVerses.length > 0 && !loading);
   const showPeople = (data && data.searchPeople.length > 0 && !loading);
   const showPlaces = (data && data.searchPlaces.length > 0 && !loading);
   const showAll = (showVerses || showPeople || showPlaces);
+  const showOne = [showVerses, showPeople, showPlaces].filter(Boolean).length === 1;
+ 
   const showNone = (searchInput.length > 2 && !showAll && !loading);
 
     return (
@@ -89,7 +153,7 @@ export default function SearchPane() {
         <div>
           {loading && <LinearProgress color="secondary"/>}
 
-          {showAll && 
+          {showAll && !showOne &&
             <Box className={classes.results}>
               <Tabs 
                 value={activeTab} 
@@ -106,7 +170,6 @@ export default function SearchPane() {
               </Tabs>
             </Box> 
           }
- 
 
           {showNone &&
             <div className={classes.results}>
@@ -121,12 +184,53 @@ export default function SearchPane() {
           }
 
           <TabPanel value={activeTab} index={0} className={classes.results}>
-            { showPeople && <PeopleCards people={data.searchPeople} /> }
-            { showPlaces && <PlacesCards places={data.searchPlaces} /> }
-            { showVerses && <VersesCards verses={data.searchVerses} /> }   
+            { showPeople && <PeopleCards people={data.searchPeople.slice(0,2)} /> }
+            { showPeople && data.searchPeople[2] &&
+              // needs an input component somewhere here to pass the value prop to updateTabs
+              <Button 
+                disableRipple 
+                color = "primary" 
+                onClick = { (e) => { updateTabs(e,2) } }
+              >
+                More People<KeyboardArrowRight />
+              </Button>
+            }
+
+            { showPlaces && <PlacesCards places={data.searchPlaces.slice(0,2)} /> }
+            { showPeople && data.searchPlaces[2] &&
+              <Button 
+                disableRipple 
+                color = "primary" 
+                onClick = { (e) => { updateTabs(e,3) } }
+              >
+                More Places<KeyboardArrowRight />
+              </Button>
+            }
+
+            { showVerses && <VersesCards verses={data.searchVerses} /> }  
+{/* TODO: work on maintaining scroll position */}
+            { showVerses && 
+              <Button 
+                disableRipple 
+                color = "primary" 
+                onClick = { () => fetchVerses() }
+              >
+                Load More
+              </Button>
+            }
+
           </TabPanel> 
           <TabPanel value={activeTab} index={1} className={classes.results}>
             { showVerses && <VersesCards verses={data.searchVerses} /> }   
+            { showVerses && 
+              <Button 
+                disableRipple 
+                color = "primary" 
+                onClick = { () => fetchVerses() }
+              >
+                Load More
+              </Button>
+            }
           </TabPanel>
           <TabPanel value={activeTab} index={2} className={classes.results}>
             { showPeople && <PeopleCards people={data.searchPeople} /> }
@@ -140,8 +244,16 @@ export default function SearchPane() {
   }
 
 const SEARCH_QUERY = gql`
-query searchResults ($input:String!) {
-    searchPeople(input:$input, first:2){
+query searchResults (
+  $input:String!,
+  $peopleLimit:Int!,
+  $peopleOffset:Int!,
+  $placesLimit:Int!,
+  $placesOffset:Int!,
+  $versesLimit:Int!,
+  $versesOffset:Int!
+) {
+    searchPeople(input:$input, first:$peopleLimit, offset:$peopleOffset){
         name  
         verseCount
         slug
@@ -151,7 +263,7 @@ query searchResults ($input:String!) {
             osisRef
         }
     }
-    searchPlaces(input:$input, first:2){
+    searchPlaces(input:$input, first:$placesLimit, offset:$placesOffset){
         name
         verseCount
         slug
@@ -161,7 +273,7 @@ query searchResults ($input:String!) {
             osisRef
         }
     }              
-    searchVerses(input:$input, first:10){
+    searchVerses(input:$input, first:$versesLimit, offset:$versesOffset){
         verseText  
         verseId
         fullRef

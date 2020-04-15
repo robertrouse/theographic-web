@@ -20,10 +20,10 @@ class VersesCards extends React.Component {
                 {this.props.verses.map(verse => {
                     // startEndArray = verse.verseText.split(this.props.query);
                     return (
-                        <Grid item>
-                            <Card key={"container" + verse.verseId}>
+                        <Grid item key={"container" + verse.verseId}>
+                            <Card>
                                 <CardContent>
-                                    <Link to={verse.osisRef.toLowerCase().split('.')[0] + '/#' + verse.osisRef}>
+                                    <Link to={'/' + verse.osisRef.toLowerCase().split('.')[0] + '/#' + verse.osisRef}>
                                         <Typography>{verse.fullRef}</Typography>
                                     </Link>
                                     <Typography>{verse.verseText}</Typography>

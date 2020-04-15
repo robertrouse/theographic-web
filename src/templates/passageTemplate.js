@@ -1,6 +1,7 @@
 import React from 'react'
 import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
+import Markdown from 'react-markdown'
 import '../components/layout.css'
 
 class Passage extends React.Component {
@@ -28,23 +29,11 @@ class Passage extends React.Component {
                 {para.verses.map(verse => (
                   <>
                   {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
-                  {verse.tokens.map(token => {
-                    if (token.paragraph[0].id === para.id )
-                    return (
-                      <>
-                        {" "}{token.oParen && "("}
-                        {
-                        token.italic ? <i>{token.token}</i> :
-                        token.person.length > 0 ? <Link to={'/person/' + token.person[0].slug}>{token.token}</Link> :
-                        token.place.length > 0 ? <Link to={'/place/' + token.place[0].slug}>{token.token}</Link> :
-                        token.token
-                        }
-                        {token.punc}{token.cParen && ")"}
-                      </>
-                      )
-                    return false
-                    }
-                  )}
+                  <Markdown 
+                    source={verse.mdText} 
+                    disallowedTypes={['paragraph']}
+                    unwrapDisallowed={true}
+                  />
                   </>
                 ))}
               </p>
@@ -74,25 +63,8 @@ query ($lookupName: String!) {
           id
           verses(orderBy: verseNum_asc) {
             verseNum
-            verseText
+            mdText
             osisRef
-            tokens (orderBy: versePos_asc, filter:{versePos_gte:0}){
-              token
-              oParen
-              cParen
-              punc
-              italic
-              versePos
-              paragraph {
-                id
-              }
-              person {
-                slug
-              }
-              place {
-                slug
-              }
-            }
           }
         }
       }

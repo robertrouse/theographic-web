@@ -20,8 +20,8 @@ class PeopleCards extends React.Component {
                 {this.props.people.map(person => {
                     // startEndArray = verse.verseText.split(this.props.query);
                     return (
-                        <Grid item>
-                            <Card key={"container" + person.slug}>
+                        <Grid item key={"container" + person.slug}>
+                            <Card>
                                 <CardContent>
                                     <Link to={'/person/' + person.slug}>
                                         <Typography>{person.name}</Typography>

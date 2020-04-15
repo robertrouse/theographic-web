@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: 'Theographic',
+    title: 'Theographic: A Knowledge Graph of the Bible',
   },
   plugins: [
     {
@@ -25,21 +25,13 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: 'gatsby-starter-default',
-        short_name: 'starter',
+        name: 'Theographic',
+        short_name: 'Theographic',
         start_url: '/',
         background_color: '#663399',
         theme_color: '#663399',
         display: 'minimal-ui',
         icon: 'src/images/og-square-100.png', 
-      },
-    },
-    {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: "UA-34750687-3",
-        head: false,
-        respectDNT: true,
       },
     },
   ],

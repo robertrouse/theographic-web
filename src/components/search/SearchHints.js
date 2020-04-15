@@ -3,7 +3,7 @@ import { Link } from 'gatsby';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { FormatQuote, KeyboardArrowRight } from '@material-ui/icons';
-import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button, Typography } from '@material-ui/core';
+import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@material-ui/core';
 
 export default function SearchHints ({ searchUpdate }) {
     const classes = useStyles();
@@ -18,9 +18,9 @@ export default function SearchHints ({ searchUpdate }) {
                     primary="Bible references"
                     secondary={<>
                         Examples:&nbsp;
-                        <Link to={'#prov_25_2'} onClick={() => {searchUpdate('Prov 25:2')}}>Prov&nbsp;25:2</Link>{', '}
-                        <Link to={'#acts_13'} onClick={() => {searchUpdate('Acts 13')}}>Acts&nbsp;13</Link>{', '}
-                        <Link to={'#john_3_16'} onClick={() => {searchUpdate('John 3:16')}}>John&nbsp;3:16</Link>
+                        <Link to={'/?query=Prov%2025:2'} onClick={() => {searchUpdate('Prov 25:2')}}>Prov&nbsp;25:2</Link>{', '}
+                        <Link to={'/?query=Acts%2013'} onClick={() => {searchUpdate('Acts 13')}}>Acts&nbsp;13</Link>{', '}
+                        <Link to={'/?query=John%203:16'} onClick={() => {searchUpdate('John 3:16')}}>John&nbsp;3:16</Link>
                     </>}
                 />
                 <Button component={Link} to="/passages" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
@@ -36,8 +36,8 @@ export default function SearchHints ({ searchUpdate }) {
                     primary="Words or phrases" 
                     secondary={<>
                         Examples:&nbsp;
-                        <Link to={'#in_the_beginning'} onClick={() => {searchUpdate('in the beginning')}}>"in the beginning"</Link>{', '}
-                        <Link to={'#search_the_scriptures'} onClick={() => {searchUpdate('search the scriptures')}}>"search the scriptures"</Link>
+                        <Link to={'/?query=in%20the%20beginning'} onClick={() => {searchUpdate('in the beginning')}}>"in the beginning"</Link>{', '}
+                        <Link to={'/?query=search%20the%20scriptures'} onClick={() => {searchUpdate('search the scriptures')}}>"search the scriptures"</Link>
                     </>}
                 />
             </ListItem>
@@ -53,9 +53,9 @@ export default function SearchHints ({ searchUpdate }) {
                     primary="People" 
                     secondary={<>
                         Examples:&nbsp;
-                        <Link to={'#abraham'} onClick={() => {searchUpdate('Abraham')}}>Abraham</Link>{', '}
-                        <Link to={'#saul'} onClick={() => {searchUpdate('Saul')}}>Saul</Link>{', '}
-                        <Link to={'#zechariah'} onClick={() => {searchUpdate('Zechariah')}}>Zechariah</Link>
+                        <Link to={'/?query=Abraham'} state={{ searchInput: 'Abraham' }} onClick={() => {searchUpdate('Abraham')}}>Abraham</Link>{', '}
+                        <Link to={'/?query=Saul'} onClick={() => {searchUpdate('Saul')}}>Saul</Link>{', '}
+                        <Link to={'/?query=Zechariah'} onClick={() => {searchUpdate('Zechariah')}}>Zechariah</Link>
                     </>}
                 />
                 <Button component={Link} to="/people" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
@@ -72,8 +72,8 @@ export default function SearchHints ({ searchUpdate }) {
                     primary="Places"
                     secondary={<>
                         Examples:&nbsp;
-                        <Link to={'#bethlehem'} onClick={() => {searchUpdate('Bethlehem')}}>Bethlehem</Link>,&nbsp;
-                        <Link to={'#antioch'} onClick={() => {searchUpdate('Antioch')}}>Antioch</Link>
+                        <Link to={'/?query=Bethlehem'} onClick={() => {searchUpdate('Bethlehem')}}>Bethlehem</Link>,&nbsp;
+                        <Link to={'/?query=Antioch'} onClick={() => {searchUpdate('Antioch')}}>Antioch</Link>
                     </>}
                 />
                 <Button component={Link} to="/places" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
