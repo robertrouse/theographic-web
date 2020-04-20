@@ -21,14 +21,14 @@ class Passage extends React.Component {
           {data.neo4j.Book[0].chapters.map(chapter=>(
             <>
             <div className="sticky-sub" >
-              <h3 id={chapter.osisRef}>Chapter {chapter.chapterNum}</h3>
+              <h3 id={chapter.osisRef} className='chapter-title'>Chapter {chapter.chapterNum}</h3>
             </div>
             
             {chapter.paragraphs.map(para => (
               <p>
                 {para.verses.map(verse => (
                   <>
-                  {" "}<span className="verse-num" id={verse.osisRef}>{verse.verseNum}</span>
+                  {" "}<span className='verse-num' id={verse.osisRef}>{verse.verseNum}</span>
                   <Markdown 
                     source={verse.mdText} 
                     disallowedTypes={['paragraph']}
