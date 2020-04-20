@@ -282,12 +282,13 @@ a:hover {
 }
 
 .verse-num{
-  background:lightgray;
-  border-radius:15px;
-  padding: 3px 8px 3px 8px;
+  padding: 118px 4px 0 0;
   position: relative;
   width:20px;
-  color:#777777;
+  color:#aaaaaa;
+  font-size: 11px;
+  vertical-align: top;
+  margin-top: -120px;
 }
 
 
