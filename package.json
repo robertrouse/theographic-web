@@ -11,7 +11,7 @@
     "@mdx-js/react": "^1.5.8",
     "@urbica/react-map-gl": "^1.13.0",
     "apollo-boost": "^0.4.7",
-    "gatsby": "^2.20.20",
+    "gatsby": "^2.20.31",
     "gatsby-image": "^2.3.2",
     "gatsby-plugin-google-analytics": "^2.2.2",
     "gatsby-plugin-manifest": "^2.3.3",
@@ -46,6 +46,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "gatsby build",
+    "build": "GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES=true gatsby build --log-pages",
     "develop": "gatsby develop -p 8001",
     "start": "npm run develop",
     "format": "prettier --write \"src/**/*.js\""
