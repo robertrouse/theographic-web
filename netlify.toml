@@ -1,2 +1,6 @@
 [[plugins]]
   package = "netlify-plugin-gatsby-cache"
+  package = "@netlify/plugin-sitemap"
+
+  [plugins.inputs]
+  buildDir = "public"
