@@ -61,7 +61,7 @@ query ($lookupName: String!) {
         osisRef
         paragraphs(orderBy: id_asc, filter:{introFlag:false}) {
           id
-          verses(orderBy: verseNum_asc) {
+          verses(orderBy: verseId_asc) {
             verseNum
             mdText
             osisRef
