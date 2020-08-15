@@ -102,7 +102,7 @@ export default function SearchPane() {
   };
 
   const search = queryString.parse(useLocation().search).q;
-  const [searchInput, setSearch] = useState(search);
+  const [searchInput, setSearch] = useState(search ? search : '');
   const searchUpdate = ( newInput = '' ) => { 
       setSearch( newInput) ;
       setTab( 0 );
@@ -119,7 +119,7 @@ export default function SearchPane() {
         "versesLimit": 10,
         "versesOffset": 0
       },
-    skip: !searchInput || searchInput.length < 3,
+    skip: searchInput.length < 3,
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network"
   });
