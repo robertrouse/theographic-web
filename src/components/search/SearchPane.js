@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Location } from '@reach/router';
-import { Link } from 'gatsby';
+import { useLocation, navigate } from '@reach/router';
+import queryString from 'query-string';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
@@ -100,10 +100,13 @@ export default function SearchPane() {
     }
     
   };
-  const [searchInput, setSearch] = useState('');
+
+  const search = queryString.parse(useLocation().search).q;
+  const [searchInput, setSearch] = useState(search);
   const searchUpdate = ( newInput = '' ) => { 
       setSearch( newInput) ;
       setTab( 0 );
+      navigate(`/?q=${newInput}`);
     };
 
   const { loading, data, fetchMore } = useQuery(SEARCH_QUERY, { 
@@ -197,7 +200,7 @@ export default function SearchPane() {
             }
 
             { showPlaces && <PlacesCards places={data.searchPlaces.slice(0,2)} /> }
-            { showPeople && data.searchPlaces[2] &&
+            { showPlaces && data.searchPlaces[2] &&
               <Button 
                 disableRipple 
                 color = "primary" 

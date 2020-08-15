@@ -6,10 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { Link } from 'gatsby';
 
 class PlacesCard extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
+
     render() {
 
         return (

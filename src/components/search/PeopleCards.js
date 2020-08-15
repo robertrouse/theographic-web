@@ -17,6 +17,7 @@ class PeopleCards extends React.Component {
                 <Grid item>
                     <Typography variant="button" display="block" >People</Typography>
                 </Grid>
+                
                 {this.props.people.map(person => {
                     // startEndArray = verse.verseText.split(this.props.query);
                     return (
