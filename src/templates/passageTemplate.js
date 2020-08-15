@@ -62,6 +62,7 @@ query ($lookupName: String!) {
         paragraphs(orderBy: id_asc, filter:{introFlag:false}) {
           id
           verses(orderBy: verseId_asc) {
+            verseId            
             verseNum
             mdText
             osisRef
