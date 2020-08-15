@@ -119,7 +119,7 @@ export default function SearchPane() {
         "versesLimit": 10,
         "versesOffset": 0
       },
-    skip: searchInput.length < 3,
+    skip: !searchInput || searchInput.length < 3,
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network"
   });
