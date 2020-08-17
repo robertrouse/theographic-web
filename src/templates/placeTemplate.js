@@ -3,7 +3,7 @@ import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import Markdown from 'react-markdown'
 import MapGL, { Marker } from '@urbica/react-map-gl'
-import '../components/layout.css'
+import Layout from '../components/layout.js'
 import 'mapbox-gl/dist/mapbox-gl.css';
 import EventList from '../components/EventList'
 
@@ -28,7 +28,7 @@ class Place extends React.Component {
     };
 
     return (
-      <>
+      <Layout>
         <Helmet>
           <meta charSet="utf-8"/>
           <title>{place.name}</title>
@@ -63,7 +63,7 @@ class Place extends React.Component {
           }  
           <div className="footer"/>
         </div>
-      </>
+      </Layout>
     )
   }
 }

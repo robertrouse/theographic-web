@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-import { StaticQuery, graphql } from 'gatsby'
+import { StaticQuery, graphql, Link } from 'gatsby'
+import '../components/layout.css'
 
 // import Header from './header'
 
@@ -37,6 +38,13 @@ const Layout = ({ children }) => (
         >
           {children}
         </div>
+        <footer id="nav-footer">
+          <nav>
+            <Link to={`/`} >Search</Link> &nbsp; &nbsp; | &nbsp; &nbsp;  
+            <Link to={`/browse/`}>Index</Link> &nbsp; &nbsp; | &nbsp; &nbsp; 
+            <Link to={`/about/`}>About</Link>
+          </nav>
+        </footer>
       </>
     )}
   />

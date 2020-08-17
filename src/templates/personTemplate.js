@@ -2,7 +2,7 @@ import React from 'react'
 import { graphql, Link } from 'gatsby'
 import Markdown from 'react-markdown'
 import { Helmet } from 'react-helmet'
-import '../components/layout.css'
+import Layout from '../components/layout.js'
 import EventList from '../components/EventList'
   
 class Person extends React.Component {
@@ -11,7 +11,7 @@ class Person extends React.Component {
     const {data} = this.props
     const person = data.neo4j.Person[0]
     return (
-      <>
+      <Layout>
         <Helmet>
           <meta charSet="utf-8"/>
           <title>{person.name}</title>
@@ -112,7 +112,7 @@ class Person extends React.Component {
           } 
           <div className="footer"/>
         </div>
-      </>
+      </Layout>
     )
   }
 }

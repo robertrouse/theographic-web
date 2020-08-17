@@ -2,13 +2,13 @@ import React from 'react'
 import { graphql } from 'gatsby'
 import { Helmet } from 'react-helmet'
 import Markdown from 'react-markdown'
-import '../components/layout.css'
+import Layout from '../components/layout.js'
 
 class Passage extends React.Component {
   render() {
     const { data } = this.props
     return (
-      <>
+      <Layout>
         <Helmet>
           <meta charSet="utf-8" />
           <title>{data.neo4j.Book[0].title}</title>
@@ -42,7 +42,7 @@ class Passage extends React.Component {
           ))}
           <div className="footer" />
         </div>
-      </>
+      </Layout>
     )
   }
 }

@@ -1,14 +1,14 @@
 import React from 'react'
 import { graphql, Link } from 'gatsby'
 import { Helmet } from 'react-helmet'
-import '../components/layout.css'
+import Layout from '../components/layout.js'
 
 class Period extends React.Component {
 
   render() {
     const { data } = this.props
     return (
-      <>
+      <Layout>
         <Helmet>
           <meta charSet="utf-8" />
           <title>{data.neo4j.EventGroup[0].title}</title>
@@ -59,7 +59,7 @@ class Period extends React.Component {
           ))}
           <div className="footer" />
         </div>
-      </>
+      </Layout>
     )
   }
 }
