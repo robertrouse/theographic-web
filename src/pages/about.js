@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
-import { Link, graphql } from 'gatsby';
+import { Link } from 'gatsby';
 import Layout from '../components/layout.js';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Container, Paper,  Tabs, Tab, Box } from '@material-ui/core';
-import PropTypes from 'prop-types';
+import { Typography, Container, Box } from '@material-ui/core';
 
-export default function BrowseIndex ()  {
-  const classes = useStyles();
-  const [activeTab, setTab] = useState(0);
+export default function About ()  {
 
   return(
     <Layout>
-      <Container maxWidth="lg">
+      <Container maxWidth="md">
         <h1>About Theographic</h1>
+        <p>
+        Theographic is a knowledge graph of the Bible, weaving data about people, places, and periods of time into the tapestry of God's story. 
+        This data enables smarter search algorithms, new apps, and exciting research potential. It's an open-source project to share information 
+        about the scriptures in our digital world.
+        </p>
       </Container>
 
       <div className="footer"></div>
     </Layout>
   )
 }
-
-const useStyles = makeStyles(theme => ({
-  tab:{
-    minWidth:0,
-  }
-}));

@@ -3,11 +3,12 @@ import { Link } from 'gatsby';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { FormatQuote, KeyboardArrowRight } from '@material-ui/icons';
-import { List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@material-ui/core';
+import { Grid, List, ListSubheader, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@material-ui/core';
 
 export default function SearchHints ({ searchUpdate }) {
     const classes = useStyles();
     return (
+        <>
         <List subheader={<ListSubheader>Try searching for...</ListSubheader>}>
             <ListItem alignItems="flex-start">
                 <ListItemIcon className={classes.icon} >
@@ -23,7 +24,6 @@ export default function SearchHints ({ searchUpdate }) {
                         <Link to={'/?q=John%203:16'} onClick={() => {searchUpdate('John 3:16')}}>John&nbsp;3:16</Link>
                     </>}
                 />
-                <Button component={Link} to="/passages" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
             </ListItem>
 
             <Divider variant="middle"/>
@@ -58,7 +58,6 @@ export default function SearchHints ({ searchUpdate }) {
                         <Link to={'/?q=Zechariah'} onClick={() => {searchUpdate('Zechariah')}}>Zechariah</Link>
                     </>}
                 />
-                <Button component={Link} to="/people" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
             </ListItem>
 
             <Divider variant="middle"/>
@@ -76,9 +75,18 @@ export default function SearchHints ({ searchUpdate }) {
                         <Link to={'/?q=Antioch'} onClick={() => {searchUpdate('Antioch')}}>Antioch</Link>
                     </>}
                 />
-                <Button component={Link} to="/places" disableRipple color="primary" >Browse<KeyboardArrowRight /></Button>
             </ListItem>
         </List>
+        <Grid container justify = "center" style={{ paddingTop: "30px" }}>
+            <Button 
+                component={Link} to="/browse" 
+                disableRipple 
+                color="primary" 
+                variant="outlined"
+            > Browse the Full Index <KeyboardArrowRight />
+            </Button>
+        </Grid>
+        </>
     );
 }
 
