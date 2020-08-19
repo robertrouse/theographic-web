@@ -58,7 +58,7 @@ export default function BrowseIndex({ data })  {
   return(
     <Layout>
       <Container maxWidth="md">
-        <Box>
+        <Box className="sticky-title">
           <Tabs 
             value={activeTab} 
             aria-label="browse tabs"
