@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, graphql } from 'gatsby';
 import Layout from '../components/layout.js';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Container, Tabs, Tab, AppBar, Box } from '@material-ui/core';
+import { Typography, Container, Tabs, Tab, Box } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
 function TabPanel(props) {
@@ -58,7 +58,7 @@ export default function BrowseIndex({ data })  {
   return(
     <Layout>
       <Container maxWidth="md">
-        <AppBar position="fixed">
+        <Box>
           <Tabs 
             value={activeTab} 
             aria-label="browse tabs"
@@ -70,7 +70,7 @@ export default function BrowseIndex({ data })  {
             <Tab label="People" className={classes.tab} {...a11yProps(1)} disableRipple />
             <Tab label="Places" className={classes.tab} {...a11yProps(2)} disableRipple />
           </Tabs>
-        </AppBar>
+        </Box>
         <TabPanel value={activeTab} index={0} >
           <h1>Books of the Bible</h1>
           {data.neo4j.testaments.map(testament => (
