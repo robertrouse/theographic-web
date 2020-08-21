@@ -43,19 +43,18 @@ function groupBy(xs, key) {
 }
 
 export default function BrowseIndex({ data })  {
-  const classes = useStyles();
-  const [activeTab, setTab] = useState(0);
-  const handleChange = (event, newValue) => {
-    setTab(newValue);
-  };
+    const classes = useStyles();
+    const [activeTab, setTab] = useState(0);
+    const handleChange = (event, newValue) => {
+      setTab(newValue);
+    };
 
-  const peopleAlpha = data.neo4j.people.map(person => { return {letter: person.name.charAt(0).toUpperCase(), ...person}});
-  const people = groupBy(peopleAlpha, `letter`);
+    const peopleAlpha = data.neo4j.people.map(person => { return {letter: person.name.charAt(0).toUpperCase(), ...person}});
+    const people = groupBy(peopleAlpha, `letter`);
 
-  const placesAlpha = data.neo4j.places.map(place => { return {letter: place.name.charAt(0).toUpperCase(), ...place}});
-  const places = groupBy(placesAlpha, `letter`);
-
-  return(
+    const placesAlpha = data.neo4j.places.map(place => { return {letter: place.name.charAt(0).toUpperCase(), ...place}});
+    const places = groupBy(placesAlpha, `letter`);
+    return(
     <Layout>
       <Container maxWidth="md">
         <Box className="sticky-title">
