@@ -78,7 +78,7 @@ ul {
 	margin-block-end: 0.6em;
 }
 
-li {
+ul li {
   list-style: disc;
   padding: 0.5em 0.1em 0.5em 0.1em;
 }
@@ -278,6 +278,7 @@ li {
   width: 1000px;
 }
 
+
 .verse-row {
   display: -webkit-box;
   display: -webkit-flex;
@@ -285,6 +286,19 @@ li {
   display: flex;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.verse {
+  padding-left: 40px;
+}
+
+.verse li {
+  margin: 0 0 0.5rem 0;
+  position: relative;
+}
+
+.verse li::marker {
+  color: darkgray;
 }
 
 .book-name {

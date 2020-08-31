@@ -20,24 +20,22 @@ class Passage extends React.Component {
 
           {data.neo4j.Book[0].chapters.map(chapter=>(
             <>
-            <div className="sticky-sub" >
-              <h3 id={chapter.osisRef} className='chapter-title'>Chapter {chapter.chapterNum}</h3>
-            </div>
-            
-            {chapter.paragraphs.map(para => (
-              <p>
-                {para.verses.map(verse => (
+              <div className="sticky-sub" >
+                <h3 id={chapter.osisRef} className='chapter-title'>Chapter {chapter.chapterNum}</h3>
+              </div>
+              <ol className='verse' >
+                {chapter.verses.map(verse => (
                   <>
-                  {" "}<span className='verse-num' id={verse.osisRef}>{verse.verseNum}</span>
-                  <Markdown 
-                    source={verse.mdText} 
-                    disallowedTypes={['paragraph']}
-                    unwrapDisallowed={true}
-                  />
+                  <li id={verse.osisRef}>
+                    <Markdown 
+                      source={verse.mdText} 
+                      disallowedTypes={['paragraph']}
+                      unwrapDisallowed={true}
+                    />
+                  </li>
                   </>
                 ))}
-              </p>
-            ))}
+              </ol>
             </>
           ))}
           <div className="footer" />
@@ -50,27 +48,23 @@ class Passage extends React.Component {
 export default Passage
 
 export const pageQuery = graphql`
-query ($lookupName: String!) {
-  neo4j {
-    Book(orderBy: bookOrder_asc, filter: {slug: $lookupName}) {
+query($lookupName: String!) {
+  neo4j{
+    Book(orderBy: bookOrder_asc, filter: { slug: $lookupName }) {
       title
       bookOrder
       chapters(orderBy: chapterNum_asc) {
         title
         chapterNum
         osisRef
-        paragraphs(orderBy: id_asc, filter:{introFlag:false}) {
-          id
-          verses(orderBy: verseId_asc) {
-            verseId            
-            verseNum
-            mdText
-            osisRef
-          }
+        verses(orderBy: verseId_asc) {
+          verseId
+          verseNum
+          mdText
+          osisRef
         }
       }
     }
   }
 }
-
 `
