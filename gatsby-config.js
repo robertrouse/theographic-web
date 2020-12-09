@@ -2,6 +2,7 @@ module.exports = {
   siteMetadata: {
     title: 'Theographic: A Knowledge Graph of the Bible',
   },
+  flags: { QUERY_ON_DEMAND: true },
   plugins: [
     {
       resolve: "gatsby-source-graphql",
