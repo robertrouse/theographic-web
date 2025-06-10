@@ -40,7 +40,7 @@ const Layout = ({ children }) => (
         </div>
         <footer id="nav-footer">
           <nav>
-            <Link to={`/`} >Search</Link> &nbsp; &nbsp; | &nbsp; &nbsp;  
+            {/* <Link to={`/`} >Search</Link> &nbsp; &nbsp; | &nbsp; &nbsp;   */}
             <Link to={`/browse/`}>Index</Link> &nbsp; &nbsp; | &nbsp; &nbsp; 
             <Link to={`/about/`}>About</Link>
           </nav>
