@@ -6,12 +6,7 @@
 import { afterAll, describe, expect, it } from 'vitest';
 import { buildBookAliasTable } from '../src/refs/bookAliases.js';
 import { loadBooks, SKIP_REASON } from './data.js';
-import {
-  IMPLEMENTED_KINDS,
-  KIND_OWNER,
-  loadGoldenQueries,
-  runExpectation,
-} from './golden/runner.js';
+import { isImplemented, KIND_OWNER, loadGoldenQueries, runExpectation } from './golden/runner.js';
 
 const books = loadBooks();
 const queries = loadGoldenQueries();
@@ -37,9 +32,14 @@ describe.skipIf(!books)(`golden set (${queries.length} lines)`, () => {
           });
           continue;
         }
-        if (!IMPLEMENTED_KINDS.has(kind)) {
+        if (!isImplemented(kind, query)) {
           skipped.set(kind, [...(skipped.get(kind) ?? []), query.n]);
           it.skip(`${kind} — implemented in ${owner}`, () => {});
+          continue;
+        }
+        const pending = query.pendingReview?.[kind];
+        if (pending !== undefined) {
+          it.skip(`${kind} — pending-review: ${pending}`, () => {});
           continue;
         }
         it(kind, () => {

@@ -20,6 +20,7 @@ import type { BookAliasTable } from '../../src/refs/bookAliases.js';
 import { parseReference } from '../../src/refs/parseReference.js';
 import type { ParseReferenceResult } from '../../src/refs/types.js';
 import { verseCountInRef } from '../../src/refs/verseIds.js';
+import { runTextExpectation, TEXT_KINDS, TEXT_QUERIES } from './text.js';
 
 export interface GoldenQuery {
   n: number;
@@ -27,6 +28,12 @@ export interface GoldenQuery {
   expect: Record<string, unknown>;
   note?: string;
   deferred?: boolean;
+  /**
+   * Kinds whose expectation is wrong against the data as the formulas stand
+   * (kind → what was measured). Skipped by name, never bent; the owning CP
+   * file records the numbers for Robert's decision.
+   */
+  pendingReview?: Record<string, string>;
 }
 
 export const KIND_OWNER: Record<string, string> = {
@@ -134,6 +141,11 @@ export function checkConsumed(
     : [`consumed: expected ${JSON.stringify(expected)}, got ${JSON.stringify(result.consumed)}`];
 }
 
+/** True when some evaluator implements `kind` for this query (text kinds are per-query, see text.ts). */
+export function isImplemented(kind: string, query: GoldenQuery): boolean {
+  return IMPLEMENTED_KINDS.has(kind) || (TEXT_QUERIES.has(query.n) && TEXT_KINDS.has(kind));
+}
+
 /** Run one expectation kind for one query. Returns failures, or `undefined` if the kind is not implemented here. */
 export function runExpectation(
   kind: string,
@@ -141,6 +153,9 @@ export function runExpectation(
   query: GoldenQuery,
   table: BookAliasTable,
 ): string[] | undefined {
+  if (TEXT_QUERIES.has(query.n) && TEXT_KINDS.has(kind)) {
+    return runTextExpectation(kind, value, query);
+  }
   if (!IMPLEMENTED_KINDS.has(kind)) return undefined;
   const result = parseReference(query.q, table);
   switch (kind) {
