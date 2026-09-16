@@ -10,9 +10,12 @@ typo tolerance, prominence ranking and precomputed disambiguation sublabels.
 - Goldens 3, 9, 14–17, 29–40, 44, 46 pass — **21 of 25 expectations green;
   4 pending review with numbers** (see below).
 - Brute-force fuzzy over the full table measured and recorded (<5 ms on Node;
-  target 1–3 ms on a mid phone) — **p50 0.72 ms · p95 1.32 ms · max 1.36 ms**
-  on Node 22 (M-series), 34 golden queries, best-of-7; first pass p95 1.33 ms.
-  Phone: not measured (no throttled profile in this session).
+  target 1–3 ms on a mid phone) — **p50 0.40 ms · p95 0.71 ms · max 0.74 ms**
+  on Node 22 (M-series), 34 golden queries, best-of-11; first pass p95 0.91 ms.
+  The GitHub runner is ~5× slower and shares the CPU with the other vitest
+  projects: a first version at p95 1.32 ms local measured 6.04 ms there, which
+  is why the hot loop was rewritten closure-free (2×). Phone: not measured
+  (no throttled profile in this session).
 
 ## Tasks
 
@@ -135,7 +138,7 @@ so) or the numbers should be 17 and 33; #46 needs a place row.
 - `entities.index.json`: 860 KB raw, **152 KB gz**; rows alone 119 KB gz;
   `names` 33 KB gz; `sub` strings 22 KB gz. Core layer so far (books 4 +
   entities 152) ≈ 156 KB gz of the ~180 budget.
-- Load: 1.1 ms (4,880 rows). Match: p50 0.72 ms, p95 1.32 ms, max 1.36 ms
+- Load: 1.1 ms (4,880 rows). Match: p50 0.40 ms, p95 0.71 ms, max 0.74 ms
   (`npx vitest run --project core test/entities.perf.test.ts` prints them).
 - Mining: 40,690 links; 649 (slug, label) pairs kept; 891 curated
   candidates, 354 collided, 144 dropped at share 0; 1,090 aliases in the

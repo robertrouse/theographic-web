@@ -125,75 +125,101 @@ export function matchEntities(
   const contentTokens = qTokens.filter((t) => t.length >= 2 && !NAME_STOPWORDS.has(t));
   const kinds = opts.kinds ? new Set(opts.kinds) : undefined;
   const T = ENTITY_TIERS;
+  const qLen = q.length;
+  const q0 = q.charCodeAt(0);
+  const prefixCeiling = T.prefix + T.prefixSpan;
 
   const rows = index.rows;
+  const strongAliases = index.strongAliases;
   const found: (Candidate | undefined)[] = new Array(rows.length);
   let lexicalHits = 0;
 
+  // The hot loop: one pass over every row, no closures, no allocation unless
+  // the row is a hit. ~5,000 rows in well under a millisecond.
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i]!;
     if (kinds && !kinds.has(r.t)) continue;
+    const norm = r.norm;
     let c: Candidate | undefined;
 
-    if (r.norm === q) {
-      c = { tier: 'exact', band: T.exact, matched: r.norm, detail: `name "${r.norm}"` };
+    if (norm === q) {
+      c = { tier: 'exact', band: T.exact, matched: norm, detail: `name "${norm}"` };
     }
 
-    for (const [alias, w, source] of r.aliases) {
-      if (alias !== q) continue;
+    const aliases = r.aliases;
+    for (let j = 0; j < aliases.length; j++) {
+      const a = aliases[j]!;
+      if (a[0] !== q) continue;
+      const w = a[1];
       const strong = w >= ALIAS_STRONG;
       c = better(c, {
         tier: strong ? 'aliasExact' : 'aliasWeak',
         band: strong ? T.aliasExact : T.aliasWeak + T.aliasWeakSpan * w,
-        matched: alias,
-        detail: `alias "${alias}" w=${w.toFixed(2)} from ${source}`,
+        matched: a[0],
+        detail: `alias "${a[0]}" w=${w.toFixed(2)} from ${a[2]}`,
       });
     }
 
     if (multi && (c === undefined || c.band < T.multiToken)) {
       const vocab = index.strongTokens[i]!;
-      if (qTokens.every((t) => vocab.includes(t))) {
+      let all = true;
+      for (let k = 0; k < qTokens.length; k++) {
+        if (!vocab.includes(qTokens[k]!)) {
+          all = false;
+          break;
+        }
+      }
+      if (all) {
         c = better(c, {
           tier: 'multiToken',
           band: T.multiToken,
-          matched: r.norm,
+          matched: norm,
           detail: `all of [${qTokens.join(' ')}] in name/title/alias tokens`,
         });
       }
     }
 
-    if (c === undefined || c.band < T.prefix + T.prefixSpan) {
-      let best: Candidate | undefined;
-      const consider = (s: string, what: string): void => {
-        if (s.length > q.length && s.startsWith(q)) {
-          const ratio = q.length / s.length;
-          const band = T.prefix + T.prefixSpan * ratio;
-          if (best === undefined || band > best.band) {
-            best = {
-              tier: 'prefix',
-              band,
-              matched: s,
-              detail: `"${q}" starts ${what} "${s}" (${q.length}/${s.length})`,
-            };
-          }
+    if (c === undefined || c.band < prefixCeiling) {
+      let bestS: string | undefined;
+      let bestWhat = 'name';
+      if (norm.length > qLen && norm.charCodeAt(0) === q0 && norm.startsWith(q)) bestS = norm;
+      const strong = strongAliases[i]!;
+      for (let j = 0; j < strong.length; j++) {
+        const s = strong[j]!;
+        if (
+          s.length > qLen &&
+          s.charCodeAt(0) === q0 &&
+          (bestS === undefined || s.length < bestS.length) &&
+          s.startsWith(q)
+        ) {
+          bestS = s;
+          bestWhat = 'alias';
         }
-      };
-      consider(r.norm, 'name');
-      for (const [alias, w] of r.aliases) if (w >= ALIAS_STRONG) consider(alias, 'alias');
-      if (best) c = better(c, best);
+      }
+      if (bestS !== undefined) {
+        c = better(c, {
+          tier: 'prefix',
+          band: T.prefix + (T.prefixSpan * qLen) / bestS.length,
+          matched: bestS,
+          detail: `"${q}" starts ${bestWhat} "${bestS}" (${qLen}/${bestS.length})`,
+        });
+      }
     }
 
     if (contentTokens.length > 0 && (c === undefined || c.band < T.token)) {
       const own = index.nameTokens[i]!;
       if (multi || own.length >= 2) {
-        const hit = contentTokens.find((t) => own.includes(t));
-        if (hit !== undefined) {
-          c = better(c, {
-            tier: 'token',
-            band: T.token,
-            matched: r.norm,
-            detail: `token "${hit}" in name "${r.norm}"`,
-          });
+        for (let k = 0; k < contentTokens.length; k++) {
+          const t = contentTokens[k]!;
+          if (own.includes(t)) {
+            c = better(c, {
+              tier: 'token',
+              band: T.token,
+              matched: norm,
+              detail: `token "${t}" in name "${norm}"`,
+            });
+            break;
+          }
         }
       }
     }
@@ -208,29 +234,40 @@ export function matchEntities(
   // single word". A single word is always worth a typo check; a multi-word
   // query is compared whole, and only when the lexical tiers came up short.
   const fuzz =
-    opts.fuzzy !== false && q.length >= T.fuzzyMinLen && (!multi || lexicalHits < T.fuzzyBelowHits);
+    opts.fuzzy !== false && qLen >= T.fuzzyMinLen && (!multi || lexicalHits < T.fuzzyBelowHits);
   if (fuzz) {
-    const maxD = q.length < T.fuzzyShortLen ? 1 : 2;
-    const qLen = q.length;
+    const maxD = qLen < T.fuzzyShortLen ? 1 : 2;
     for (let i = 0; i < rows.length; i++) {
       if (found[i] !== undefined) continue;
       const r = rows[i]!;
       if (kinds && !kinds.has(r.t)) continue;
       let bestD = maxD + 1;
       let bestS = '';
-      let bestWhat = '';
-      const tryString = (s: string, what: string): void => {
-        const dl = s.length - qLen;
-        if (dl > maxD || dl < -maxD) return; // length band
-        const d = damerauLevenshtein(q, s, maxD);
+      let bestWhat = 'name';
+      const norm = r.norm;
+      const dn = norm.length - qLen;
+      if (dn <= maxD && dn >= -maxD) {
+        const d = damerauLevenshtein(q, norm, maxD);
         if (d < bestD) {
           bestD = d;
-          bestS = s;
-          bestWhat = what;
+          bestS = norm;
         }
-      };
-      tryString(r.norm, 'name');
-      for (const [alias, w] of r.aliases) if (w >= ALIAS_STRONG) tryString(alias, 'alias');
+      }
+      if (bestD > 1) {
+        const strong = strongAliases[i]!;
+        for (let j = 0; j < strong.length; j++) {
+          const s = strong[j]!;
+          const ds = s.length - qLen;
+          if (ds > maxD || ds < -maxD) continue; // length band
+          const d = damerauLevenshtein(q, s, maxD);
+          if (d < bestD) {
+            bestD = d;
+            bestS = s;
+            bestWhat = 'alias';
+            if (d === 1) break;
+          }
+        }
+      }
       if (bestD <= maxD) {
         const tier = FUZZY_TIER[bestD]!;
         found[i] = {

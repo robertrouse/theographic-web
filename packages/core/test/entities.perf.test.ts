@@ -17,7 +17,7 @@ const books = loadBooks();
 const file = loadEntityIndexFile();
 
 const P95_BUDGET_MS = 5;
-const ROUNDS = 7;
+const ROUNDS = 11;
 
 function percentile(sorted: number[], p: number): number {
   return sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))]!;

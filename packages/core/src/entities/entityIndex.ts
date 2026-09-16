@@ -39,6 +39,8 @@ export interface EntityIndex {
    * even though "syria" alone is Syria's name, not Antioch's alias.
    */
   strongTokens: string[][];
+  /** Per row: alias strings with weight ≥ `ALIAS_STRONG` (prefix and fuzzy candidates). */
+  strongAliases: string[][];
   byId: Map<string, number>;
 }
 
@@ -51,6 +53,7 @@ export function loadEntityIndex(file: EntityIndexFile): EntityIndex {
   const rows = file.rows;
   const nameToks: string[][] = new Array(rows.length);
   const strongToks: string[][] = new Array(rows.length);
+  const strongAliases: string[][] = new Array(rows.length);
   const byId = new Map<string, number>();
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i]!;
@@ -58,10 +61,15 @@ export function loadEntityIndex(file: EntityIndexFile): EntityIndex {
     nameToks[i] = own;
     const set = new Set(own);
     if (r.title !== undefined) for (const t of nameTokens(normalizeName(r.title))) set.add(t);
+    const strong: string[] = [];
     for (const [alias, w] of r.aliases) {
-      if (w >= ALIAS_STRONG) for (const t of nameTokens(alias)) set.add(t);
+      if (w >= ALIAS_STRONG) {
+        strong.push(alias);
+        for (const t of nameTokens(alias)) set.add(t);
+      }
     }
     strongToks[i] = [...set];
+    strongAliases[i] = strong;
     byId.set(r.id, i);
   }
   return {
@@ -71,6 +79,7 @@ export function loadEntityIndex(file: EntityIndexFile): EntityIndex {
     logMaxVc: Math.log(1 + file.maxVc),
     nameTokens: nameToks,
     strongTokens: strongToks,
+    strongAliases,
     byId,
   };
 }
