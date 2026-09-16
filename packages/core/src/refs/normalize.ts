@@ -32,6 +32,7 @@ export function ordinalValue(word: string): string | undefined {
  *
  *   "1Sam."  → "1 sam"     "Song of Solomon" → "song of solomon"
  *   "Jn3"    → "jn 3"      "  Phlm  "        → "phlm"
+ *   "1st Sam" → "1st sam"  (an ordinal suffix stays glued to its digit)
  */
 export function normalizeAlias(s: string): string {
   return (
@@ -39,7 +40,7 @@ export function normalizeAlias(s: string): string {
       .normalize('NFKC')
       .toLowerCase()
       .replace(/\./g, '')
-      .match(/[a-z]+|[0-9]+/g)
+      .match(/[0-9]+(?:st|nd|rd)(?![a-z])|[a-z]+|[0-9]+/g)
       ?.join(' ') ?? ''
   );
 }
