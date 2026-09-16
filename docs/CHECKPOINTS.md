@@ -13,7 +13,7 @@ merge. `v2` merges to `master` at CP-11.
 | #   | Checkpoint                                                      | Status      | Branch / PR   | Next action                                      |
 | --- | --------------------------------------------------------------- | ----------- | ------------- | ------------------------------------------------ |
 | 00  | [Scaffold + checkpoint system](checkpoints/CP-00-scaffold.md)   | done        | `v2` `6e33176` | —                                                |
-| 01  | [Data pipeline + bundles](checkpoints/CP-01-data-pipeline.md)   | done        | `cp-01-data`  | —                                                |
+| 01  | [Data pipeline + bundles](checkpoints/CP-01-data-pipeline.md)   | done        | [#83](https://github.com/robertrouse/theographic-web/pull/83) | —                                                |
 | 02  | [Reference parser](checkpoints/CP-02-reference-parser.md)       | todo        | —             | next: alias table from books.json + curated list |
 | 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | todo        | —             |                                                  |
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | todo        | —             |                                                  |
