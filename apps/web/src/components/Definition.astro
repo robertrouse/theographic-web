@@ -1,0 +1,42 @@
+---
+/**
+ * A labelled block of description text. Today the source is Easton's Bible
+ * Dictionary (1897); CP-08 swaps in generated definitions by changing which
+ * `{ source, markdown }` the page passes — this component does not know or
+ * care where the text came from, and always names its source (invariant 7).
+ *
+ * The first paragraph is the summary at the point of use; anything after it
+ * is one click away behind "Read more", so a long entry (Easton on Moses runs
+ * to 3,000 words) never pushes the timeline and verses off the page.
+ */
+import { renderBlocks, splitParagraphs } from '../lib/markdown';
+import { siteLinks } from '../lib/links';
+
+interface Props {
+  /** Human label for the source, e.g. "Easton's Bible Dictionary (1897)". */
+  source: string;
+  /** Markdown subset: links, italics, blank-line paragraphs. */
+  markdown: string;
+  /** e.g. "draft" — rendered next to the source label when present. */
+  status?: string;
+}
+const { source, markdown, status } = Astro.props;
+const [first = '', ...rest] = splitParagraphs(markdown);
+const lead = renderBlocks(first, siteLinks);
+const more = rest.length > 0 ? renderBlocks(rest.join('\n\n'), siteLinks) : undefined;
+---
+
+<section class="definition" aria-label={`Description from ${source}`}>
+  <p class="definition__source">
+    {source}{status && <span> · {status}</span>}
+  </p>
+  <Fragment set:html={lead} />
+  {
+    more && (
+      <details class="definition__more">
+        <summary>Read more</summary>
+        <Fragment set:html={more} />
+      </details>
+    )
+  }
+</section>

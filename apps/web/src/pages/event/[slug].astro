@@ -1,0 +1,147 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import EntityChips from '../../components/EntityChips.astro';
+import EventTimeline from '../../components/EventTimeline.astro';
+import {
+  getBookByOrder,
+  getChildEvents,
+  getEvent,
+  getEventBySlug,
+  getEvents,
+  resolveGroups,
+  resolvePeople,
+  resolvePlaces,
+} from '../../lib/data';
+import { entityHref, formatDate, formatDuration, rangeLabel, verseHref } from '../../lib/refs';
+
+export const getStaticPaths = (() =>
+  getEvents().map((e) => ({ params: { slug: e.slug } }))) satisfies GetStaticPaths;
+
+const event = getEventBySlug(Astro.params.slug)!;
+const date = formatDate(event.startDate);
+const participants = resolvePeople(event.participants);
+const groups = resolveGroups(event.groups);
+const locations = resolvePlaces(event.locations);
+const parent = event.partOf !== undefined ? getEvent(event.partOf) : undefined;
+const predecessor = event.predecessor !== undefined ? getEvent(event.predecessor) : undefined;
+const children = getChildEvents(event.id);
+const range = event.verseRange;
+const rangeText = range ? rangeLabel(range, getBookByOrder) : undefined;
+const rangeLink = range ? verseHref(range[0], getBookByOrder) : undefined;
+
+/** Walk `partOf` up to the top-level event: the period this event sits in. */
+let period = parent;
+while (period?.partOf !== undefined) period = getEvent(period.partOf) ?? undefined;
+
+const descriptionText = [date, rangeText, locations.map((l) => l.name).join(', ')]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<Base title={event.name} description={`${event.name}: ${descriptionText}.`} section="browse">
+  <header class="page-head">
+    <p class="page-head__kicker">
+      Event{
+        period && period.id !== event.id && (
+          <>
+            {' '}
+            · in <a href={`/period/${period.slug}`}>{period.name}</a>
+          </>
+        )
+      }
+    </p>
+    <h1>{event.name}</h1>
+    {date && <p class="page-head__sub">{date}</p>}
+  </header>
+
+  <dl class="facts">
+    {
+      date && (
+        <>
+          <dt>Date</dt>
+          <dd>
+            <time datetime={event.startDate}>{date}</time>
+          </dd>
+        </>
+      )
+    }
+    {
+      event.duration && (
+        <>
+          <dt>Duration</dt>
+          <dd>{formatDuration(event.duration)}</dd>
+        </>
+      )
+    }
+    {
+      rangeText && (
+        <>
+          <dt>Passage</dt>
+          <dd>{rangeLink ? <a href={rangeLink}>{rangeText}</a> : rangeText}</dd>
+        </>
+      )
+    }
+    {
+      participants.length > 0 && (
+        <>
+          <dt>People</dt>
+          <dd>
+            <EntityChips items={participants} label="Participants" />
+          </dd>
+        </>
+      )
+    }
+    {
+      groups.length > 0 && (
+        <>
+          <dt>Groups</dt>
+          <dd>
+            <EntityChips items={groups} label="Groups" />
+          </dd>
+        </>
+      )
+    }
+    {
+      locations.length > 0 && (
+        <>
+          <dt>Places</dt>
+          <dd>
+            <EntityChips items={locations} label="Locations" />
+          </dd>
+        </>
+      )
+    }
+    {
+      parent && (
+        <>
+          <dt>Part of</dt>
+          <dd>
+            <a href={entityHref(parent)}>{parent.name}</a>
+          </dd>
+        </>
+      )
+    }
+    {
+      predecessor && (
+        <>
+          <dt>Preceded by</dt>
+          <dd>
+            <a href={entityHref(predecessor)}>{predecessor.name}</a>
+          </dd>
+        </>
+      )
+    }
+  </dl>
+
+  {event.notes && <p class="muted">{event.notes}</p>}
+
+  {
+    children.length > 0 && (
+      <section>
+        <h2>Within this event</h2>
+        <EventTimeline events={children} detail="locations" label={`Events within ${event.name}`} />
+      </section>
+    )
+  }
+</Base>

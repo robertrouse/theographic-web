@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import { getManifest } from '../lib/data';
+
+const manifest = getManifest();
+const { counts } = manifest;
+const sourceUrl = `https://github.com/${manifest.source.repo}`;
+const n = (x: number) => x.toLocaleString('en');
+---
+
+<Base
+  title="About"
+  description="What Theographic is, who it is for, and where the data comes from."
+  section="about"
+>
+  <article class="about">
+    <h1>About Theographic</h1>
+    <p class="lead"><strong>Connecting biblical knowledge to our world today</strong></p>
+    <p>
+      Theographic is a <a href="https://www.youtube.com/watch?v=mmQl6VGvX-c">knowledge graph</a> of the
+      Bible, weaving data about people, places, and periods of time into the tapestry of God's story.
+      This data enables smarter search algorithms, new apps, and exciting research potential. It's an
+      open-source project to share information about the scriptures in our digital world.
+    </p>
+
+    <h2>Who it's for</h2>
+    <ul>
+      <li>
+        <strong>Bible students:</strong> find related information on any passage or subject without expensive
+        software or endless searching.
+      </li>
+      <li>
+        <strong>Visual storytellers:</strong> images representing data capture attention and spark curiosity.
+        See examples at <a href="https://viz.bible">Viz.Bible</a>.
+      </li>
+      <li>
+        <strong>Developers:</strong> the data is published as open files, ready for your own Bible websites
+        and mobile apps.
+      </li>
+      <li>
+        <strong>Machine learning &amp; AI researchers:</strong> knowledge graphs provide critical context
+        to train algorithms and interpret results.
+      </li>
+    </ul>
+
+    <h2>The data</h2>
+    <p>
+      {n(counts.people)} people, {n(counts.places)} places, {n(counts.events)} events and
+      {n(counts.groups)} groups, linked to {n(counts.verses)} verses across {counts.books} books and
+      {n(counts.chapters)} chapters. It is maintained in the open at
+      <a href={sourceUrl}>theographic-bible-metadata</a>.
+    </p>
+    <p>
+      Scripture text is the King James Version, 1769 edition, which is in the public domain.
+      Dictionary entries are from Easton's Bible Dictionary (1897), also public domain.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      To get in touch, email <a href="mailto:robert@viz.bible">robert@viz.bible</a> or
+      <a href="https://twitter.com/bibleviz">@bibleviz</a> on Twitter.
+    </p>
+
+    <h2>License</h2>
+    <p>Data license: to be confirmed.</p>
+  </article>
+</Base>
+
+<style>
+  .about {
+    max-width: var(--max-prose);
+  }
+  .about li {
+    margin-bottom: 0.5em;
+  }
+</style>

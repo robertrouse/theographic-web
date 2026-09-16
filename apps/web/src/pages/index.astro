@@ -1,15 +1,48 @@
 ---
 import Base from '../layouts/Base.astro';
-import { VERSION } from '@theographic/core';
+import SearchSlot from '../components/SearchSlot.astro';
+
+/** The ten hint queries CP-07's definition of done is measured against. */
+const hints = [
+  'Prov 25:2',
+  'Acts 13',
+  'John 3:16',
+  'in the beginning',
+  'search the scriptures',
+  'Abraham',
+  'Saul',
+  'Zechariah',
+  'Bethlehem',
+  'Antioch',
+];
+const hintHref = (q: string) => `/?q=${encodeURIComponent(q)}`;
 ---
 
-<Base title="Theographic: A Knowledge Graph of the Bible">
-  <img
-    src="/brand/theographic-logo.png"
-    alt="Theographic"
-    width="475"
-    height="222"
-    style="max-width:100%;height:auto"
-  />
-  <p>Rebuild in progress — checkpoint CP-00. Core {VERSION}.</p>
+<Base title="Theographic" section="search" hideHeaderSearch>
+  <div class="home">
+    <h1 class="visually-hidden">Theographic: a knowledge graph of the Bible</h1>
+    <img
+      class="home__logo"
+      src="/brand/theographic-logo.png"
+      alt="Theographic"
+      width="950"
+      height="444"
+      fetchpriority="high"
+    />
+    <SearchSlot class="home__search" />
+    <div class="home__hints">
+      <p class="muted">Try searching for</p>
+      <ul class="chips">
+        {
+          hints.map((q) => (
+            <li>
+              <a href={hintHref(q)}>{q}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <p class="lead"><a href="/browse/">Browse the full index</a></p>
+    <p class="muted">People, places, periods and passages of the Bible, and how they connect.</p>
+  </div>
 </Base>

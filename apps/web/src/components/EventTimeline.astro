@@ -1,0 +1,58 @@
+---
+/**
+ * Events in chronology order, each with its formatted year and a link to
+ * `/event/{slug}`. Optionally names locations under each event (a person's
+ * timeline wants "where"; a place's wants "who").
+ */
+import type { EventEntity } from '@theographic/core';
+import { entityHref, eventYear, rangeLabel } from '../lib/refs';
+import { getBookByOrder, resolvePeople, resolvePlaces } from '../lib/data';
+
+interface Props {
+  events: EventEntity[];
+  /** Which sub-line to show under each title. */
+  detail?: 'locations' | 'participants' | 'none';
+  label?: string;
+}
+const { events, detail = 'none', label } = Astro.props;
+const sorted = [...events].sort((a, b) => a.sortKey - b.sortKey);
+const sub = (e: EventEntity) => {
+  if (detail === 'locations') return resolvePlaces(e.locations);
+  if (detail === 'participants') return resolvePeople(e.participants);
+  return [];
+};
+---
+
+{
+  sorted.length > 0 && (
+    <ol class="timeline" aria-label={label}>
+      {sorted.map((e) => {
+        const links = sub(e);
+        const year = eventYear(e);
+        return (
+          <li>
+            <span class="when">{year ?? '—'}</span>
+            <span>
+              <a href={entityHref(e)}>{e.name}</a>
+              {e.verseRange && (
+                <span class="muted"> · {rangeLabel(e.verseRange, getBookByOrder)}</span>
+              )}
+              {links.length > 0 && (
+                <span class="muted">
+                  {' '}
+                  ·{' '}
+                  {links.map((x, i) => (
+                    <>
+                      {i > 0 && ', '}
+                      <a href={entityHref(x)}>{x.name}</a>
+                    </>
+                  ))}
+                </span>
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  )
+}

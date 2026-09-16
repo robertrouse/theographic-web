@@ -1,0 +1,178 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Definition from '../../components/Definition.astro';
+import EntityChips from '../../components/EntityChips.astro';
+import EventTimeline from '../../components/EventTimeline.astro';
+import PlaceMap from '../../components/PlaceMap.astro';
+import VerseList from '../../components/VerseList.astro';
+import {
+  getBookByOsis,
+  getPlace,
+  getPlaceDetail,
+  getPlaces,
+  resolveEvents,
+  resolvePeople,
+} from '../../lib/data';
+import { entityHref, subtitleOf } from '../../lib/refs';
+
+export const getStaticPaths = (() =>
+  getPlaces().map((p) => ({ params: { slug: p.slug } }))) satisfies GetStaticPaths;
+
+const place = getPlace(Astro.params.slug)!;
+const detail = getPlaceDetail(place.slug);
+const subtitle = subtitleOf(place);
+const hasCoords = place.lat !== undefined && place.lon !== undefined;
+
+const events = resolveEvents(detail.events);
+const born = resolvePeople(detail.peopleBorn);
+const died = resolvePeople(detail.peopleDied);
+const visited = resolvePeople(detail.hasBeenHere);
+const books = (detail.booksWritten ?? []).flatMap((o) => {
+  const b = getBookByOsis(o);
+  return b ? [b] : [];
+});
+const rootOf = detail.rootOf ? getPlace(detail.rootOf) : undefined;
+const duplicateOf = detail.duplicateOf ? getPlace(detail.duplicateOf) : undefined;
+
+const kind = [place.featureType, place.featureSubType].filter(Boolean).join(' · ');
+const descriptionText = [
+  subtitle,
+  kind,
+  `mentioned in ${place.verseCount.toLocaleString('en')} verses`,
+]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<Base title={place.name} description={`${place.name}: ${descriptionText}.`} section="browse">
+  <header class="page-head">
+    <p class="page-head__kicker">Place{kind && <> · {kind}</>}</p>
+    <h1>{place.name}</h1>
+    {subtitle && <p class="page-head__sub">{subtitle}</p>}
+  </header>
+
+  {
+    hasCoords ? (
+      <PlaceMap
+        name={place.name}
+        lat={place.lat!}
+        lon={place.lon!}
+        featureType={place.featureType}
+      />
+    ) : (
+      <p class="muted">No coordinates.</p>
+    )
+  }
+
+  <dl class="facts">
+    {
+      place.esvName && place.esvName !== place.name && (
+        <>
+          <dt>ESV name</dt>
+          <dd>{place.esvName}</dd>
+        </>
+      )
+    }
+    {
+      place.aliases && place.aliases.length > 0 && (
+        <>
+          <dt>Also called</dt>
+          <dd>{place.aliases.join(', ')}</dd>
+        </>
+      )
+    }
+    {
+      hasCoords && (
+        <>
+          <dt>Coordinates</dt>
+          <dd>
+            {place.lat!.toFixed(4)}, {place.lon!.toFixed(4)}
+            {place.precision && <span class="muted"> · {place.precision.toLowerCase()}</span>}
+          </dd>
+        </>
+      )
+    }
+    {
+      rootOf && (
+        <>
+          <dt>Coordinate from</dt>
+          <dd>
+            <a href={entityHref(rootOf)}>{rootOf.name}</a>
+          </dd>
+        </>
+      )
+    }
+    {
+      duplicateOf && (
+        <>
+          <dt>Same as</dt>
+          <dd>
+            <a href={entityHref(duplicateOf)}>{duplicateOf.name}</a>
+          </dd>
+        </>
+      )
+    }
+    {
+      books.length > 0 && (
+        <>
+          <dt>Books written here</dt>
+          <dd>
+            <ul class="chips" aria-label="Books written here">
+              {books.map((b) => (
+                <li>
+                  <a href={`/${b.slug}`}>{b.name}</a>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </>
+      )
+    }
+  </dl>
+
+  {
+    detail.easton && (
+      <Definition source="Easton's Bible Dictionary (1897)" markdown={detail.easton} />
+    )
+  }
+  {detail.comment && <p class="muted">{detail.comment}</p>}
+
+  {
+    events.length > 0 && (
+      <section>
+        <h2>Events here</h2>
+        <EventTimeline events={events} detail="participants" label={`Events at ${place.name}`} />
+      </section>
+    )
+  }
+  {
+    born.length > 0 && (
+      <section>
+        <h2>Born here</h2>
+        <EntityChips items={born} label="People born here" />
+      </section>
+    )
+  }
+  {
+    died.length > 0 && (
+      <section>
+        <h2>Died here</h2>
+        <EntityChips items={died} label="People who died here" />
+      </section>
+    )
+  }
+  {
+    visited.length > 0 && (
+      <section>
+        <h2>Has been here</h2>
+        <EntityChips items={visited} label="People who have been here" />
+      </section>
+    )
+  }
+
+  <section>
+    <h2>Verses</h2>
+    <VerseList verses={detail.verses} />
+  </section>
+</Base>

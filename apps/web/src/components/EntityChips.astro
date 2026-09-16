@@ -1,0 +1,37 @@
+---
+/**
+ * A wrapped list of entity links. Works for any entity kind (invariant 2):
+ * the href comes from `kind` + `slug`, the label from `name`. Groups have no
+ * page yet, so they render as plain chips. Renders nothing for an empty list.
+ */
+import type { Entity } from '@theographic/core';
+import { entityHref } from '../lib/refs';
+
+interface Props {
+  items: Entity[];
+  /** Optional per-slug count, shown after the name. */
+  counts?: Map<string, number>;
+  label?: string;
+}
+const { items, counts, label } = Astro.props;
+const hasPage = (e: Entity) => e.kind !== 'group';
+---
+
+{
+  items.length > 0 && (
+    <ul class="chips" aria-label={label}>
+      {items.map((e) => (
+        <li>
+          {hasPage(e) ? (
+            <a href={entityHref(e)}>
+              {e.name}
+              {counts?.has(e.slug) && <span class="count">{counts.get(e.slug)}</span>}
+            </a>
+          ) : (
+            <span>{e.name}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
