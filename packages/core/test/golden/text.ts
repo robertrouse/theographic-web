@@ -1,7 +1,8 @@
 /**
- * Golden expectations for the verse-text queries (CP-04): #11's snippet and
- * the text-search kinds on #21–25, #47, #48. The runner (`runner.ts`) hands
- * these queries here; every other query and kind stays with its owner.
+ * Golden expectations for the verse-text queries (CP-04): #11's snippet,
+ * the text-search kinds on #21–25, #47, #48, and `expansion` on any query.
+ * The runner (`runner.ts`) asks `ownsTextExpectation` and hands those here;
+ * every other query and kind stays with its owner.
  *
  * The text layer alone answers these — there is no cross-group merge yet
  * (CP-05) — so `group: "verses"` expectations are evaluated against
@@ -23,6 +24,7 @@
  *   allWeak       every query word is weak; the search still returns hits
  *   snippet       the verse's snippet keeps `unhighlighted` outside every
  *                 highlight span for a query made of that verse's own words
+ *   expansion     (any query) each listed term is a variant of some query word
  */
 import { BM25, searchText, tfNorm, type TextHit } from '../../src/text/bm25.js';
 import type { TextIndex } from '../../src/text/index.js';
@@ -44,6 +46,13 @@ export const TEXT_KINDS: ReadonlySet<string> = new Set([
   'allWeak',
   'snippet',
 ]);
+
+/** Kinds this file answers for every golden query, not just TEXT_QUERIES. */
+const ANY_QUERY_KINDS: ReadonlySet<string> = new Set(['expansion']);
+
+export function ownsTextExpectation(kind: string, query: GoldenQuery): boolean {
+  return ANY_QUERY_KINDS.has(kind) || (TEXT_QUERIES.has(query.n) && TEXT_KINDS.has(kind));
+}
 
 let cached: TextIndex | undefined;
 function index(): TextIndex {
@@ -68,9 +77,17 @@ export function runTextExpectation(
   value: unknown,
   query: GoldenQuery,
 ): string[] | undefined {
-  if (!TEXT_QUERIES.has(query.n) || !TEXT_KINDS.has(kind)) return undefined;
+  if (!ownsTextExpectation(kind, query)) return undefined;
   const ix = index();
   switch (kind) {
+    case 'expansion': {
+      const variants = new Set(
+        searchText(query.q, ix, { limit: 0 }).words.flatMap((w) => w.variants.map((v) => v.term)),
+      );
+      return (value as string[])
+        .filter((term) => !variants.has(term))
+        .map((term) => `expansion: ${term} not among ${JSON.stringify([...variants])}`);
+    }
     case 'top': {
       if (!isVerses(value)) return [];
       const { id } = value as { id: number };

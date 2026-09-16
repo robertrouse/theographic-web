@@ -12,7 +12,9 @@
  *   consumed  exact consumed spans.
  *
  * Every other kind is listed in `KIND_OWNER` with the checkpoint that will
- * implement it; the test file turns those into named skips.
+ * implement it; the test file turns those into named skips. CP-04's text
+ * kinds live in `text.ts` and are routed there per query by
+ * `ownsTextExpectation`.
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -20,7 +22,7 @@ import type { BookAliasTable } from '../../src/refs/bookAliases.js';
 import { parseReference } from '../../src/refs/parseReference.js';
 import type { ParseReferenceResult } from '../../src/refs/types.js';
 import { verseCountInRef } from '../../src/refs/verseIds.js';
-import { runTextExpectation, TEXT_KINDS, TEXT_QUERIES } from './text.js';
+import { ownsTextExpectation, runTextExpectation } from './text.js';
 
 export interface GoldenQuery {
   n: number;
@@ -143,7 +145,7 @@ export function checkConsumed(
 
 /** True when some evaluator implements `kind` for this query (text kinds are per-query, see text.ts). */
 export function isImplemented(kind: string, query: GoldenQuery): boolean {
-  return IMPLEMENTED_KINDS.has(kind) || (TEXT_QUERIES.has(query.n) && TEXT_KINDS.has(kind));
+  return IMPLEMENTED_KINDS.has(kind) || ownsTextExpectation(kind, query);
 }
 
 /** Run one expectation kind for one query. Returns failures, or `undefined` if the kind is not implemented here. */
@@ -153,9 +155,7 @@ export function runExpectation(
   query: GoldenQuery,
   table: BookAliasTable,
 ): string[] | undefined {
-  if (TEXT_QUERIES.has(query.n) && TEXT_KINDS.has(kind)) {
-    return runTextExpectation(kind, value, query);
-  }
+  if (ownsTextExpectation(kind, query)) return runTextExpectation(kind, value, query);
   if (!IMPLEMENTED_KINDS.has(kind)) return undefined;
   const result = parseReference(query.q, table);
   switch (kind) {

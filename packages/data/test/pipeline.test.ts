@@ -168,6 +168,8 @@ describe('writeBundles', () => {
       'entities.json',
       'events.json',
       'manifest.json',
+      'verses.idx',
+      'verses.txt',
       'verses/Gen.json',
       'verses/John.json',
     ]);
@@ -181,5 +183,7 @@ describe('writeBundles', () => {
       events: 1,
       groups: 1,
     });
+    expect(manifest.avgVerseTokens).toBeGreaterThan(0);
+    expect(a.files.find((f) => f.path === 'verses.idx')!.bytes).toBeGreaterThan(64);
   });
 });

@@ -146,6 +146,24 @@ b=.75); `cov^1.5` makes a 1-of-3 match score 0.19× — the fix for the backlog
 complaint. Snippet = full `verseText` with highlight offsets for every matched
 variant (so `why` and highlight agree).
 
+Points the formula leaves open, settled in CP-04 (`core/src/text/bm25.ts`,
+`expand.ts`):
+
+- `idf_w` is per _query word_, from the exact term's df, or the most common
+  variant's df when the word is not in the dictionary. `wt` is the weight of
+  the best-scoring variant in that verse (one variant per word). This is what
+  makes "loveth/loved rank below equal-tf love" true by construction — with
+  per-variant idf a rarer inflection would outrank the exact form.
+- An archaic variant's stem group is reached at 0.9 × 0.7 = 0.63, so `show`
+  and `shew` return the same set.
+- Fuzzy fires only when the word is absent (or df < 3) **and** no archaic form
+  matched; a resolved word never fuzzes.
+- Phrase and proximity need ≥ 2 query words; `m` counts words the verse
+  matched (weak ones included), `minSpan` is the smallest token window holding
+  each of them. A query wrapped in double quotes keeps only phrase matches.
+- Weak means df > 0.5·N on the word's idf df; a weak word's variants add to
+  the score of existing candidates only.
+
 Cross-group (All tab), normalized 0..1: passages 1.0 explicit / 0.9 bare / 0.85
 bare-ambiguous, **pinned first**; entities `min(1, s)`; text verses
 `0.80·(score/score_top)·q` (q = 1 if cov=1 ∧ phrase, 0.9 if cov=1, else
