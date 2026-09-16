@@ -14,7 +14,7 @@ merge. `v2` merges to `master` at CP-11.
 | --- | --------------------------------------------------------------- | ----------- | ------------- | ------------------------------------------------ |
 | 00  | [Scaffold + checkpoint system](checkpoints/CP-00-scaffold.md)   | done        | `v2` `6e33176` | —                                                |
 | 01  | [Data pipeline + bundles](checkpoints/CP-01-data-pipeline.md)   | done        | [#83](https://github.com/robertrouse/theographic-web/pull/83) | —                                                |
-| 02  | [Reference parser](checkpoints/CP-02-reference-parser.md)       | in-progress | `cp-02-refs`  | agent working; review PR when it lands           |
+| 02  | [Reference parser](checkpoints/CP-02-reference-parser.md)       | in-progress | [#84](https://github.com/robertrouse/theographic-web/pull/84) | implementation complete; review + merge the PR |
 | 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | todo        | —             |                                                  |
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | todo        | —             |                                                  |
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | todo        | —             |                                                  |

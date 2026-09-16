@@ -1,0 +1,55 @@
+{"n":1,"q":"John 3:16","expect":{"refs":[{"bookOsis":"John","kind":"verse","chapterStart":3,"verseStart":16,"chapterEnd":3,"verseEnd":16,"verseIdStart":43003016,"verseIdEnd":43003016,"confidence":1}],"empty":["people"]},"note":"refs John.3.16 only; people empty"}
+{"n":2,"q":"John 3","expect":{"refs":[{"bookOsis":"John","kind":"chapter","chapterStart":3,"chapterEnd":3,"verseIdStart":43003001,"verseIdEnd":43003036,"confidence":1}],"empty":["people"]},"note":"John.3, no John entity"}
+{"n":3,"q":"John","expect":{"refs":[{"bookOsis":"John","kind":"book","confidence":0.7,"ambiguousWith":["john_1676","john_1677","mark_1679"]}],"inTop":[{"group":"people","ids":["john_1676","john_1677","mark_1679"]}]},"note":"Book of John (bare) + people john_1676, john_1677, mark_1679"}
+{"n":4,"q":"1 John 3","expect":{"refs":[{"bookOsis":"1John","kind":"chapter","chapterStart":3,"chapterEnd":3,"confidence":1}]},"note":"1John.3"}
+{"n":5,"q":"I Sam 17","expect":{"refs":[{"bookOsis":"1Sam","kind":"chapter","chapterStart":17,"chapterEnd":17,"confidence":1}]},"note":"1Sam.17"}
+{"n":5,"q":"1Sa 17","expect":{"refs":[{"bookOsis":"1Sam","kind":"chapter","chapterStart":17,"chapterEnd":17,"confidence":1}]},"note":"1Sam.17"}
+{"n":5,"q":"1 Samuel 17","expect":{"refs":[{"bookOsis":"1Sam","kind":"chapter","chapterStart":17,"chapterEnd":17,"confidence":1}]},"note":"1Sam.17"}
+{"n":6,"q":"Jn 3:16-18","expect":{"refs":[{"bookOsis":"John","kind":"verseRange","chapterStart":3,"verseStart":16,"chapterEnd":3,"verseEnd":18,"verseIdStart":43003016,"verseIdEnd":43003018}]},"note":"verseRange"}
+{"n":7,"q":"Gen 1:1-2:3","expect":{"refs":[{"bookOsis":"Gen","kind":"verseRange","verseIdStart":1001001,"verseIdEnd":1002003}]},"note":"ids 1001001–1002003"}
+{"n":8,"q":"Gen 1-3","expect":{"refs":[{"bookOsis":"Gen","kind":"chapterRange","chapterStart":1,"chapterEnd":3,"verseCount":80}]},"note":"80 verses"}
+{"n":9,"q":"Ruth","expect":{"refs":[{"bookOsis":"Ruth","kind":"book","confidence":0.7,"ambiguousWith":["ruth_2450"]}],"inTop":[{"group":"people","ids":["ruth_2450"]}]},"note":"book + ruth_2450"}
+{"n":10,"q":"Ps 23:1,4","expect":{"refs":[{"bookOsis":"Ps","kind":"verse","chapterStart":23,"verseStart":1,"verseIdStart":19023001,"verseIdEnd":19023001},{"bookOsis":"Ps","kind":"verse","chapterStart":23,"verseStart":4,"verseIdStart":19023004,"verseIdEnd":19023004}]},"note":"two refs"}
+{"n":11,"q":"Ps 119:105","expect":{"refs":[{"bookOsis":"Ps","kind":"verse","chapterStart":119,"verseStart":105,"verseIdStart":19119105}],"snippet":{"verse":19119105,"unhighlighted":"NUN."}},"note":"snippet keeps \"NUN.\" unhighlighted"}
+{"n":12,"q":"Song 2:1","expect":{"refs":[{"bookOsis":"Song","kind":"verse","chapterStart":2,"verseStart":1,"verseIdStart":22002001}]},"note":"Song.2.1"}
+{"n":12,"q":"SoS 2:1","expect":{"refs":[{"bookOsis":"Song","kind":"verse","chapterStart":2,"verseStart":1,"verseIdStart":22002001}]},"note":"Song.2.1"}
+{"n":12,"q":"Cant 2:1","expect":{"refs":[{"bookOsis":"Song","kind":"verse","chapterStart":2,"verseStart":1,"verseIdStart":22002001}]},"note":"Song.2.1"}
+{"n":13,"q":"Phm 1:4","expect":{"refs":[{"bookOsis":"Phlm","kind":"verse","chapterStart":1,"verseStart":4,"verseIdStart":57001004,"verseIdEnd":57001004}]},"note":"Phlm.1.4"}
+{"n":13,"q":"Phlm 4","expect":{"refs":[{"bookOsis":"Phlm","kind":"verse","chapterStart":1,"verseStart":4,"verseIdStart":57001004,"verseIdEnd":57001004}]},"note":"Phlm.1.4 — single-chapter book, lone number is a verse"}
+{"n":13,"q":"Philemon 4","expect":{"refs":[{"bookOsis":"Phlm","kind":"verse","chapterStart":1,"verseStart":4,"verseIdStart":57001004,"verseIdEnd":57001004}]},"note":"Phlm.1.4"}
+{"n":14,"q":"Philemon","expect":{"refs":[{"bookOsis":"Phlm","kind":"book","confidence":0.7,"ambiguousWith":["philemon_2342"]}],"inTop":[{"group":"people","ids":["philemon_2342"]}]},"note":"book + philemon_2342"}
+{"n":15,"q":"Jude","expect":{"refs":[{"bookOsis":"Jude","kind":"book","confidence":0.7,"ambiguousWith":["jude_1756"]}],"top":{"group":"people","id":"jude_1756"},"scoreBelow":[{"group":"people","idPrefix":"judas_","max":0.7,"why":"fuzzy"}]},"note":"book; jude_1756 first; Judas via fuzzy <0.7"}
+{"n":16,"q":"Mark","expect":{"refs":[{"bookOsis":"Mark","kind":"book","confidence":0.7,"ambiguousWith":["mark_1679"]}],"inTop":[{"group":"people","ids":["mark_1679"]}]},"note":"book + mark_1679 (collides via surname)"}
+{"n":17,"q":"James","expect":{"refs":[{"bookOsis":"Jas","kind":"book","confidence":0.7,"ambiguousWith":["james_717","james_718","james_719"]}],"inTop":[{"group":"people","ids":["james_717","james_718","james_719"]}],"sublabels":{"group":"people","distinct":3}},"note":"book + 3 James with distinct sublabels"}
+{"n":18,"q":"Acts 13","expect":{"refs":[{"bookOsis":"Acts","kind":"chapter","chapterStart":13,"chapterEnd":13,"verseIdStart":44013001,"verseIdEnd":44013052}],"empty":["verses"]},"note":"no text hits"}
+{"n":19,"q":"Prov 25:2","expect":{"refs":[{"bookOsis":"Prov","kind":"verse","chapterStart":25,"verseStart":2,"verseIdStart":20025002,"verseIdEnd":20025002}]},"note":"Prov.25.2"}
+{"n":20,"q":"John 99","expect":{"refs":[],"errors":["chapterOutOfRange"],"nonEmpty":["people"]},"note":"chapterOutOfRange error, people still returned"}
+{"n":21,"q":"Jesus wept","expect":{"refs":[],"top":{"group":"verses","id":43011035},"topGroup":"verses","groupOrder":["verses","people"]},"note":"John.11.35 first, verses group above people"}
+{"n":22,"q":"in the beginning","expect":{"refs":[],"inTop":[{"group":"verses","ids":[1001001,43001001],"n":2,"subset":true}],"why":["phrase"]},"note":"top-2 ⊆ {Gen.1.1, John.1.1} with phrase in why"}
+{"n":23,"q":"\"search the scriptures\"","expect":{"refs":[],"top":{"group":"verses","id":43005039}},"note":"John.5.39"}
+{"n":24,"q":"shew","expect":{"refs":[],"count":{"group":"verses","equals":218},"sameSetAs":"show"},"note":"218 verses; `show` same set via archaic map"}
+{"n":24,"q":"show","expect":{"refs":[],"count":{"group":"verses","equals":218},"sameSetAs":"shew"},"note":"same set as shew via archaic map"}
+{"n":25,"q":"love","expect":{"refs":[],"count":{"group":"verses","min":280},"rankBelow":{"forms":["loveth","loved"],"below":"love","equalTf":true}},"note":"≥280; loveth/loved rank below equal-tf love"}
+{"n":26,"q":"love in John","expect":{"refs":[{"bookOsis":"John","kind":"book"}],"scope":{"books":["John"]},"allVerseIdsMatch":"^43\\d{6}$"},"note":"in:[John], all verse ids 43xxxxxx"}
+{"n":27,"q":"love 1 John","expect":{"refs":[{"bookOsis":"1John","kind":"book","confidence":0.9}],"scope":{"books":["1John"]}},"note":"scoped 1John"}
+{"n":28,"q":"in:nt Jerusalem","expect":{"refs":[],"top":{"group":"places","id":"jerusalem_636"},"scope":{"testament":"NT"}},"note":"jerusalem_636; NT only"}
+{"n":29,"q":"Jerusalm","expect":{"refs":[],"top":{"group":"places","id":"jerusalem_636"},"why":["fuzzy1"]},"note":"fuzzy1 jerusalem_636"}
+{"n":30,"q":"Nebuchadnezar","expect":{"refs":[],"top":{"group":"people","namedHighestVc":"Nebuchadnezzar"},"inTop":[{"group":"verses","ids":[27001001]}],"expansion":["nebuchadrezzar"]},"note":"highest-vc Nebuchadnezzar; Dan.1.1; expansion includes nebuchadrezzar"}
+{"n":31,"q":"Saul","expect":{"refs":[],"top":{"group":"people","id":"saul_2478"},"inTop":[{"group":"people","ids":["paul_2479"],"n":3,"why":"alias"}]},"note":"saul_2478 first, paul_2479 top-3 with alias why"}
+{"n":32,"q":"Paul","expect":{"refs":[],"top":{"group":"people","id":"paul_2479"},"inTop":[{"group":"verses","ids":[44013009],"why":"mention"}]},"note":"paul_2479; Acts.13.9 via mention hop"}
+{"n":33,"q":"Antioch","expect":{"refs":[],"exactly":{"group":"places","ids":["antioch_68","antioch_69"]},"sublabels":{"group":"places","values":["Syria","Pisidia"]}},"note":"exactly [antioch_68, antioch_69] with sublabels Syria/Pisidia"}
+{"n":34,"q":"Paul Antioch","expect":{"refs":[],"inTop":[{"group":"verses","ids":[44011026,44013001],"why":"co-mention"}],"nonEmpty":["events"]},"note":"Acts.11.26, Acts.13.1 co-mention; events non-empty"}
+{"n":35,"q":"Simon","expect":{"refs":[],"count":{"group":"people","equals":8},"inTop":[{"group":"people","ids":["peter_2745"],"n":2}],"sublabels":{"group":"people","distinct":8}},"note":"8 Simons, peter_2745 top-2, distinct sublabels"}
+{"n":36,"q":"person:Simon","expect":{"refs":[],"empty":["verses","places","events","groups","passages"]},"note":"other groups empty"}
+{"n":37,"q":"Simon Peter","expect":{"refs":[],"top":{"group":"people","id":"peter_2745"},"why":["multiToken"]},"note":"peter_2745 first (multiToken)"}
+{"n":38,"q":"Zechariah","expect":{"refs":[{"bookOsis":"Zech","kind":"book","confidence":0.7}],"count":{"group":"people","equals":26},"sublabels":{"group":"people","distinctMin":20}},"note":"book + 26 people, ≥20 distinct sublabels"}
+{"n":39,"q":"Jacob","expect":{"refs":[],"order":{"group":"people","ids":["israel_682","jacob_683"]}},"note":"israel_682 then jacob_683"}
+{"n":40,"q":"Bethlehem","expect":{"refs":[],"top":{"group":"places","id":"bethlehem_218"}},"note":"bethlehem_218 first"}
+{"n":41,"q":"Moses Exodus 3","expect":{"refs":[{"bookOsis":"Exod","kind":"chapter","chapterStart":3,"chapterEnd":3,"verseIdStart":2003001,"verseIdEnd":2003022}],"top":{"group":"people","id":"moses_2108"},"versesFirst":{"mentions":"moses_2108","in":"Exod.3"}},"note":"Exod.3 + moses_2108 + Moses mentions in Exod.3 first"}
+{"n":42,"q":"Tower of Babel","expect":{"refs":[],"topGroup":"events","nonEmpty":["places"],"inTop":[{"group":"places","names":["Babel"]}]},"note":"event first; places has Babel"}
+{"n":43,"q":"","deferred":true,"expect":{},"note":"topics; deferred (seam only in v1)"}
+{"n":44,"q":"Apostles","expect":{"refs":[],"count":{"group":"groups","min":3}},"note":"groups ≥3"}
+{"n":45,"q":"Gen 1:1; John 1:1","expect":{"refs":[{"bookOsis":"Gen","kind":"verse","verseIdStart":1001001,"verseIdEnd":1001001},{"bookOsis":"John","kind":"verse","verseIdStart":43001001,"verseIdEnd":43001001}],"consumed":[[0,7],[9,17]]},"note":"two refs"}
+{"n":46,"q":"Israel","expect":{"refs":[],"inTop":[{"group":"all","ids":["israel_682"],"n":3},{"group":"all","names":["Israel"],"kind":"place","featureType":"Region","n":3}]},"note":"israel_682 and region Israel both in All top-3"}
+{"n":47,"q":"charity","expect":{"refs":[],"inTop":[{"group":"verses","ids":[46013013]}],"notSurfacedBy":{"q":"love","id":46013013}},"note":"1Cor.13.13 in top; `love` does NOT surface it (no synonyms — documented non-goal)"}
+{"n":48,"q":"the","expect":{"refs":[],"noCrash":true,"allWeak":true,"perf":{"maxMs":30}},"note":"all-weak; no crash; <30 ms"}
