@@ -21,6 +21,12 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - name: Cache metadata source files
+        uses: actions/cache@v4
+        with:
+          path: packages/data/.cache
+          key: metadata-${{ hashFiles('packages/data/data.lock') }}
+      - run: npm run data
       - run: npm run build
       - name: Bundle size budget
         run: node scripts/size-budget.mjs
