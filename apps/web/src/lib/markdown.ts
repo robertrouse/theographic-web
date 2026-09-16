@@ -42,12 +42,17 @@ export function renderInline(md: string, resolve: LinkResolver): string {
   return out;
 }
 
-/** Blank-line separated paragraphs, each rendered inline. */
-export function renderBlocks(md: string, resolve: LinkResolver): string {
+/** Blank-line separated paragraphs, whitespace collapsed, empties dropped. */
+export function splitParagraphs(md: string): string[] {
   return md
     .split(/\n\s*\n/)
     .map((p) => p.replace(/\s*\n\s*/g, ' ').trim())
-    .filter((p) => p.length > 0)
+    .filter((p) => p.length > 0);
+}
+
+/** Paragraphs, each rendered inline. */
+export function renderBlocks(md: string, resolve: LinkResolver): string {
+  return splitParagraphs(md)
     .map((p) => `<p>${renderInline(p, resolve)}</p>`)
     .join('\n');
 }

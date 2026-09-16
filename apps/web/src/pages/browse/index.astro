@@ -14,14 +14,15 @@ const testaments = [
   { key: 'OT', label: 'Old Testament' },
   { key: 'NT', label: 'New Testament' },
 ] as const;
+/** Divisions in order of first appearance; books stay in canonical order within each. */
 const divisionsOf = (t: 'OT' | 'NT') => {
-  const out: { division: string; books: typeof books }[] = [];
+  const out = new Map<string, typeof books>();
   for (const b of books.filter((x) => x.testament === t)) {
-    const last = out[out.length - 1];
-    if (last && last.division === b.division) last.books.push(b);
-    else out.push({ division: b.division, books: [b] });
+    const list = out.get(b.division) ?? [];
+    list.push(b);
+    out.set(b.division, list);
   }
-  return out;
+  return [...out.entries()].map(([division, books]) => ({ division, books }));
 };
 
 const people = groupByLetter(getPeople());
