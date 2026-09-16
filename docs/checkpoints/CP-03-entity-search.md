@@ -145,7 +145,7 @@ so) or the numbers should be 17 and 33; #46 needs a place row.
 
 ## Where I left off
 
-Done and pushed as PR (see CHECKPOINTS). Not done: phone timing on a
+Done and pushed as [PR #86](https://github.com/robertrouse/theographic-web/pull/86). Not done: phone timing on a
 throttled profile (CP-07/09 have a device); the four pending-review goldens
 need Robert. `apps/web` does not yet load the index at runtime — CP-05/07.
 
