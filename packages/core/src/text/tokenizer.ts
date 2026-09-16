@@ -115,14 +115,52 @@ export function terms(text: string, opts?: TokenizeOptions): string[] {
  * Light suffix stripper used only to form *stem groups* — sets of dictionary
  * terms that share a stem and expand each other at weight 0.7. It never
  * touches the index or the snippet, so it can be crude as long as it is
- * deterministic: "love", "loved", "loveth", "lovest", "loves", "loving" →
- * "lov"; "bless", "blessed", "blessing" → "bless"; "city", "cities" → "city".
+ * deterministic and its collisions are on rare words rather than common
+ * ones: "love", "loved", "loveth", "lovest", "loves", "lovely" → "love";
+ * "bless", "blessed", "blessing" → "bless"; "city", "cities" → "city".
  *
  * Rules, applied at most once each in order, with a minimum stem of 3 chars:
  *   -ies/-ied → -y · -eth -est -ing -ed -es -ly -s (not after ss) · trailing -e
+ * Two guards keep three-letter words out of groups they do not belong to,
+ * measured on the KJV dictionary: the trailing -e rule needs four letters
+ * left ("thee" stays "thee" rather than joining "the"; likewise made/mad,
+ * fire/fir, wine/win, here/her, note/not), and a suffix stripped down to a
+ * three-letter consonant-vowel-consonant stem gets its e back ("gates" →
+ * "gate", "coming" → "come", "forest" → "fore" — not "gat", "com", "for"),
+ * while "eating" → "eat" and "saying" → "say" stay as they are. The
+ * auxiliary forms in `NO_STEM` never group at all.
  */
+export const NO_STEM: ReadonlySet<string> = new Set([
+  'the',
+  'thee',
+  'thou',
+  'thy',
+  'thine',
+  'hast',
+  'hath',
+  'doth',
+  'art',
+  'wilt',
+  'shalt',
+]);
+
+const VOWEL = /[aeiou]/;
+
+/** Porter's *o: ends consonant-vowel-consonant, last not w, x or y. */
+function cvc(s: string): boolean {
+  const n = s.length;
+  return (
+    n >= 3 &&
+    !VOWEL.test(s[n - 1]!) &&
+    !'wxy'.includes(s[n - 1]!) &&
+    VOWEL.test(s[n - 2]!) &&
+    !VOWEL.test(s[n - 3]!)
+  );
+}
+
 export function stem(word: string): string {
   const MIN = 3;
+  if (NO_STEM.has(word)) return word;
   let w = word;
   if (w.length - 2 >= MIN && (w.endsWith('ies') || w.endsWith('ied'))) {
     w = w.slice(0, -3) + 'y';
@@ -130,11 +168,13 @@ export function stem(word: string): string {
     for (const suf of ['eth', 'est', 'ing', 'ed', 'es', 'ly', 's']) {
       if (w.length - suf.length >= MIN && w.endsWith(suf)) {
         if (suf === 's' && w.endsWith('ss')) break;
-        w = w.slice(0, -suf.length);
+        const rest = w.slice(0, -suf.length);
+        const restoreE = (suf.startsWith('e') || suf === 'ing') && rest.length === MIN && cvc(rest);
+        w = restoreE ? rest + 'e' : rest;
         break;
       }
     }
   }
-  if (w.length - 1 >= MIN && w.endsWith('e')) w = w.slice(0, -1);
+  if (w.length - 1 >= MIN + 1 && w.endsWith('e')) w = w.slice(0, -1);
   return w;
 }

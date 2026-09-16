@@ -19,3 +19,7 @@ export * from './text/tokenizer.js';
 export * from './text/format.js';
 export * from './text/build.js';
 export * from './text/index.js';
+export * from './text/damerau.js';
+export * from './text/expand.js';
+export * from './text/snippet.js';
+export * from './text/bm25.js';

@@ -28,7 +28,7 @@ import {
   TxtField,
 } from './format.js';
 import { openTextIndex } from './index.js';
-import { foldText, isPsalm119, stem, tokenize } from './tokenizer.js';
+import { NO_STEM, foldText, isPsalm119, stem, tokenize } from './tokenizer.js';
 
 export interface TextRow {
   /** Verse id, BBCCCVVV. Rows must be in ascending id order. */
@@ -193,9 +193,10 @@ export function buildTextIndex(
   for (let i = 0; i < N; i++) w.u32(rows[i]!.id);
   w.patchU32(IdxField.docIdOff, docIdOff);
 
-  // stem groups
+  // stem groups; the auxiliaries in NO_STEM stay out ("hast" must not join "haste")
   const byStem = new Map<string, number[]>();
   for (let t = 0; t < T; t++) {
+    if (NO_STEM.has(terms[t]!)) continue;
     const s = stem(terms[t]!);
     const g = byStem.get(s);
     if (g) g.push(t);
