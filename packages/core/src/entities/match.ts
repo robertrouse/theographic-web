@@ -29,10 +29,12 @@ import type { EntityGroup, EntityIndexType } from './types.js';
  *                 or multi-word name; stopwords never count)
  * - `aliasWeak`   query equals an alias of weight w < `ALIAS_STRONG`;
  *                 band + `aliasWeakSpan` · w
- * - `fuzzy1/2`    Damerau-Levenshtein 1 / 2 from the name or a strong alias;
- *                 only when the lexical tiers found fewer than `fuzzyBelowHits`
- *                 rows; distance ≤ 1 for queries shorter than `fuzzyShortLen`,
- *                 else ≤ 2; queries shorter than `fuzzyMinLen` never fuzz.
+ * - `fuzzy1/2`    Damerau-Levenshtein 1 / 2 from the name or a strong alias,
+ *                 on rows no lexical tier hit; always for a single-word query,
+ *                 for a multi-word query only when the lexical tiers found
+ *                 fewer than `fuzzyBelowHits` rows; distance ≤ 1 for queries
+ *                 shorter than `fuzzyShortLen`, else ≤ 2; queries shorter than
+ *                 `fuzzyMinLen` never fuzz.
  */
 export const ENTITY_TIERS = {
   exact: 1.0,
@@ -206,9 +208,7 @@ export function matchEntities(
   // single word". A single word is always worth a typo check; a multi-word
   // query is compared whole, and only when the lexical tiers came up short.
   const fuzz =
-    opts.fuzzy !== false &&
-    q.length >= T.fuzzyMinLen &&
-    (!multi || lexicalHits < T.fuzzyBelowHits);
+    opts.fuzzy !== false && q.length >= T.fuzzyMinLen && (!multi || lexicalHits < T.fuzzyBelowHits);
   if (fuzz) {
     const maxD = q.length < T.fuzzyShortLen ? 1 : 2;
     const qLen = q.length;
