@@ -202,7 +202,14 @@ export function matchEntities(
     }
   }
 
-  if (opts.fuzzy !== false && lexicalHits < T.fuzzyBelowHits && q.length >= T.fuzzyMinLen) {
+  // Design: "fuzzy only when exact/prefix yield <3 hits OR the query is a
+  // single word". A single word is always worth a typo check; a multi-word
+  // query is compared whole, and only when the lexical tiers came up short.
+  const fuzz =
+    opts.fuzzy !== false &&
+    q.length >= T.fuzzyMinLen &&
+    (!multi || lexicalHits < T.fuzzyBelowHits);
+  if (fuzz) {
     const maxD = q.length < T.fuzzyShortLen ? 1 : 2;
     const qLen = q.length;
     for (let i = 0; i < rows.length; i++) {

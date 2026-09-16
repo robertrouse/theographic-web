@@ -218,9 +218,11 @@ export function buildEntityIndexDetailed(n: Normalized): {
   for (const g of n.groups) {
     const [bare, paren] = parenthetical(g.name);
     const members = g.members?.length ?? 0;
-    const sub =
-      paren ??
-      `${members} member${members === 1 ? '' : 's'} · ${g.verseCount} verse${g.verseCount === 1 ? '' : 's'}`;
+    const facts = [
+      ...(members > 0 ? [`${members} member${members === 1 ? '' : 's'}`] : []),
+      ...(g.verseCount > 0 ? [`${g.verseCount} verse${g.verseCount === 1 ? '' : 's'}`] : []),
+    ];
+    const sub = paren ?? (facts.length > 0 ? facts.join(' · ') : 'no members or verses');
     drafts.push({
       t: 'g',
       id: g.slug,
@@ -240,7 +242,8 @@ export function buildEntityIndexDetailed(n: Normalized): {
   for (const e of n.events) {
     const y = /^(-?\d+)/.exec(e.startDate);
     const when = y ? formatYear(Number.parseInt(y[1]!, 10)) : undefined;
-    const count = `${e.verseCount} verse${e.verseCount === 1 ? '' : 's'}`;
+    const count =
+      e.verseCount > 0 ? `${e.verseCount} verse${e.verseCount === 1 ? '' : 's'}` : 'no verses';
     drafts.push({
       t: 'e',
       id: e.slug,
