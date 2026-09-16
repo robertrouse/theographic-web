@@ -1,0 +1,21 @@
+{
+  "name": "@theographic/data",
+  "version": "0.1.0",
+  "description": "Build pipeline: theographic-bible-metadata JSON → compact bundles, search indexes, generated definitions",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b",
+    "data": "tsx src/cli.ts build",
+    "data:fetch": "tsx src/cli.ts fetch",
+    "data:gate": "tsx src/cli.ts gate",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@theographic/core": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0"
+  }
+}

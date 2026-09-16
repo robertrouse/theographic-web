@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+apps/web/public/data
+packages/data/.cache
+*.bin
+*.idx
+docs/**/*.md
+CLAUDE.md
+README.md

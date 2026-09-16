@@ -1,7 +1,9 @@
-[[plugins]]
-  package = "netlify-plugin-gatsby-cache"
-[[plugins]]
-  package = "@netlify/plugin-sitemap"
+[build]
+  base = "/"
+  command = "npm run build"
+  publish = "apps/web/dist"
 
-  [plugins.inputs]
-  buildDir = "public"
+[build.environment]
+  NODE_VERSION = "22"
+
+# Old-URL redirects are generated into apps/web/public/_redirects by CP-06.

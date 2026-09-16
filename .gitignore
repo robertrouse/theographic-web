@@ -1,7 +1,19 @@
-.cache
-node_modules
-yarn-error.log
-/public
+node_modules/
+dist/
+.astro/
+.cache/
+*.log
 .DS_Store
 .env
-aws-credentials.csv
+.env.*
+!.env.example
+.netlify/
+
+# generated data bundles (rebuilt by `npm run data`; committed only via CI later)
+apps/web/public/data/
+packages/data/.cache/
+
+# native shells
+apps/mobile/ios/App/Pods/
+apps/mobile/android/.gradle/
+apps/mobile/android/build/

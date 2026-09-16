@@ -1,0 +1,14 @@
+/* Design tokens. Carried over from the 2020 site where it had a considered
+   value; everything else is a placeholder until CP-06 sets the design system. */
+:root {
+  --font-body: 'Helvetica Neue', Arial, sans-serif;
+  --font-display: Georgia, 'Times New Roman', serif;
+  --text-size: 17px; /* body floor: nothing below 15px */
+  --color-text: #333;
+  --color-muted: #6b7280;
+  --color-bg: #fbfaf7;
+  --color-primary: #556cd6; /* 2020 MUI primary */
+  --color-secondary: #19857b; /* 2020 MUI secondary */
+  --color-rule: #b5cbd6;
+  --max-content: 960px;
+}
