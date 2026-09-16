@@ -25,8 +25,8 @@ and the v2 structure in place.
 - [x] `scripts/size-budget.mjs` — counts only JS referenced from HTML (Astro emits an unreferenced React renderer chunk).
 - [x] Docs: CHECKPOINTS.md, all CP files, ROADMAP.md, ADR-0001.
 - [x] CLAUDE.md.
-- [ ] Commit on `v2`, push, watch CI.
-- [ ] Netlify: confirm branch deploy URL for `v2` (Robert may need to link the site).
+- [x] Commit on `v2` (`6e33176`), push; CI run 35052979406 green (typecheck, test, build, budget).
+- [x] Netlify branch deploy live at https://v2--theographic.netlify.app/ (site already linked; production still serves the old build until CP-11).
 
 ## Decisions made
 
@@ -39,8 +39,7 @@ and the v2 structure in place.
 
 ## Where I left off
 
-Everything scaffolded and verified locally (build 475 ms, 2 smoke tests, size
-budget 0 KB JS on the home page). Not yet committed or pushed.
+Done. Next checkpoint: CP-01.
 
 ## Verify
 

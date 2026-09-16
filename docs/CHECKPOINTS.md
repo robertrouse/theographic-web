@@ -12,8 +12,8 @@ merge. `v2` merges to `master` at CP-11.
 
 | #   | Checkpoint                                                      | Status      | Branch / PR   | Next action                                      |
 | --- | --------------------------------------------------------------- | ----------- | ------------- | ------------------------------------------------ |
-| 00  | [Scaffold + checkpoint system](checkpoints/CP-00-scaffold.md)   | in-progress | `v2` (direct) | commit; push; confirm Netlify branch deploy + CI |
-| 01  | [Data pipeline + bundles](checkpoints/CP-01-data-pipeline.md)   | todo        | —             | write `fetch.ts` against the pinned SHA          |
+| 00  | [Scaffold + checkpoint system](checkpoints/CP-00-scaffold.md)   | done        | `v2` `6e33176` | —                                                |
+| 01  | [Data pipeline + bundles](checkpoints/CP-01-data-pipeline.md)   | in-progress | `cp-01-data`  | write `fetch.ts` against the pinned SHA          |
 | 02  | [Reference parser](checkpoints/CP-02-reference-parser.md)       | todo        | —             |                                                  |
 | 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | todo        | —             |                                                  |
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | todo        | —             |                                                  |
