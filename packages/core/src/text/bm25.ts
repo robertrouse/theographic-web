@@ -43,8 +43,8 @@ export const BM25 = {
   proxBoost: 0.25,
   /** How many top-by-base verses are re-tokenized for phrase/proximity. */
   retokenizeTop: 300,
-  /** Longest query, in words, that is scored; extra words are ignored. */
-  maxWords: 32,
+  /** Longest query, in words, that is scored; extra words are ignored (word bits live in an int32). */
+  maxWords: 30,
 } as const;
 
 export interface TextSearchOptions {
