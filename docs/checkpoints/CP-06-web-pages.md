@@ -119,7 +119,7 @@ chapter and place pages), and dark mode on home and a person page.
   metadata repo does not carry, so old `/period/…` URLs resolve to the route
   but not necessarily to the same slug. 249 periods.
 - **`/browse/` is one page, four `:target` panels, no JS.** Bible is the
-  default panel (`:has()`); every entry is in the HTML (509 KB, ~60 KB gz) so
+  default panel (`:has()`); every entry is in the HTML (509 KB, 50 KB gz) so
   find-in-page and crawlers see it all. Bible groups by division globally, not
   by consecutive run (Lamentations sits with Poetry-Wisdom).
 - **`rootOf` is labelled "Coordinate from".** The field means "place whose
