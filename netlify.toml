@@ -1,6 +1,6 @@
 [build]
   base = "/"
-  command = "npm run build"
+  command = "npm run data && npm run build"
   publish = "apps/web/dist"
 
 [build.environment]

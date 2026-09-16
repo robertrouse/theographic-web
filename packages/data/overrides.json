@@ -1,0 +1,6 @@
+{
+  "$comment": "Hand corrections applied during normalization. Each entry names the source row and what is wrong; file the fix upstream too.",
+  "dropAliases": {
+    "mount_of_olives_828": ["4b is just 'mount' or 'mountain'"]
+  }
+}
