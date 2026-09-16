@@ -18,7 +18,7 @@ merge. `v2` merges to `master` at CP-11.
 | 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | todo        | —             |                                                  |
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | todo        | —             |                                                  |
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | todo        | —             |                                                  |
-| 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | in-progress | `cp-06-pages` | agent working; review PR when it lands           |
+| 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | in-progress | `cp-06-pages` PR pending | review PR; merge into `v2`; tag `cp-06`   |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | todo        | —             |                                                  |
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | todo        | —             | needs Robert: 30-entity review                   |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | todo        | —             |                                                  |
