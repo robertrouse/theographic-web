@@ -17,3 +17,6 @@ packages/data/.cache/
 apps/mobile/ios/App/Pods/
 apps/mobile/android/.gradle/
 apps/mobile/android/build/
+
+# agent worktrees
+.claude/worktrees/
