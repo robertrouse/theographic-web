@@ -16,6 +16,7 @@ import type {
   VersesBundle,
 } from '@theographic/core';
 import { sha256 } from './hash.js';
+import { buildEntityIndex } from './index-entities.js';
 import type { Normalized } from './normalize.js';
 
 export const OUT_DIR = fileURLToPath(new URL('../../../apps/web/public/data/', import.meta.url));
@@ -67,6 +68,8 @@ export async function writeBundles(
 
   const events: EventsBundle = { events: n.events };
   await emit('events.json', events);
+
+  await emit('entities.index.json', buildEntityIndex(n));
 
   for (const [slug, d] of n.personDetail) await emit(`detail/person/${slug}.json`, d);
   for (const [slug, d] of n.placeDetail) await emit(`detail/place/${slug}.json`, d);
