@@ -15,3 +15,7 @@ export * from './refs/bookAliases.js';
 export * from './refs/ambiguous.js';
 export * from './refs/parseReference.js';
 export * from './refs/verseIds.js';
+export * from './text/tokenizer.js';
+export * from './text/format.js';
+export * from './text/build.js';
+export * from './text/index.js';
