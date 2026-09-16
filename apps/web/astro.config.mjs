@@ -36,6 +36,11 @@ export default defineConfig({
     format: 'directory',
   },
   vite: {
+    define: {
+      // Absolute path of the bundles for src/lib/data.ts. Injected here because
+      // a built chunk's import.meta.url points into dist/.prerender, not src/.
+      __DATA_DIR__: JSON.stringify(fileURLToPath(new URL('./public/data/', import.meta.url))),
+    },
     build: {
       // MapLibre is imported lazily on place pages that have coordinates;
       // its chunk is large by nature and must not trip the chunk warning.

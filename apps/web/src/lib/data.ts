@@ -24,7 +24,9 @@ import type {
   VersesBundle,
 } from '@theographic/core';
 
-const DATA_DIR = new URL('../../public/data/', import.meta.url).pathname;
+declare const __DATA_DIR__: string;
+/** Set by `vite.define` in astro.config.mjs: `apps/web/public/data/`. */
+const DATA_DIR = __DATA_DIR__;
 
 function readJson<T>(rel: string): T {
   const path = join(DATA_DIR, rel);
