@@ -9,3 +9,9 @@ export const VERSION = '0.1.0';
 
 export * from './types.js';
 export * from './ids.js';
+export * from './refs/types.js';
+export * from './refs/normalize.js';
+export * from './refs/bookAliases.js';
+export * from './refs/ambiguous.js';
+export * from './refs/parseReference.js';
+export * from './refs/verseIds.js';
