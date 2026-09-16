@@ -1,0 +1,167 @@
+---
+/**
+ * The full index. Four panels behind anchor tabs — no JavaScript: the
+ * panel whose id is in the URL fragment is shown (`:target`), and Bible is
+ * shown when there is none. Every entry is in the HTML, so the page is
+ * crawlable and works with find-in-page.
+ */
+import Base from '../../layouts/Base.astro';
+import { getBooks, getPeople, getPlaces, getTopLevelEvents } from '../../lib/data';
+import { chapterHref, entityHref, eventYear, groupByLetter, subtitleOf } from '../../lib/refs';
+
+const books = getBooks();
+const testaments = [
+  { key: 'OT', label: 'Old Testament' },
+  { key: 'NT', label: 'New Testament' },
+] as const;
+const divisionsOf = (t: 'OT' | 'NT') => {
+  const out: { division: string; books: typeof books }[] = [];
+  for (const b of books.filter((x) => x.testament === t)) {
+    const last = out[out.length - 1];
+    if (last && last.division === b.division) last.books.push(b);
+    else out.push({ division: b.division, books: [b] });
+  }
+  return out;
+};
+
+const people = groupByLetter(getPeople());
+const places = groupByLetter(getPlaces());
+const periods = getTopLevelEvents();
+
+const tabs = [
+  { id: 'bible', label: 'Bible' },
+  { id: 'people', label: 'People' },
+  { id: 'places', label: 'Places' },
+  { id: 'periods', label: 'Periods' },
+];
+---
+
+<Base
+  title="Index"
+  description="Every book, person, place and period in Theographic."
+  section="browse"
+>
+  <div class="browse">
+    <h1>Index</h1>
+    <nav class="tabs" aria-label="Index sections">
+      {tabs.map((t) => <a href={`#${t.id}`}>{t.label}</a>)}
+    </nav>
+
+    <section id="bible" class="panel" aria-label="Bible">
+      {
+        testaments.map((t) => (
+          <>
+            <h2>{t.label}</h2>
+            {divisionsOf(t.key).map((d) => (
+              <div class="division">
+                <h3>{d.division}</h3>
+                <ul class="index-list">
+                  {d.books.map((b) => (
+                    <li>
+                      <a href={b.chapterCount === 1 ? chapterHref(b.slug, 1) : `/${b.slug}`}>
+                        {b.name}
+                      </a>
+                      <span class="sub">
+                        {' '}
+                        {b.chapterCount === 1 ? '1 ch' : `${b.chapterCount} ch`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </>
+        ))
+      }
+    </section>
+
+    <section id="people" class="panel" aria-label="People">
+      <h2 class="visually-hidden">People</h2>
+      {
+        people.map(([letter, rows]) => (
+          <div class="letter-group">
+            <h3 id={`people-${letter}`}>{letter}</h3>
+            <ul class="index-list">
+              {rows.map((p) => {
+                const sub = subtitleOf(p);
+                return (
+                  <li>
+                    <a href={entityHref(p)}>{p.name}</a>
+                    {sub && <span class="sub"> {sub}</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+
+    <section id="places" class="panel" aria-label="Places">
+      <h2 class="visually-hidden">Places</h2>
+      {
+        places.map(([letter, rows]) => (
+          <div class="letter-group">
+            <h3 id={`places-${letter}`}>{letter}</h3>
+            <ul class="index-list">
+              {rows.map((p) => {
+                const sub = subtitleOf(p);
+                return (
+                  <li>
+                    <a href={entityHref(p)}>{p.name}</a>
+                    {sub && <span class="sub"> {sub}</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+
+    <section id="periods" class="panel" aria-label="Periods">
+      <h2 class="visually-hidden">Periods</h2>
+      <ol class="timeline">
+        {
+          periods.map((e) => (
+            <li>
+              <span class="when">{eventYear(e) ?? '—'}</span>
+              <a href={`/period/${e.slug}`}>{e.name}</a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .panel {
+    display: none;
+  }
+  .panel:target {
+    display: block;
+  }
+  /* No fragment: Bible is the default panel. */
+  .browse:not(:has(.panel:target)) #bible {
+    display: block;
+  }
+  .browse:not(:has(.panel:target)) .tabs a[href='#bible'],
+  .browse:has(#people:target) .tabs a[href='#people'],
+  .browse:has(#places:target) .tabs a[href='#places'],
+  .browse:has(#periods:target) .tabs a[href='#periods'] {
+    color: var(--color-text);
+    border-bottom-color: var(--color-primary);
+  }
+  .panel {
+    scroll-margin-top: calc(var(--header-h) + 60px);
+  }
+  .division h3 {
+    margin-top: 0.6em;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+</style>

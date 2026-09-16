@@ -1,0 +1,173 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { Entity } from '@theographic/core';
+import { formatYear } from '@theographic/core';
+import Base from '../../layouts/Base.astro';
+import Definition from '../../components/Definition.astro';
+import EntityChips from '../../components/EntityChips.astro';
+import EventTimeline from '../../components/EventTimeline.astro';
+import VerseList from '../../components/VerseList.astro';
+import {
+  getPeople,
+  getPerson,
+  getPersonDetail,
+  getPlace,
+  getBooksWrittenBy,
+  resolveEvents,
+  resolveGroups,
+  resolvePeople,
+} from '../../lib/data';
+import { entityHref, subtitleOf } from '../../lib/refs';
+
+export const getStaticPaths = (() =>
+  getPeople().map((p) => ({ params: { slug: p.slug } }))) satisfies GetStaticPaths;
+
+const person = getPerson(Astro.params.slug)!;
+const detail = getPersonDetail(person.slug);
+const subtitle = subtitleOf(person);
+
+/** Family rows, in the order a reader expects; empty rows are dropped. */
+const family: { label: string; items: Entity[] }[] = [
+  { label: 'Father', items: resolvePeople(person.father ? [person.father] : []) },
+  { label: 'Mother', items: resolvePeople(detail.mother ? [detail.mother] : []) },
+  {
+    label: detail.partners && detail.partners.length > 1 ? 'Partners' : 'Partner',
+    items: resolvePeople(detail.partners),
+  },
+  { label: 'Children', items: resolvePeople(detail.children) },
+  { label: 'Siblings', items: resolvePeople(detail.siblings) },
+  { label: 'Half-siblings', items: resolvePeople(detail.halfSiblings) },
+].filter((r) => r.items.length > 0);
+
+const born = {
+  place: detail.birthPlace ? getPlace(detail.birthPlace) : undefined,
+  year: detail.birthYear,
+};
+const died = {
+  place: detail.deathPlace ? getPlace(detail.deathPlace) : undefined,
+  year: detail.deathYear,
+};
+const groups = resolveGroups(detail.groups);
+const wrote = getBooksWrittenBy(person.slug);
+const events = resolveEvents(detail.events);
+
+const descriptionText = [
+  subtitle,
+  born.year !== undefined && `born ${formatYear(born.year)}`,
+  died.year !== undefined && `died ${formatYear(died.year)}`,
+  `mentioned in ${person.verseCount.toLocaleString('en')} verses`,
+]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<Base title={person.name} description={`${person.name}: ${descriptionText}.`} section="browse">
+  <header class="page-head">
+    <p class="page-head__kicker">Person{person.surname && <> · {person.surname}</>}</p>
+    <h1>{person.name}</h1>
+    {subtitle && <p class="page-head__sub">{subtitle}</p>}
+  </header>
+
+  <dl class="facts">
+    {
+      person.aliases && person.aliases.length > 0 && (
+        <>
+          <dt>Also called</dt>
+          <dd>{person.aliases.join(', ')}</dd>
+        </>
+      )
+    }
+    {
+      family.map((r) => (
+        <>
+          <dt>{r.label}</dt>
+          <dd>
+            <EntityChips items={r.items} label={r.label} />
+          </dd>
+        </>
+      ))
+    }
+    {
+      (born.place || born.year !== undefined) && (
+        <>
+          <dt>Born</dt>
+          <dd>
+            {born.year !== undefined && <span>{formatYear(born.year)}</span>}
+            {born.place && (
+              <>
+                {born.year !== undefined && ' · '}
+                <a href={entityHref(born.place)}>{born.place.name}</a>
+              </>
+            )}
+          </dd>
+        </>
+      )
+    }
+    {
+      (died.place || died.year !== undefined) && (
+        <>
+          <dt>Died</dt>
+          <dd>
+            {died.year !== undefined && <span>{formatYear(died.year)}</span>}
+            {died.place && (
+              <>
+                {died.year !== undefined && ' · '}
+                <a href={entityHref(died.place)}>{died.place.name}</a>
+              </>
+            )}
+          </dd>
+        </>
+      )
+    }
+    {
+      groups.length > 0 && (
+        <>
+          <dt>Groups</dt>
+          <dd>
+            <EntityChips items={groups} label="Groups" />
+          </dd>
+        </>
+      )
+    }
+    {
+      wrote.length > 0 && (
+        <>
+          <dt>Wrote</dt>
+          <dd>
+            <ul class="chips" aria-label="Books written">
+              {wrote.map((b) => (
+                <li>
+                  <a href={`/${b.slug}`}>{b.name}</a>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </>
+      )
+    }
+  </dl>
+
+  {
+    detail.easton && (
+      <Definition source="Easton's Bible Dictionary (1897)" markdown={detail.easton} />
+    )
+  }
+
+  {
+    events.length > 0 && (
+      <section>
+        <h2>Timeline</h2>
+        <EventTimeline
+          events={events}
+          detail="locations"
+          label={`Events involving ${person.name}`}
+        />
+      </section>
+    )
+  }
+
+  <section>
+    <h2>Verses</h2>
+    <VerseList verses={detail.verses} />
+  </section>
+</Base>
