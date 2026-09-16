@@ -30,6 +30,11 @@ typo tolerance, prominence ranking and precomputed disambiguation sublabels.
 - [ ] `why[]` strings per hit; golden runner: `top`, `inTop`, `absent`, `why`.
 - [ ] Perf test printing p50/p95 over all golden queries.
 
+## Follow-up from CP-06
+- `/browse/#people` lists duplicate names bare ("Abdi · Abdi · Abdi"). Once the
+  entity index carries `sub`, render it there too (read `entities.index.json`
+  in `apps/web/src/lib/data.ts`; one-line change in the browse page).
+
 ## Decisions made
 
 _(fill in)_

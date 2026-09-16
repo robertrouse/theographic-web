@@ -18,7 +18,7 @@ merge. `v2` merges to `master` at CP-11.
 | 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | in-progress | `cp-03-entities` | agent working; review PR when it lands        |
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | in-progress | `cp-04-text`     | agent working; review PR when it lands        |
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | todo        | —             |                                                  |
-| 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | in-progress | [#85](https://github.com/robertrouse/theographic-web/pull/85) | review PR; merge into `v2`; tag `cp-06`   |
+| 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | todo        | —             |                                                  |
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | todo        | —             | needs Robert: 30-entity review                   |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | todo        | —             |                                                  |
