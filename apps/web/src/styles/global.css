@@ -52,13 +52,29 @@ h3 {
 p {
   margin: 0 0 1em;
 }
+/* Links in running text are underlined (colour alone is 2.7:1 against the
+   text, under the 3:1 rule); the underline is quiet until hover. Navigation,
+   chips and grids opt out below — they are not in a block of text. */
 a {
   color: var(--color-primary);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 a:hover {
   color: var(--color-primary-strong);
-  text-decoration: underline;
+  text-decoration-color: currentColor;
+}
+.site-header a,
+.bottom-nav a,
+.tabs a,
+.chips a,
+.chapter-grid a,
+.pager a,
+.index-list a,
+.home a {
+  text-decoration: none;
 }
 a:focus-visible,
 button:focus-visible,
@@ -211,7 +227,6 @@ hr {
 }
 .site-footer a {
   color: inherit;
-  text-decoration: underline;
 }
 
 /* ------------------------------------------------- page furniture */
@@ -483,16 +498,13 @@ summary::marker {
 }
 .verses .v a {
   color: inherit;
+  text-decoration: none;
 }
 .verses a {
   color: var(--color-text);
-  text-decoration: underline;
-  text-decoration-color: var(--color-rule);
-  text-underline-offset: 3px;
 }
 .verses a:hover {
   color: var(--color-primary);
-  text-decoration-color: currentColor;
 }
 .pager {
   display: flex;
