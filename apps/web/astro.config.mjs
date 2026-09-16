@@ -41,6 +41,7 @@ export default defineConfig({
       // a built chunk's import.meta.url points into dist/.prerender, not src/.
       __DATA_DIR__: JSON.stringify(fileURLToPath(new URL('./public/data/', import.meta.url))),
     },
+    worker: { format: 'es' },
     build: {
       // MapLibre is imported lazily on place pages that have coordinates;
       // its chunk is large by nature and must not trip the chunk warning.

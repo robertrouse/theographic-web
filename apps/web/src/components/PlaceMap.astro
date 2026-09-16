@@ -37,6 +37,10 @@ const coords = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
 <script>
   import cssHref from 'maplibre-gl/dist/maplibre-gl.css?url';
+  // MapLibre 6 ships its worker as a sibling module resolved from
+  // import.meta.url, which does not survive bundling. Vite builds it as a
+  // separate worker chunk here and MapLibre is told where it landed.
+  import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
   const el = document.querySelector<HTMLElement>('[data-map]');
 
@@ -51,7 +55,8 @@ const coords = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
       document.head.append(link);
     }
 
-    const { Map, Marker, Popup, NavigationControl } = await import('maplibre-gl');
+    const { Map, Marker, Popup, NavigationControl, setWorkerUrl } = await import('maplibre-gl');
+    setWorkerUrl(workerUrl);
     const center: [number, number] = [Number(lon), Number(lat)];
     const map = new Map({
       container: root,
