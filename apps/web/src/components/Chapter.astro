@@ -1,0 +1,113 @@
+---
+/**
+ * The reader for one chapter: verses as an ordered list with `#v{n}`
+ * anchors, `rich` rendered to entity links and italics, prev/next, and a
+ * compact list of the people and places the chapter mentions, derived from
+ * the verse rows (most-mentioned first).
+ */
+import type { Book, Entity } from '@theographic/core';
+import { getBookByOrder, getChapter, resolvePeople, resolvePlaces } from '../lib/data';
+import { renderInline } from '../lib/markdown';
+import { siteLinks } from '../lib/links';
+import { chapterHref } from '../lib/refs';
+import EntityChips from './EntityChips.astro';
+
+interface Props {
+  book: Book;
+  chapter: number;
+  /** Book pages embed a single chapter and already carry the book heading. */
+  heading?: boolean;
+}
+const { book, chapter, heading = true } = Astro.props;
+const verses = getChapter(book.osis, chapter);
+
+const tally = (key: 'people' | 'places') => {
+  const counts = new Map<string, number>();
+  for (const v of verses) for (const s of v[key] ?? []) counts.set(s, (counts.get(s) ?? 0) + 1);
+  const slugs = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  return { slugs: slugs.map(([s]) => s), counts };
+};
+const people = tally('people');
+const places = tally('places');
+const mentioned: { label: string; items: Entity[]; counts: Map<string, number> }[] = [
+  { label: 'People in this chapter', items: resolvePeople(people.slugs), counts: people.counts },
+  { label: 'Places in this chapter', items: resolvePlaces(places.slugs), counts: places.counts },
+];
+
+const prev =
+  chapter > 1
+    ? { href: chapterHref(book.slug, chapter - 1), label: `${book.name} ${chapter - 1}` }
+    : (() => {
+        const b = getBookByOrder(book.order - 1);
+        return b
+          ? { href: chapterHref(b.slug, b.chapterCount), label: `${b.name} ${b.chapterCount}` }
+          : undefined;
+      })();
+const next =
+  chapter < book.chapterCount
+    ? { href: chapterHref(book.slug, chapter + 1), label: `${book.name} ${chapter + 1}` }
+    : (() => {
+        const b = getBookByOrder(book.order + 1);
+        return b ? { href: chapterHref(b.slug, 1), label: `${b.name} 1` } : undefined;
+      })();
+---
+
+<article class="reader">
+  {
+    heading && (
+      <header class="page-head">
+        <p class="page-head__kicker">
+          <a href={`/${book.slug}`}>{book.name}</a> · {book.testament === 'OT' ? 'Old' : 'New'}{' '}
+          Testament
+        </p>
+        <h1>
+          {book.name} {chapter}
+        </h1>
+      </header>
+    )
+  }
+  <ol class="verses" aria-label={`${book.name} chapter ${chapter}`}>
+    {
+      verses.map((v) => (
+        <li id={`v${v.v}`} value={v.v}>
+          <span class="v">
+            <a href={`#v${v.v}`} aria-label={`Verse ${v.v}`}>
+              {v.v}
+            </a>
+          </span>
+          <Fragment set:html={renderInline(v.rich, siteLinks)} />
+        </li>
+      ))
+    }
+  </ol>
+  <nav class="pager" aria-label="Chapters">
+    {
+      prev ? (
+        <a href={prev.href} rel="prev">
+          ← {prev.label}
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      next ? (
+        <a href={next.href} rel="next">
+          {next.label} →
+        </a>
+      ) : (
+        <span />
+      )
+    }
+  </nav>
+  {
+    mentioned
+      .filter((m) => m.items.length > 0)
+      .map((m) => (
+        <section>
+          <h2>{m.label}</h2>
+          <EntityChips items={m.items} counts={m.counts} label={m.label} />
+        </section>
+      ))
+  }
+</article>

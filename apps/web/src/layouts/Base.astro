@@ -1,31 +1,67 @@
 ---
 import '../styles/global.css';
+import SearchSlot from '../components/SearchSlot.astro';
+import { getManifest } from '../lib/data';
 
 interface Props {
   title: string;
   description?: string;
+  /** Which top-level section this page belongs to, for nav highlighting. */
+  section?: 'search' | 'browse' | 'about';
+  /** Home carries its own large search box; the header hides its small one. */
+  hideHeaderSearch?: boolean;
 }
 const {
   title,
   description = 'Discover connections among the people, places, periods and passages of the Bible',
+  section,
+  hideHeaderSearch = false,
 } = Astro.props;
+const fullTitle = title === 'Theographic' ? title : `${title} · Theographic`;
+const manifest = getManifest();
+const sourceUrl = `https://github.com/${manifest.source.repo}/tree/${manifest.source.sha}`;
+const current = (s: string) => (section === s ? 'page' : undefined);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/brand/og-square-100.png" />
-    <meta property="og:title" content={title} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/brand/og-square-100.png" />
+    <meta property="og:image" content={new URL('/brand/og-square-100.png', Astro.site)} />
+    <slot name="head" />
   </head>
   <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-header__brand" href="/" aria-label="Theographic home">Theographic</a>
+        {!hideHeaderSearch && <SearchSlot class="site-header__search" compact />}
+        <nav class="site-header__nav" aria-label="Site">
+          <a href="/browse/" aria-current={current('browse')}>Index</a>
+          <a href="/about/" aria-current={current('about')}>About</a>
+        </nav>
+      </div>
+    </header>
     <main>
       <slot />
     </main>
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        Data from <a href={sourceUrl}>theographic-bible-metadata</a> · King James Version (1769, public
+        domain) · Data license: to be confirmed
+      </div>
+    </footer>
+    <nav class="bottom-nav" aria-label="Site">
+      <a href="/" aria-current={current('search')}>Search</a>
+      <a href="/browse/" aria-current={current('browse')}>Index</a>
+      <a href="/about/" aria-current={current('about')}>About</a>
+    </nav>
   </body>
 </html>

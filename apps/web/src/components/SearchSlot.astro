@@ -1,0 +1,27 @@
+---
+/**
+ * PLACEHOLDER for the CP-07 search island. A plain form that submits to
+ * `/?q=` so the URL contract exists today; CP-07 replaces this component's
+ * body with the React `SearchBox` island and keeps the same props.
+ */
+interface Props {
+  class?: string;
+  compact?: boolean;
+  value?: string;
+}
+const { class: className, compact = false, value } = Astro.props;
+---
+
+<form class={className} action="/" method="get" role="search" data-search-slot>
+  <label for={compact ? 'q-header' : 'q'} class="visually-hidden">Search the Bible</label>
+  <input
+    id={compact ? 'q-header' : 'q'}
+    type="search"
+    name="q"
+    value={value}
+    placeholder={compact ? 'Search' : 'Search people, places, passages or words'}
+    autocomplete="off"
+    autocapitalize="off"
+    spellcheck="false"
+  />
+</form>
