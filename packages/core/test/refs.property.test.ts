@@ -12,7 +12,8 @@ import { listVerseFiles, loadBooks, loadVerses, SKIP_REASON } from './data.js';
 const books = loadBooks();
 
 describe.skipIf(!books)('reference round-trip over every verse', () => {
-  const table = buildBookAliasTable(books ?? []);
+  if (!books) return; // the body still runs when skipped
+  const table = buildBookAliasTable(books);
   const files = listVerseFiles();
 
   it('has a verse file for each of the 66 books', () => {

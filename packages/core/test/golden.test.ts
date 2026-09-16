@@ -18,7 +18,8 @@ const queries = loadGoldenQueries();
 const skipped = new Map<string, number[]>();
 
 describe.skipIf(!books)(`golden set (${queries.length} lines)`, () => {
-  const table = buildBookAliasTable(books ?? []);
+  if (!books) return; // the body still runs when skipped
+  const table = buildBookAliasTable(books);
 
   for (const query of queries) {
     describe(`#${query.n} ${JSON.stringify(query.q)}`, () => {

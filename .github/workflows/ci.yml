@@ -20,13 +20,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npm test
       - name: Cache metadata source files
         uses: actions/cache@v4
         with:
           path: packages/data/.cache
           key: metadata-${{ hashFiles('packages/data/data.lock') }}
       - run: npm run data
+      # After the data step so the golden and property tests run against the
+      # real bundles instead of skipping; REQUIRE_DATA turns a skip into a failure.
+      - run: npm test
+        env:
+          THEOGRAPHIC_REQUIRE_DATA: '1'
       - run: npm run build
       - name: Bundle size budget
         run: node scripts/size-budget.mjs
