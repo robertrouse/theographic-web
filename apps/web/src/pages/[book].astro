@@ -26,8 +26,9 @@ const testament = book.testament === 'OT' ? 'Old Testament' : 'New Testament';
     <p class="page-head__kicker">{testament} · {book.division}</p>
     <h1>{book.name}</h1>
     <p class="page-head__sub">
-      {book.chapterCount}
-      {single ? 'chapter' : 'chapters'} · {book.verseCount.toLocaleString('en')} verses
+      {
+        `${book.chapterCount} ${single ? 'chapter' : 'chapters'} · ${book.verseCount.toLocaleString('en')} verses`
+      }
       {book.yearWritten !== undefined && <> · written c. {formatYear(book.yearWritten)}</>}
     </p>
   </header>
