@@ -8,16 +8,18 @@
  *   "_Simon_ Peter’s"  → "simon peter"
  *   "Antioch (Syria)"  → "antioch syria"
  *
- * NFKC → lower-case → curly apostrophe folded → possessive stripped → Markdown
- * emphasis dropped → every other non-alphanumeric run becomes one space.
+ * NFKC → lower-case → Markdown emphasis dropped → curly apostrophe folded →
+ * possessive stripped → every other non-alphanumeric run becomes one space.
+ * Emphasis goes first because `_` is a word character: "_God's_" would
+ * otherwise keep its possessive.
  */
 export function normalizeName(s: string): string {
   return s
     .normalize('NFKC')
     .toLowerCase()
+    .replace(/[_*]/g, '')
     .replace(/’/g, "'")
     .replace(/'s\b|'(?=\s|$)/g, '')
-    .replace(/[_*]/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 }
