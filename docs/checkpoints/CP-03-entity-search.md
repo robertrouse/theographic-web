@@ -14,8 +14,9 @@ typo tolerance, prominence ranking and precomputed disambiguation sublabels.
   on Node 22 (M-series), 34 golden queries, best-of-11; first pass p95 0.91 ms.
   The GitHub runner is ~5× slower and shares the CPU with the other vitest
   projects: a first version at p95 1.32 ms local measured 6.04 ms there, which
-  is why the hot loop was rewritten closure-free (2×). Phone: not measured
-  (no throttled profile in this session).
+  is why the hot loop was rewritten closure-free (2×); the same runner then
+  measured p50 0.88 ms · p95 2.38 ms · max 2.99 ms (run 35146769880). Phone:
+  not measured (no throttled profile in this session).
 
 ## Tasks
 
