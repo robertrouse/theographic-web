@@ -65,6 +65,10 @@ only and ships separately, so a search never needs a verses file.
 - **Bundles are gitignored and rebuilt in CI/Netlify** from the pinned SHA
   rather than committed (15 MB raw, 4,410 files).
 - **`splitName`**: a trailing parenthetical in `kjvName` becomes `title`.
+- **`npm run data` builds `core` first.** `@theographic/core` resolves to
+  `dist/`, which a fresh clone does not have; the first Netlify deploy preview
+  failed on exactly this while CI passed only because `typecheck` had built it.
+  Verified with a clean clone + `npm ci` + the netlify.toml command.
 
 ## Where I left off
 Done. Next: CP-02 (reference parser) and CP-06 (pages) can proceed in parallel.

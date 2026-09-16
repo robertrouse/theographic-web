@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "npm run build -w @theographic/core && npm run build -w @theographic/data && npm run build -w @theographic/web",
-    "data": "npm run data -w @theographic/data",
+    "data": "npm run build -w @theographic/core && npm run data -w @theographic/data",
     "dev": "npm run dev -w @theographic/web",
     "preview": "npm run preview -w @theographic/web",
     "test": "vitest run",
