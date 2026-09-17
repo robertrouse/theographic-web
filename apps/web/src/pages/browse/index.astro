@@ -6,7 +6,7 @@
  * crawlable and works with find-in-page.
  */
 import Base from '../../layouts/Base.astro';
-import { getBooks, getPeople, getPlaces, getTopLevelEvents } from '../../lib/data';
+import { disambiguator, getBooks, getPeople, getPlaces, getTopLevelEvents } from '../../lib/data';
 import { chapterHref, entityHref, eventYear, groupByLetter, subtitleOf } from '../../lib/refs';
 
 const books = getBooks();
@@ -84,7 +84,9 @@ const tabs = [
             <h3 id={`people-${letter}`}>{letter}</h3>
             <ul class="index-list">
               {rows.map((p) => {
-                const sub = subtitleOf(p);
+                // Duplicate names get the search index's sublabel (title,
+                // father or first verse) so "Abdi · Abdi · Abdi" reads apart.
+                const sub = disambiguator(p.slug) ?? subtitleOf(p);
                 return (
                   <li>
                     <a href={entityHref(p)}>{p.name}</a>
@@ -106,7 +108,9 @@ const tabs = [
             <h3 id={`places-${letter}`}>{letter}</h3>
             <ul class="index-list">
               {rows.map((p) => {
-                const sub = subtitleOf(p);
+                // Duplicate names get the search index's sublabel (title,
+                // father or first verse) so "Abdi · Abdi · Abdi" reads apart.
+                const sub = disambiguator(p.slug) ?? subtitleOf(p);
                 return (
                   <li>
                     <a href={entityHref(p)}>{p.name}</a>

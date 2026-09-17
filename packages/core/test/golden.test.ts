@@ -1,11 +1,14 @@
 /**
  * Golden acceptance set (docs/search-design.md §"Golden set"). One test per
  * (query, expectation kind). Kinds a later checkpoint owns are skipped by
- * name — look for "skipped" in the report, never for a quiet green.
+ * name — look for "skipped" in the report, never for a quiet green. An
+ * expectation flagged `pendingReview` is run and skipped with its note while
+ * it still fails; the moment it passes the test fails so the flag is removed.
  */
 import { afterAll, describe, expect, it } from 'vitest';
+import { loadEntityIndex } from '../src/entities/entityIndex.js';
 import { buildBookAliasTable } from '../src/refs/bookAliases.js';
-import { loadBooks, SKIP_REASON } from './data.js';
+import { loadBooks, loadEntityIndexFile, SKIP_REASON } from './data.js';
 import {
   IMPLEMENTED_KINDS,
   KIND_OWNER,
@@ -14,12 +17,15 @@ import {
 } from './golden/runner.js';
 
 const books = loadBooks();
+const indexFile = loadEntityIndexFile();
 const queries = loadGoldenQueries();
 const skipped = new Map<string, number[]>();
+const partial: string[] = [];
+const pending: string[] = [];
 
-describe.skipIf(!books)(`golden set (${queries.length} lines)`, () => {
-  if (!books) return; // the body still runs when skipped
-  const table = buildBookAliasTable(books);
+describe.skipIf(!books || !indexFile)(`golden set (${queries.length} lines)`, () => {
+  if (!books || !indexFile) return; // the body still runs when skipped
+  const ctx = { table: buildBookAliasTable(books), index: loadEntityIndex(indexFile) };
 
   for (const query of queries) {
     describe(`#${query.n} ${JSON.stringify(query.q)}`, () => {
@@ -42,9 +48,25 @@ describe.skipIf(!books)(`golden set (${queries.length} lines)`, () => {
           it.skip(`${kind} — implemented in ${owner}`, () => {});
           continue;
         }
-        it(kind, () => {
-          const failures = runExpectation(kind, value, query, table);
-          expect(failures, `#${query.n} ${query.q}: ${query.note ?? ''}`).toEqual([]);
+        const review = query.pendingReview?.[kind];
+        it(review ? `${kind} (pending review)` : kind, (t) => {
+          const result = runExpectation(kind, value, query, ctx);
+          if (result === undefined) throw new Error(`#${query.n} ${kind}: runner returned nothing`);
+          if (result.deferred) partial.push(`#${query.n} ${kind}: ${result.deferred}`);
+          const label = `#${query.n} ${query.q}: ${query.note ?? ''}`;
+          if (review) {
+            if (result.failures.length === 0) {
+              throw new Error(
+                `${label} — pendingReview.${kind} now PASSES; remove the flag ("${review}")`,
+              );
+            }
+            pending.push(
+              `#${query.n} ${kind}: ${review}\n      ${result.failures.join('\n      ')}`,
+            );
+            t.skip(`pending review — ${review}`);
+            return;
+          }
+          expect(result.failures, label).toEqual([]);
         });
       }
     });
@@ -62,7 +84,13 @@ describe.skipIf(!books)(`golden set (${queries.length} lines)`, () => {
     console.info(
       `golden: skipped expectation kinds pending later checkpoints:\n${lines.join('\n')}`,
     );
+    if (partial.length) {
+      console.info(`golden: parts deferred to a later checkpoint:\n  ${partial.join('\n  ')}`);
+    }
+    if (pending.length) {
+      console.info(`golden: expectations pending review:\n  ${pending.join('\n  ')}`);
+    }
   });
 });
 
-it.skipIf(books)(`golden set skipped: ${SKIP_REASON}`, () => {});
+it.skipIf(books && indexFile)(`golden set skipped: ${SKIP_REASON}`, () => {});

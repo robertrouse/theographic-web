@@ -165,6 +165,7 @@ describe('writeBundles', () => {
       'detail/person/god_1.json',
       'detail/place/antioch_2.json',
       'detail/place/eden_1.json',
+      'entities.index.json',
       'entities.json',
       'events.json',
       'manifest.json',

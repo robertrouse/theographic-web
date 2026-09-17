@@ -12,6 +12,8 @@ import type {
   Book,
   BooksBundle,
   EntitiesBundle,
+  EntityIndexFile,
+  EntityIndexRow,
   EventEntity,
   EventsBundle,
   GroupEntity,
@@ -116,6 +118,28 @@ export function getEvent(id: number): EventEntity | undefined {
 }
 export function getEventBySlug(slug: string): EventEntity | undefined {
   return eventsBySlug().get(slug);
+}
+
+// ------------------------------------------------------------ entity index
+
+/** `entities.index.json` (CP-03): search rows with precomputed sublabels. */
+export const getEntityIndex = memo(() => readJson<EntityIndexFile>('entities.index.json'));
+
+const indexRowsById = memo(() => new Map(getEntityIndex().rows.map((r) => [r.id, r])));
+
+/** The index row for an entity slug (or book OSIS), when it has one. */
+export function getIndexRow(id: string): EntityIndexRow | undefined {
+  return indexRowsById().get(id);
+}
+
+/**
+ * The line that tells same-named entities apart: the index `sub`, only when
+ * another row shares the name (`dupCount > 1`). Unique names get nothing —
+ * the list is not the place for a verse count on every row.
+ */
+export function disambiguator(id: string): string | undefined {
+  const row = getIndexRow(id);
+  return row !== undefined && row.dupCount > 1 ? row.sub : undefined;
 }
 
 /** Events with no parent, in chronology order — what the site calls periods. */
