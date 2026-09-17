@@ -28,3 +28,6 @@ export * from './entities/normalizeName.js';
 export * from './entities/entityIndex.js';
 export * from './entities/disambiguate.js';
 export * from './entities/match.js';
+export * from './graph/format.js';
+export * from './graph/build.js';
+export * from './graph/adjacency.js';
