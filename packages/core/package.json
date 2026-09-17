@@ -4,6 +4,7 @@
   "description": "Theographic search and data model — pure TypeScript, runs in browser workers, Node, and native shells",
   "license": "GPL-3.0-or-later",
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

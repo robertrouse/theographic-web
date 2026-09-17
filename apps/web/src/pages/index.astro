@@ -1,6 +1,8 @@
 ---
+import { engineManifest } from '@theographic/core';
 import Base from '../layouts/Base.astro';
-import SearchSlot from '../components/SearchSlot.astro';
+import SearchPage from '../components/search/SearchPage';
+import { getBooks, getManifest } from '../lib/data';
 
 /** The ten hint queries CP-07's definition of done is measured against. */
 const hints = [
@@ -15,7 +17,8 @@ const hints = [
   'Bethlehem',
   'Antioch',
 ];
-const hintHref = (q: string) => `/?q=${encodeURIComponent(q)}`;
+const manifest = engineManifest(getManifest());
+const books = getBooks().map((b) => ({ order: b.order, osis: b.osis, slug: b.slug, name: b.name }));
 ---
 
 <Base title="Theographic" section="search" hideHeaderSearch>
@@ -29,19 +32,7 @@ const hintHref = (q: string) => `/?q=${encodeURIComponent(q)}`;
       height="444"
       fetchpriority="high"
     />
-    <SearchSlot class="home__search" />
-    <div class="home__hints">
-      <p class="muted">Try searching for</p>
-      <ul class="chips">
-        {
-          hints.map((q) => (
-            <li>
-              <a href={hintHref(q)}>{q}</a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
+    <SearchPage client:load manifest={manifest} books={books} hints={hints} />
     <p class="lead"><a href="/browse/">Browse the full index</a></p>
     <p class="muted">People, places, periods and passages of the Bible, and how they connect.</p>
   </div>
