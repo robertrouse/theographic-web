@@ -1,11 +1,14 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
+import Definition from '../../components/Definition.astro';
 import EntityChips from '../../components/EntityChips.astro';
 import EventTimeline from '../../components/EventTimeline.astro';
 import {
   getBookByOrder,
+  getBookByOsis,
   getChildEvents,
+  getDefinition,
   getEvent,
   getEventBySlug,
   getEvents,
@@ -14,12 +17,14 @@ import {
   resolvePlaces,
 } from '../../lib/data';
 import { entityHref, formatDate, formatDuration, rangeLabel, verseHref } from '../../lib/refs';
+import { describeWith } from '../../lib/definitions';
 
 export const getStaticPaths = (() =>
   getEvents().map((e) => ({ params: { slug: e.slug } }))) satisfies GetStaticPaths;
 
 const event = getEventBySlug(Astro.params.slug)!;
 const date = formatDate(event.startDate);
+const description = describeWith(getDefinition(event.slug), undefined, getBookByOsis);
 const participants = resolvePeople(event.participants);
 const groups = resolveGroups(event.groups);
 const locations = resolvePlaces(event.locations);
@@ -133,6 +138,16 @@ const descriptionText = [date, rangeText, locations.map((l) => l.name).join(', '
       )
     }
   </dl>
+
+  {
+    description && (
+      <Definition
+        source={description.source}
+        markdown={description.markdown}
+        citations={description.citations}
+      />
+    )
+  }
 
   {event.notes && <p class="muted">{event.notes}</p>}
 
