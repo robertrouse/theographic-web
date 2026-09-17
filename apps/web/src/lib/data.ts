@@ -11,6 +11,7 @@ import { join } from 'node:path';
 import type {
   Book,
   BooksBundle,
+  Definition,
   EntitiesBundle,
   EntityIndexFile,
   EntityIndexRow,
@@ -177,6 +178,27 @@ export function getPersonDetail(slug: string): PersonDetail {
 }
 export function getPlaceDetail(slug: string): PlaceDetail {
   return readJson<PlaceDetail>(`detail/place/${slug}.json`);
+}
+
+// ------------------------------------------------------------- definitions
+
+/**
+ * `definitions.json` (CP-08) is optional: the bundle is only written when the
+ * metadata repo has the file. A missing file means "no definitions yet", not
+ * an error, so this is the one bundle read through `existsSync` rather than
+ * `readJson` (invariant 6).
+ */
+const definitionsBySlug = memo(() => {
+  const path = join(DATA_DIR, 'definitions.json');
+  if (!existsSync(path)) return new Map<string, Definition>();
+  const { definitions } = JSON.parse(readFileSync(path, 'utf8')) as {
+    definitions: Definition[];
+  };
+  return new Map(definitions.map((d) => [d.slug, d]));
+});
+
+export function getDefinition(slug: string): Definition | undefined {
+  return definitionsBySlug().get(slug);
 }
 
 // ---------------------------------------------------------------- helpers

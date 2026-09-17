@@ -17,44 +17,138 @@ reviewable data, never overwriting a reviewed row.
 
 ## Design
 
-- `@anthropic-ai/sdk`, **Message Batches** (`client.messages.batches.create`,
-  poll `processing_status`, stream results keyed by `custom_id` = slug).
-- Model `claude-opus-5`, adaptive thinking (default), `max_tokens` 2000,
-  `output_config.format` JSON schema:
-  `{ definition: string, citations: string[] /* osisRef */, confidence: 'high'|'medium'|'low', notes?: string }`.
+- `@anthropic-ai/sdk` 0.126, **Message Batches** (`client.messages.batches.create`,
+  poll `processing_status`, stream results keyed by `custom_id` = slug; results
+  arrive in any order and the collector never assumes otherwise).
+- Model `claude-opus-5`, adaptive thinking (the default — no `thinking` param,
+  no `budget_tokens`), `max_tokens` 2000, `output_config.format` JSON schema:
+  `{ definition: string, citations: string[] /* osisRef */, confidence: 'high'|'medium'|'low', notes?: string }`,
+  `additionalProperties: false`.
 - System prompt (stable, `cache_control: {type:'ephemeral'}`): role, rules —
   ≤ 120 words; only claims supported by the supplied verses/relationships;
   cite osisRefs from the supplied list only; say what is uncertain; no
   doctrinal interpretation; plain modern English; name the entity as the
   displayTitle; if the sources are too thin, say so in `notes` and keep the
-  definition to what is known.
-- User content per entity: record fields; relationships with names; up to ~40
-  verses chosen for spread across books (`verseText`); Easton text labelled
-  "legacy reference (1897), may be dated or conflate people"; events add
-  participants, locations, verse span, date.
+  definition to what is known. It is 1,666 chars (~420 tokens), which is
+  below the prompt-cache minimum, so the `cache_control` is harmless but will
+  not engage; padding it to qualify would cost more than it saves.
+- User content per entity (`ground.ts`): record fields; relationships with
+  names; up to 40 verses chosen for spread across books (one per book
+  minimum, the rest in proportion, evenly sampled within a book so first and
+  last mention survive; events get their passage sampled evenly); Easton text
+  labelled "legacy reference (1897), may be dated or conflate people" and
+  capped at ~2k tokens; the whole message capped at ~6k tokens (Easton is
+  cut first, at a paragraph boundary, then the verse sample). Every message
+  ends with a `CITABLE:` list — the only refs a citation may use.
 - Output row: `{ slug, kind, text, citations, confidence, model, generatedAt,
-status: 'draft'|'reviewed', notes? }`. Regeneration skips `reviewed`.
-- Cost (list): ~4,790 × (~4k in + ~400 out) ≈ 19M in / 2M out ≈ $145 at Opus 5,
-  ≈ $75 via Batches. Verify `ant auth status` / `ANTHROPIC_API_KEY` first.
+status: 'draft'|'reviewed', notes? }`. Regeneration skips `reviewed`
+  (`selectTargets`) and `mergeDefinitions` refuses to overwrite one even if
+  asked.
+- Checker (`check.ts`): shape re-validated on the way in; every citation must
+  be a real verse that mentions the entity (people, places: `detail.verses`)
+  or lie in the event's verse list; ≤ 130 words; non-empty text; at least
+  one citation; no duplicates. A failing row is **kept** as `draft` with
+  `notes: 'citation check failed: …'` — never dropped, never patched.
+- Where the file lives: `THEOGRAPHIC_METADATA_DIR/json/definitions.json` when
+  set, else `packages/data/.cache/definitions/definitions.json`. Either way
+  `npm run data` picks it up as an optional ninth source (`fetch.ts`
+  `fetchOptionalDefinitions`), the gate checks it against the model, and
+  `bundles.ts` writes `apps/web/public/data/definitions.json` only when a
+  source file existed. Absent file = no definitions, not an error.
+- Cost: measured prompt sizes over all 4,791 entities (4 chars/token):
+  **3.67M input tokens** incl. system (avg 348/user message; max 4,962 for
+  `jerusalem_636`; 12 Easton entries truncated). Output is the unknown —
+  ~150 tokens of JSON plus adaptive thinking; at ~700/request ≈ 3.4M, at the
+  2,000 cap ≈ 9.6M. At Opus 5 batch rates ($2.50 / $12.50 per MTok):
+  **≈ $50 expected, ≈ $130 worst case.** Verify with the dry run's `usage`
+  before the full run.
+
+## Running it
+
+```bash
+# credentials: ANTHROPIC_API_KEY or `ant auth login`; the CLI never prints them.
+# NB: Claude Code sessions export ANTHROPIC_BASE_URL — run from a plain shell.
+export THEOGRAPHIC_METADATA_DIR=~/Documents/GitHub/theographic-bible-metadata   # optional
+
+npm run data:definitions -- ground moses_2108              # what the model sees
+npm run data:definitions -- submit --dry-run 30 --preview  # all 30 prompts, no network
+npm run data:definitions -- submit --dry-run 30            # → prints the batch id
+npm run data:definitions -- collect msgbatch_…             # polls, checks, merges
+npm run data:definitions -- check                          # re-run the checker on the file
+npm run data                                               # bundles now include definitions.json
+```
+
+`submit` writes `packages/data/.cache/definitions/<batchId>.json` so `collect`
+can run in a later session. `--kind`, `--limit N`, `--slugs a,b` narrow a
+submit; `--out path` redirects collect/check to another file.
 
 ## Tasks
 
-- [ ] `definitions/prompt.ts`, `definitions/ground.ts` (verse selection), `definitions/run.ts` (batch submit/poll/collect), `definitions/check.ts` (citations), `definitions/merge.ts` (respect `reviewed`).
-- [ ] Dry run 30 → `definitions.dryrun.json`; Robert reviews.
+- [x] `definitions/prompt.ts`, `definitions/ground.ts` (verse selection), `definitions/run.ts` (batch submit/poll/collect), `definitions/check.ts` (citations), `definitions/merge.ts` (respect `reviewed`).
+- [x] CLI `cli-defs.ts` (`npm run data:definitions -- submit|collect|check|ground`).
+- [x] Optional ninth source → gate → `definitions.json` bundle.
+- [x] Site: person/place/event pages render `text` with citations as links;
+      draft mark; hide Easton. Verified on a 3-row sample (reviewed Moses
+      shows no mark and no Easton; draft Bethel/Exodus show the mark; Aaron,
+      with no row, still shows Easton).
+- [x] Tests (mocked SDK, no network): 46 in `packages/data/test/definitions.test.ts`,
+      7 in `apps/web/test/definitions.test.ts`.
+- [ ] Dry run 30 → `docs/checkpoints/cp-08-dryrun.json`; Robert reviews.
+      **Blocked: no credential on the machine that built this** (no
+      `ANTHROPIC_API_KEY`, no `ant` CLI, no `~/.config/anthropic`). Nothing has
+      been sent to the API. Robert runs the two commands above and commits
+      the resulting file.
 - [ ] Full run; commit to the metadata repo; bump `data.lock`.
-- [ ] Site: person/place/event pages render `text` with citations as links;
-      draft mark; hide Easton.
 
 ## Decisions made
 
-_(fill in)_
+- **Citations are checked against the data, not the sample.** The rule is "a
+  verse that mentions the entity", which `detail.verses` already answers, so
+  a hand-edited or reviewed row is checked exactly like a generated one and
+  the gate can run the same check on every build.
+- **A failed check keeps the row.** A draft with `citation check failed` in
+  its notes passes the gate (it is what the reviewer needs to see); a
+  `reviewed` row that fails does not. Silently dropping or "fixing" a
+  citation would hide the one thing invariant 7 exists to surface.
+- **The local metadata clone is a working copy.** For the eight Airtable
+  sources `data.lock` is strict. For `definitions.json` from
+  `THEOGRAPHIC_METADATA_DIR` the hash is re-recorded on every build and the
+  change shows up as a `data.lock` diff in git — that diff is the deliberate
+  act. From GitHub at the pinned SHA the strict rule applies, and a 404 is
+  memoised per SHA (`definitions.absent`) so builds without the file never
+  refetch.
+- **`Definition.astro` grew a `citations` prop and an optional `source`**
+  rather than a second component: the page passes one `{ markdown, source?,
+  citations? }` from `describeWith()` whatever the source, which is what
+  CP-06 set it up for.
+- **Groups are out of scope** (no `detail.verses` to anchor against); the
+  checker rejects a `group` row outright.
+- **No `thinking` parameter is sent.** Opus 5 runs adaptive thinking by
+  default and rejects `budget_tokens`; the tests assert the param is absent.
 
 ## Where I left off
 
-_(not started)_
+Pipeline, gate, bundle, site and tests are done and green
+(`npm run typecheck && THEOGRAPHIC_REQUIRE_DATA=1 npm test && npm run build`,
+prettier clean). **The dry run has not been executed** — no API credential was
+available in the environment. Next session, with a credential:
+
+1. `npm run data:definitions -- submit --dry-run 30` (30 requests, ~16k input
+   tokens; the `--preview` output was inspected and the sample is: 10 people
+   led by `abiel_23` (ambiguous), 10 places led by `atad_112` (no
+   coordinates), 10 events).
+2. `npm run data:definitions -- collect <batchId>`; copy the merged file to
+   `docs/checkpoints/cp-08-dryrun.json`; paste the `usage:` line into the
+   Cost bullet above.
+3. If the API rejects the request shape (the one thing a mock cannot prove),
+   the likely culprits are `output_config.format` with an optional `notes`
+   property, or `cache_control` on a system block inside a batch — both are
+   documented as supported, neither has been exercised here.
 
 ## Verify
 
 ```bash
-npm run data:definitions -- --dry-run 30 && npm run data:definitions -- --check
+npm run typecheck && THEOGRAPHIC_REQUIRE_DATA=1 npm test && npm run build
+npm run data:definitions -- submit --dry-run 30 --preview | tail -1   # "30 request(s); none submitted"
+npm run data:definitions -- check                                     # 0 failures on the current file
 ```

@@ -1,3 +1,5 @@
+import type { Definition } from '@theographic/core';
+
 /**
  * Shape of the Airtable exports as they arrive. Only the fields the pipeline
  * reads are typed; everything else is ignored on purpose.
@@ -155,4 +157,10 @@ export interface Sources {
   events: AirtableRecord<EventFields>[];
   peopleGroups: AirtableRecord<GroupFields>[];
   easton: AirtableRecord<EastonFields>[];
+  /**
+   * Optional ninth source (CP-08): generated definitions as committed in the
+   * metadata repo. Absent when no file exists — never an empty array standing
+   * in for "none".
+   */
+  definitions?: Definition[];
 }

@@ -16,6 +16,7 @@
 import type {
   Book,
   BookOsis,
+  Definition,
   EventEntity,
   FeatureType,
   GroupEntity,
@@ -47,6 +48,8 @@ export interface Normalized {
   placeDetail: Map<Slug, PlaceDetail>;
   /** Easton entries not matched to any person or place; kept for later use. */
   eastonTopics: { label: string; item: number; text: string }[];
+  /** Generated definitions, sorted by slug; absent when the source has none. */
+  definitions?: Definition[];
 }
 
 export class NormalizeError extends Error {}
@@ -404,7 +407,7 @@ export function normalize(src: Sources, overrides: Overrides = {}): Normalized {
     }))
     .sort((a, b) => a.label.localeCompare(b.label) || a.item - b.item);
 
-  return {
+  const out: Normalized = {
     books: bookRows,
     versesByBook,
     people: personRows,
@@ -415,4 +418,9 @@ export function normalize(src: Sources, overrides: Overrides = {}): Normalized {
     placeDetail,
     eastonTopics,
   };
+  // --- definitions (pass-through; the gate checks slugs and citations) ------
+  if (src.definitions) {
+    out.definitions = [...src.definitions].sort((a, b) => a.slug.localeCompare(b.slug));
+  }
+  return out;
 }

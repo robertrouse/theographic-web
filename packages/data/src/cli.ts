@@ -4,32 +4,14 @@
  *   build  — fetch → normalize → gate → write apps/web/public/data/ (default)
  *   gate   — normalize and gate without writing anything
  */
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 import { sizeTable, writeBundles } from './bundles.js';
-import { fetchSources, readSource, SOURCE_FILES } from './fetch.js';
+import { fetchSources } from './fetch.js';
 import { gate } from './gate.js';
-import { normalize, NormalizeError, type Overrides } from './normalize.js';
-import type { Sources } from './source.js';
+import { loadAll, loadOverrides } from './load.js';
+import { normalize, NormalizeError } from './normalize.js';
 
 const [, , command = 'build'] = process.argv;
 const log = (s: string): void => console.log(s);
-
-async function loadAll(): Promise<{ src: Sources; sha: string; repo: string }> {
-  const { lock, dir } = await fetchSources({ log });
-  const src = Object.fromEntries(
-    await Promise.all(SOURCE_FILES.map(async (name) => [name, await readSource(dir, name)])),
-  ) as unknown as Sources;
-  return { src, sha: lock.sha, repo: lock.repo };
-}
-
-async function loadOverrides(): Promise<Overrides> {
-  const p = fileURLToPath(new URL('../overrides.json', import.meta.url));
-  const { $comment: _c, ...rest } = JSON.parse(await readFile(p, 'utf8')) as Overrides & {
-    $comment?: string;
-  };
-  return rest;
-}
 
 async function main(): Promise<number> {
   switch (command) {
@@ -40,7 +22,7 @@ async function main(): Promise<number> {
     case 'gate':
     case 'build': {
       const t0 = performance.now();
-      const { src, sha, repo } = await loadAll();
+      const { src, sha, repo } = await loadAll(log);
       const overrides = await loadOverrides();
       let n;
       try {

@@ -8,6 +8,8 @@ import EntityChips from '../../components/EntityChips.astro';
 import EventTimeline from '../../components/EventTimeline.astro';
 import VerseList from '../../components/VerseList.astro';
 import {
+  getBookByOsis,
+  getDefinition,
   getPeople,
   getPerson,
   getPersonDetail,
@@ -18,6 +20,7 @@ import {
   resolvePeople,
 } from '../../lib/data';
 import { entityHref, subtitleOf } from '../../lib/refs';
+import { describeWith } from '../../lib/definitions';
 
 export const getStaticPaths = (() =>
   getPeople().map((p) => ({ params: { slug: p.slug } }))) satisfies GetStaticPaths;
@@ -25,6 +28,7 @@ export const getStaticPaths = (() =>
 const person = getPerson(Astro.params.slug)!;
 const detail = getPersonDetail(person.slug);
 const subtitle = subtitleOf(person);
+const description = describeWith(getDefinition(person.slug), detail.easton, getBookByOsis);
 
 /** Family rows, in the order a reader expects; empty rows are dropped. */
 const family: { label: string; items: Entity[] }[] = [
@@ -148,8 +152,12 @@ const descriptionText = [
   </dl>
 
   {
-    detail.easton && (
-      <Definition source="Easton's Bible Dictionary (1897)" markdown={detail.easton} />
+    description && (
+      <Definition
+        source={description.source}
+        markdown={description.markdown}
+        citations={description.citations}
+      />
     )
   }
 

@@ -36,6 +36,35 @@ export function rangeLabel(range: readonly [VerseId, VerseId], book: BookLookup)
   return `${verseLabel(a, book)}–${pz.v}`;
 }
 
+/** "Gen.12.1" → { osis: "Gen", c: 12, v: 1 }; anything else → undefined. */
+export function osisRefParts(ref: string): { osis: string; c: number; v: number } | undefined {
+  const m = /^([1-5]?[A-Za-z]+)\.(\d{1,3})\.(\d{1,3})$/.exec(ref.trim());
+  if (!m) return undefined;
+  return { osis: m[1]!, c: Number.parseInt(m[2]!, 10), v: Number.parseInt(m[3]!, 10) };
+}
+
+export interface Citation {
+  /** "Genesis 12:1" */
+  label: string;
+  /** "/gen/12#v1" — absent when the book or chapter is unknown, so the label renders as text. */
+  href?: string;
+}
+
+/**
+ * A definition's OSIS citation → link. An unknown book or out-of-range
+ * chapter yields a label with no href rather than a broken link; the gate
+ * upstream should have caught it, but the page must not 404 either way.
+ */
+export function citationOf(ref: string, bookByOsis: (osis: string) => Book | undefined): Citation {
+  const p = osisRefParts(ref);
+  if (!p) return { label: ref };
+  const b = bookByOsis(p.osis);
+  if (!b) return { label: ref };
+  const label = `${b.name} ${p.c}:${p.v}`;
+  if (p.c < 1 || p.c > b.chapterCount) return { label };
+  return { label, href: `/${b.slug}/${p.c}#v${p.v}` };
+}
+
 export function chapterHref(bookSlug: string, c: number): string {
   return `/${bookSlug}/${c}`;
 }

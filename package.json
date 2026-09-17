@@ -21,7 +21,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "data:definitions": "npm run build -w @theographic/core && npm run data:definitions -w @theographic/data --"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",

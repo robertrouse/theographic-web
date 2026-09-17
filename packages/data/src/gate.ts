@@ -9,6 +9,8 @@
  * reports the whole picture.
  */
 import { verseIdParts } from '@theographic/core';
+import { CHECK_FAILED, checkDefinition } from './definitions/check.js';
+import { buildGroundContext, kindOf } from './definitions/ground.js';
 import type { Normalized } from './normalize.js';
 import type { Sources } from './source.js';
 
@@ -220,11 +222,55 @@ export function gate(
   if (inverseMismatch > 0)
     fail(`${inverseMismatch} entities whose verse list disagrees with verse→entity links`);
 
+  // --- definitions (CP-08): every row names a real entity and cites it -------
+  // The file is optional, but once present it must be consistent with THIS
+  // model: a slug that no longer exists or a citation that does not mention
+  // the entity is a data error, not something to drop quietly (invariant 7).
+  let definitionFacts: string | undefined;
+  if (n.definitions) {
+    const ctx = buildGroundContext(n);
+    const seen = new Set<string>();
+    let drafts = 0;
+    let reviewed = 0;
+    let flagged = 0;
+    for (const d of n.definitions) {
+      const where = `definition ${d.slug}`;
+      if (seen.has(d.slug)) fail(`${where}: duplicate row`);
+      seen.add(d.slug);
+      const kind = kindOf(d.slug, ctx);
+      if (kind === undefined) {
+        fail(`${where}: no such entity`);
+        continue;
+      }
+      if (d.kind !== kind) {
+        fail(`${where}: kind ${d.kind}, entity is a ${kind}`);
+        continue;
+      }
+      if (d.status !== 'draft' && d.status !== 'reviewed')
+        fail(`${where}: status ${String(d.status)}`);
+      if (typeof d.model !== 'string' || d.model.length === 0) fail(`${where}: no model`);
+      if (typeof d.generatedAt !== 'string' || d.generatedAt.length === 0)
+        fail(`${where}: no generatedAt`);
+      if (d.status === 'reviewed') reviewed++;
+      else drafts++;
+      // A draft may carry a failed check in its notes — that is the reviewer's
+      // cue, and the row stays. A reviewed row must pass outright.
+      const c = checkDefinition(d, ctx);
+      if (!c.ok) {
+        if (d.status === 'reviewed') fail(`${where}: reviewed but ${c.problems.join('; ')}`);
+        else if (d.notes?.includes(CHECK_FAILED)) flagged++;
+        else fail(`${where}: ${c.problems.join('; ')}`);
+      }
+    }
+    definitionFacts = `${n.definitions.length} definitions (${reviewed} reviewed, ${drafts} draft${flagged ? `, ${flagged} flagged by the citation check` : ''})`;
+  }
+
   const withCoords = n.places.filter((p) => p.lat !== undefined).length;
   const facts = [
     `${n.books.length} books, ${src.chapters.length} chapters, ${verseTotal} verses`,
     `${n.people.length} people, ${n.places.length} places (${withCoords} with coordinates), ${n.events.length} events, ${n.groups.length} groups`,
     `${n.eastonTopics.length} unmatched Easton topics retained for later`,
+    ...(definitionFacts ? [definitionFacts] : []),
   ];
   return { ok: errors.length === 0, errors, facts };
 }

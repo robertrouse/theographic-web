@@ -8,6 +8,7 @@ import PlaceMap from '../../components/PlaceMap.astro';
 import VerseList from '../../components/VerseList.astro';
 import {
   getBookByOsis,
+  getDefinition,
   getPlace,
   getPlaceDetail,
   getPlaces,
@@ -15,6 +16,7 @@ import {
   resolvePeople,
 } from '../../lib/data';
 import { entityHref, subtitleOf } from '../../lib/refs';
+import { describeWith } from '../../lib/definitions';
 
 export const getStaticPaths = (() =>
   getPlaces().map((p) => ({ params: { slug: p.slug } }))) satisfies GetStaticPaths;
@@ -22,6 +24,7 @@ export const getStaticPaths = (() =>
 const place = getPlace(Astro.params.slug)!;
 const detail = getPlaceDetail(place.slug);
 const subtitle = subtitleOf(place);
+const description = describeWith(getDefinition(place.slug), detail.easton, getBookByOsis);
 const hasCoords = place.lat !== undefined && place.lon !== undefined;
 
 const events = resolveEvents(detail.events);
@@ -132,8 +135,12 @@ const descriptionText = [
   </dl>
 
   {
-    detail.easton && (
-      <Definition source="Easton's Bible Dictionary (1897)" markdown={detail.easton} />
+    description && (
+      <Definition
+        source={description.source}
+        markdown={description.markdown}
+        citations={description.citations}
+      />
     )
   }
   {detail.comment && <p class="muted">{detail.comment}</p>}
