@@ -60,6 +60,12 @@ export interface TextSearchOptions {
    */
   phrase?: boolean;
   retokenizeTop?: number;
+  /**
+   * Also return `ranked`: every matching verse in rank order with its score,
+   * coverage and phrase flag, without snippets. The cross-group merge uses
+   * it to combine text evidence with graph hops for verses beyond `limit`.
+   */
+  ranked?: boolean;
 }
 
 export interface TextHit {
@@ -67,6 +73,16 @@ export interface TextHit {
   score: number;
   snippet: Snippet;
   why?: string[];
+}
+
+/** One entry of `TextSearchResult.ranked`. */
+export interface RankedVerse {
+  id: number;
+  score: number;
+  /** Matched non-weak words / non-weak words (1 when there are none). */
+  cov: number;
+  /** The whole query appears contiguously, in order. Only known inside the re-tokenized window. */
+  phrase: boolean;
 }
 
 export interface TextSearchResult {
@@ -79,6 +95,8 @@ export interface TextSearchResult {
   /** Every query word is weak (df > 0.5·N); the rarest one generated candidates. */
   allWeak: boolean;
   phrase: boolean;
+  /** Present when `opts.ranked` is set: all `total` verses in rank order. */
+  ranked?: RankedVerse[];
 }
 
 /** tf normalization; exported so `why` and the tests compute it from one place. */
@@ -105,6 +123,7 @@ export function searchText(
   const wordList = [...new Set(rawWords)].slice(0, BM25.maxWords);
   const words = wordList.map((w) => expandWord(w, index, { fuzzy: opts.fuzzy ?? true }));
   const empty: TextSearchResult = { query, words, hits: [], total: 0, allWeak: false, phrase };
+  if (opts.ranked) empty.ranked = [];
   const usable = words.filter((w) => w.variants.length > 0);
   if (usable.length === 0) return empty;
 
@@ -230,7 +249,18 @@ export function searchText(
     hits.push(hit);
   }
 
-  return { query, words, hits, total, allWeak, phrase };
+  const result: TextSearchResult = { query, words, hits, total, allWeak, phrase };
+  if (opts.ranked) {
+    const covOf = (m: number): number =>
+      nonWeakCount === 0 ? 1 : popcount(m & nonWeakMask) / nonWeakCount;
+    result.ranked = [...head, ...tail].map((s) => ({
+      id: index.verseIdAt(s.doc),
+      score: finalScore.get(s.doc) ?? s.base,
+      cov: covOf(s.matched),
+      phrase: boosts.get(s.doc)?.phrase ?? false,
+    }));
+  }
+  return result;
 }
 
 function popcount(x: number): number {
@@ -299,7 +329,7 @@ function minSpan(bits: number[], mask: number): number {
 function explain(
   s: Scored,
   toks: Token[],
-  words: ExpandedWord[],
+  words: readonly ExpandedWord[],
   index: TextIndex,
   boost: { phrase: boolean; span: number; m: number } | undefined,
   nonWeakCount: number,
@@ -340,4 +370,51 @@ function explain(
     why.push(`prox +${pct.toFixed(0)}% (span ${boost.span})`);
   }
   return why;
+}
+
+export interface VerseDetail {
+  snippet: Snippet;
+  why: string[];
+  /** Words the verse matched (weak included) and whether they appear as a contiguous phrase. */
+  matched: number;
+  phrase: boolean;
+}
+
+/**
+ * Snippet and `why` for any verse against an already-expanded query — the
+ * cross-group merge needs this for verses it reaches through the graph, which
+ * may sit outside the text layer's returned window. Recomputes the same
+ * parts `explain` does from the verse's own tokens; a verse matching no
+ * query word gets a plain snippet and an empty `why`.
+ */
+export function verseDetail(
+  index: TextIndex,
+  words: readonly ExpandedWord[],
+  verseId: number,
+): VerseDetail {
+  const doc = index.docIndexOf(verseId);
+  if (doc < 0) throw new RangeError(`verse ${verseId} is not in the text index`);
+  const text = index.textAt(doc);
+  const toks = tokenize(text, { acrostic: isPsalm119(verseId) });
+  const variantWord = new Map<string, number>();
+  words.forEach((w, i) => {
+    for (const v of w.variants) variantWord.set(v.term, (variantWord.get(v.term) ?? 0) | (1 << i));
+  });
+  const snippet = highlight(text, toks, variantWord);
+  const bits = toks.map((t) => variantWord.get(t.term) ?? 0);
+  let matched = 0;
+  for (const b of bits) matched |= b;
+  if (matched === 0) return { snippet, why: [], matched: 0, phrase: false };
+  const m = popcount(matched);
+  const hasPhrase =
+    words.length >= 2 &&
+    containsPhrase(
+      bits,
+      words.map((_, i) => 1 << i),
+    );
+  const span = m >= 2 ? minSpan(bits, matched) : 0;
+  const nonWeakCount = words.filter((w) => !w.weak).length;
+  const scored: Scored = { doc, base: 0, matched };
+  const why = explain(scored, toks, words, index, { phrase: hasPhrase, span, m }, nonWeakCount);
+  return { snippet, why, matched, phrase: hasPhrase };
 }

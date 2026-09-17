@@ -10,13 +10,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist-node/node/index.d.ts",
+      "import": "./dist-node/node/index.js"
     }
   },
+  "bin": {
+    "theographic": "./bin/theographic.mjs"
+  },
   "files": [
-    "dist"
+    "dist",
+    "dist-node",
+    "bin"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && tsc -p node/tsconfig.json",
     "test": "vitest run"
   }
 }
