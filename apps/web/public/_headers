@@ -1,0 +1,24 @@
+# Netlify cache headers.
+#
+# /_astro/* is content-hashed by Vite: safe to cache for a year.
+#
+# The five engine files are requested by the search worker with a
+# `?v=<sha256 prefix>` query from the manifest (core's fetchSource), so
+# every rebuild is a new URL and the old one can be immutable. Nothing on
+# the site requests them without the query; the other bundles under /data
+# (verses/*.json, detail/*, manifest.json) keep Netlify's default
+# revalidation because they are fetched by path alone.
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/books.json
+  Cache-Control: public, max-age=31536000, immutable
+/data/entities.index.json
+  Cache-Control: public, max-age=31536000, immutable
+/data/verses.idx
+  Cache-Control: public, max-age=31536000, immutable
+/data/verses.txt
+  Cache-Control: public, max-age=31536000, immutable
+/data/graph.bin
+  Cache-Control: public, max-age=31536000, immutable

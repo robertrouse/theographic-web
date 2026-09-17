@@ -134,8 +134,9 @@ export function HitItem({ hit, books, engine, textReady, debug }: HitItemProps) 
     );
   }
 
+  // Places' sublabels already carry the count ("City · 754 verses" / "no verses").
   const count = hit.verseCount;
-  const subHasCount = hit.sublabel !== undefined && /\d+ verse/.test(hit.sublabel);
+  const subHasCount = hit.sublabel !== undefined && /\bverses?\b/.test(hit.sublabel);
   return (
     <li className="hit hit--entity">
       <div className="hit__head">

@@ -22,15 +22,29 @@ export interface EngineInit {
 let engine: WorkerEngine | undefined;
 let idleScheduled = false;
 
+/** User Timing marks (`search:*`) so a Lighthouse run or the debug panel can read the milestones. */
+export function mark(name: string): void {
+  try {
+    performance.mark(`search:${name}`);
+  } catch {
+    // No User Timing here; nothing to record.
+  }
+}
+
 export function getEngine(init: EngineInit): WorkerEngine {
   if (engine) return engine;
   const worker = new Worker(new URL('./search.worker.ts', import.meta.url), { type: 'module' });
   // `WorkerLike` names only `postMessage`/`onmessage`; the DOM's `onmessage`
   // signature carries a `this: Worker` that the structural type cannot, hence the cast.
+  mark('worker-start');
   engine = createWorkerEngine(worker as unknown as WorkerLike, {
     baseUrl: init.baseUrl ?? '/data/',
     manifest: init.manifest,
     layers: ['core'],
+  });
+  void engine.ready.then(() => mark('core-ready'));
+  engine.onLayer((layer, state) => {
+    if (state === 'ready') mark(`${layer}-ready`);
   });
   return engine;
 }

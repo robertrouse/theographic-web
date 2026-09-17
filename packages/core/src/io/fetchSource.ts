@@ -27,6 +27,7 @@
  *     fetch first. The full `manifest.json` lists every bundle and is
  *     large; hosts should inline `engineManifest()`'s subset instead.
  */
+import type { Manifest } from '../types.js';
 import type { IndexSource } from './IndexSource.js';
 
 /** The files the engine reads, and so the only hashes the worker needs. */
@@ -38,19 +39,31 @@ export const ENGINE_FILES = [
   'graph.bin',
 ] as const;
 
-/** The subset of `Manifest` a browser source needs: path → sha256 (hex). */
-export interface EngineManifest {
+/**
+ * The subset of `Manifest` a browser source needs: the engine files'
+ * hashes, plus what `status()` reports. The full manifest lists every
+ * bundle (~200 KB); this is under a kilobyte and is inlined by the host,
+ * so the engine's `read('manifest.json')` is answered from memory.
+ */
+export interface EngineManifest extends Partial<Pick<Manifest, 'format' | 'source' | 'counts'>> {
   files: Record<string, string>;
 }
 
-/** Pick the engine files' hashes out of a full manifest. */
-export function engineManifest(full: { files: Record<string, string> }): EngineManifest {
+/** Pick the engine files' hashes and the status fields out of a full manifest. */
+export function engineManifest(
+  full: { files: Record<string, string> } & Partial<Pick<Manifest, 'format' | 'source' | 'counts'>>,
+): EngineManifest {
   const files: Record<string, string> = {};
   for (const f of ENGINE_FILES) {
     const h = full.files[f];
     if (h !== undefined) files[f] = h;
   }
-  return { files };
+  return {
+    files,
+    ...(full.format !== undefined ? { format: full.format } : {}),
+    ...(full.source !== undefined ? { source: full.source } : {}),
+    ...(full.counts !== undefined ? { counts: full.counts } : {}),
+  };
 }
 
 /**
@@ -163,6 +176,11 @@ export function fetchSource(opts: FetchSourceOptions): FetchSource {
   })();
 
   const read = async (path: string): Promise<Uint8Array> => {
+    if (path === 'manifest.json') {
+      // The engine reads the manifest for `status()`; the inlined copy is it.
+      const m = await manifest;
+      if (m) return new TextEncoder().encode(JSON.stringify(m));
+    }
     const url = await urlFor(path);
     const c = await cache;
     if (c) {

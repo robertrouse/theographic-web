@@ -10,10 +10,9 @@
  * ⌘K / Ctrl+K / `/` focus it from anywhere on the page.
  */
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
-import type { Suggestion } from '@theographic/core';
+import type { Group, Suggestion } from '@theographic/core';
 import { isAborted } from '@theographic/core';
 import { SHOW_RECENT } from '../../search/recent';
-import { GROUP_LABEL } from '../../search/hrefs';
 
 export interface SearchBoxProps {
   value: string;
@@ -30,11 +29,21 @@ export interface SearchBoxProps {
 
 const TRIGGER = 2;
 
+const KIND_LABEL: Record<Group, string> = {
+  passages: 'Passage',
+  verses: 'Verse',
+  people: 'Person',
+  places: 'Place',
+  events: 'Event',
+  groups: 'Group',
+  topics: 'Topic',
+};
+
 function kindLabel(s: Suggestion): string {
   if (s.kind === 'recent') return 'Recent';
   if (s.kind === 'book') return 'Book';
   if (s.kind === 'reference') return 'Passage';
-  return s.group ? GROUP_LABEL[s.group].replace(/s$/, '') : '';
+  return s.group ? KIND_LABEL[s.group] : '';
 }
 
 function isEditable(el: EventTarget | null): boolean {

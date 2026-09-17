@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Group, Hit, SearchResult, WorkerEngine } from '@theographic/core';
 import { isAborted } from '@theographic/core';
+import { mark } from '../../search/engine';
 import { GROUP_LABEL, type BookIndex } from '../../search/hrefs';
 import type { Tab } from '../../search/urlState';
 import { DebugPanel } from './DebugPanel';
@@ -61,6 +62,7 @@ export function SearchResults({
   const [limit, setLimit] = useState(PAGE);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
+  const marked = useRef({ first: false, verses: false });
   const tabRefs = useRef(new Map<Tab, HTMLButtonElement>());
   const focusTab = useRef(false);
 
@@ -80,6 +82,14 @@ export function SearchResults({
     engine.search(q, { limitPerGroup: limit }).then(
       (result) => {
         if (!alive) return;
+        if (!marked.current.first) {
+          marked.current.first = true;
+          mark('first-results');
+        }
+        if (!marked.current.verses && result.ready.verses) {
+          marked.current.verses = true;
+          mark('first-verses');
+        }
         setTimed({ result, roundTripMs: performance.now() - t0, at: Date.now() });
         setError(undefined);
         setPending(false);

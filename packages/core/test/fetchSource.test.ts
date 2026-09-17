@@ -52,6 +52,9 @@ function fakeCaches(): CacheStorageLike & { store: Map<string, Map<string, Respo
 }
 
 const MANIFEST = {
+  format: 1 as const,
+  source: { repo: 'r/m', sha: 'abc' },
+  counts: { books: 66, chapters: 1189, verses: 31102, people: 1, places: 1, events: 1, groups: 1 },
   files: {
     'books.json': 'aaaaaaaaaaaaaaaaaaaaaaaa',
     'entities.index.json': 'bbbbbbbbbbbbbbbbbbbbbbbb',
@@ -66,6 +69,8 @@ describe('fetchSource', () => {
   it('engineManifest keeps only the five engine files; dataVersion is stable and sensitive', () => {
     const m = engineManifest(MANIFEST);
     expect(Object.keys(m.files).sort()).toEqual([...ENGINE_FILES].sort());
+    expect(m.counts?.verses).toBe(31102);
+    expect(m.source?.sha).toBe('abc');
     expect(dataVersion(m)).toMatch(/^[0-9a-f]{8}$/);
     expect(dataVersion(m)).toBe(dataVersion(engineManifest(MANIFEST)));
     const changed = engineManifest({ files: { ...MANIFEST.files, 'graph.bin': '0000' } });
@@ -110,6 +115,23 @@ describe('fetchSource', () => {
     expect([...caches.store.keys()].sort()).toEqual(
       [`theographic-data-${version}`, 'unrelated'].sort(),
     );
+  });
+
+  it('answers manifest.json from the inlined manifest without a request', async () => {
+    const calls: string[] = [];
+    const src = fetchSource({
+      baseUrl: '/data/',
+      manifest: engineManifest(MANIFEST),
+      caches: null,
+      fetch: async (url) => {
+        calls.push(url);
+        return response('x');
+      },
+    });
+    const m = JSON.parse(new TextDecoder().decode(await src.read('manifest.json')));
+    expect(m.counts.verses).toBe(31102);
+    expect(Object.keys(m.files)).toHaveLength(5);
+    expect(calls).toEqual([]);
   });
 
   it('works without a Cache API and without a manifest', async () => {
