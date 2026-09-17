@@ -113,11 +113,73 @@ function preloadIslandChunks() {
   };
 }
 
+/**
+ * Bundles `src/sw.ts` to `dist/sw.js` with esbuild (already a Vite
+ * dependency) and defines its precache list: the shell pages, every
+ * `/_astro/*` chunk except MapLibre's (1.5 MB, fetched on first place
+ * page and cached at runtime instead), the brand images, icons and
+ * manifest. `__BUILD__` is a digest of the precached HTML and the list,
+ * so a rebuild that changes nothing installs nothing. Runs after
+ * `preloadIslandChunks` so the HTML it hashes is the HTML that ships.
+ * @returns {import('astro').AstroIntegration}
+ */
+function serviceWorker() {
+  const SHELL_PAGES = ['/', '/browse/', '/about/', '/offline/'];
+  return {
+    name: 'theographic:service-worker',
+    hooks: {
+      'astro:build:done': async ({ dir, logger }) => {
+        const { build } = await import('esbuild');
+        const { createHash } = await import('node:crypto');
+        const root = fileURLToPath(dir);
+        const hash = createHash('sha256');
+        const precache = [];
+        for (const p of SHELL_PAGES) {
+          const file = join(root, p, 'index.html');
+          hash.update(readFileSync(file));
+          precache.push(p);
+        }
+        for (const name of readdirSync(join(root, '_astro'))) {
+          if (name.startsWith('maplibre-gl')) continue;
+          precache.push(`/_astro/${name}`);
+        }
+        for (const d of ['brand', 'icons']) {
+          for (const name of readdirSync(join(root, d))) precache.push(`/${d}/${name}`);
+        }
+        precache.push('/manifest.webmanifest');
+        hash.update(precache.join('\n'));
+        const buildId = hash.digest('hex').slice(0, 8);
+        const result = await build({
+          entryPoints: [fileURLToPath(new URL('./src/sw.ts', import.meta.url))],
+          outfile: join(root, 'sw.js'),
+          bundle: true,
+          minify: true,
+          format: 'iife',
+          target: 'es2020',
+          define: { __PRECACHE__: JSON.stringify(precache), __BUILD__: JSON.stringify(buildId) },
+          legalComments: 'none',
+          logLevel: 'silent',
+        });
+        if (result.errors.length) throw new Error(result.errors.map((e) => e.text).join('\n'));
+        const size = statSync(join(root, 'sw.js')).size;
+        logger.info(`sw.js build ${buildId}: ${precache.length} precached URLs, ${size} bytes`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
   site: 'https://theographic.netlify.app',
   output: 'static',
   trailingSlash: 'ignore',
-  integrations: [react(), sitemap(), netlifyRedirects(), preloadIslandChunks()],
+  integrations: [
+    react(),
+    // The offline fallback is not a page for a crawler.
+    sitemap({ filter: (page) => !page.endsWith('/offline/') }),
+    netlifyRedirects(),
+    preloadIslandChunks(),
+    serviceWorker(),
+  ],
   build: {
     // Entity pages are many (4,500+); keep each as /path/index.html so
     // Netlify serves clean URLs without a rewrite table.

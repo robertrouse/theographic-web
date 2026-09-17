@@ -32,6 +32,10 @@ const current = (s: string) => (section === s ? 'page' : undefined);
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/brand/og-square-100.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -63,5 +67,6 @@ const current = (s: string) => (section === s ? 'page' : undefined);
       <a href="/browse/" aria-current={current('browse')}>Index</a>
       <a href="/about/" aria-current={current('about')}>About</a>
     </nav>
+    <script src="../pwa/register.ts"></script>
   </body>
 </html>

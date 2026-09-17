@@ -560,3 +560,45 @@ summary::marker {
     filter: invert(1) hue-rotate(180deg);
   }
 }
+
+/* ------------------------------------------------------------- pwa */
+/* The two notes pwa/register.ts adds: "Offline · saved copy" and
+   "A new version is available. Reload". Fixed at the bottom, above the
+   phone nav; one at a time in practice. */
+.pwa-note {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 30;
+  max-width: calc(100% - 2 * var(--gutter));
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--text-small);
+  line-height: 1.3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+.pwa-note button {
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 2px 12px;
+  margin-left: 4px;
+  cursor: pointer;
+}
+@media (max-width: 767px) {
+  .pwa-note {
+    bottom: calc(var(--bottom-nav-h) + 12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --------------------------------------------------------- offline */
+.offline-list li {
+  margin-bottom: 0.3em;
+}
