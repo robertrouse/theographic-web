@@ -19,7 +19,7 @@ merge. `v2` merges to `master` at CP-11.
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | done        | [#87](https://github.com/robertrouse/theographic-web/pull/87) | phone timing to confirm in CP-07                 |
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | done        | [#89](https://github.com/robertrouse/theographic-web/pull/89) | 10 goldens pending Robert (CP-03/04/05 files) |
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
-| 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | in-progress | `cp-07-ui`    | agent working; review PR when it lands |
+| 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | in-progress | `cp-07-ui` PR | review PR; decide Preact (main-thread JS 74 KB, react-dom 64 of it) |
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | blocked     | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline merged; needs Robert: run the 30-entity dry run with an API key, review, then full run |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | todo        | —             |                                                  |
 | 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | todo        | —             |                                                  |

@@ -1,14 +1,33 @@
 // Fails CI when the built site's critical assets exceed their budget.
-// Budgets are gzip sizes; they get real values in CP-07 when the search island
-// lands. Until then this only reports.
+// Sizes are gzip bytes of the files under apps/web/dist (CP-07 set the
+// values; docs/checkpoints/CP-07-search-ui.md has the measurements).
+//
+//   main-thread JS on /      ≤ 80 KB   every JS chunk the home page loads or
+//                                      preloads on the main thread (React,
+//                                      react-dom, the islands) — not the worker.
+//                                      CP-07 asked for 60 KB; react-dom/client
+//                                      alone is 64.3 KB gz (React 19.3), so 60
+//                                      is unreachable without swapping the
+//                                      renderer (Preact/compat ≈ 5 KB — an ADR,
+//                                      not a budget tweak). The islands
+//                                      themselves are ~10 KB.
+//   search worker chunk      ≤ 60 KB   the engine, bundled for the worker
+//   core data layer          ≤ 200 KB  books.json + entities.index.json, the
+//                                      files that gate the first search
+//   text data layer          report    verses.idx + verses.txt (prefetched on
+//                                      idle; not gated)
+//   all loaded JS            ≤ 200 KB  the CP-00 site-wide gate, kept
 import { readdirSync, statSync, readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 
 const dist = new URL('../apps/web/dist/', import.meta.url).pathname;
+const KB = 1024;
 const budgets = {
-  // pattern (regex on path relative to dist) : max gzip bytes
-  '^_astro/.*\\.js$': 200 * 1024, // all client JS combined
+  homeMainThreadJs: 80 * KB,
+  workerJs: 60 * KB,
+  coreLayer: 200 * KB,
+  allLoadedJs: 200 * KB,
 };
 
 function walk(dir, out = []) {
@@ -20,32 +39,80 @@ function walk(dir, out = []) {
   return out;
 }
 
-const files = walk(dist).map((p) => ({
-  rel: p.slice(dist.length),
-  gz: gzipSync(readFileSync(p)).length,
-}));
+const gz = new Map();
+const gzOf = (rel) => {
+  if (!gz.has(rel)) gz.set(rel, gzipSync(readFileSync(join(dist, rel))).length);
+  return gz.get(rel);
+};
+const kb = (n) => `${(n / KB).toFixed(1)} KB`;
+
+const files = walk(dist).map((p) => p.slice(dist.length));
+const html = files.filter((f) => f.endsWith('.html'));
+
+/** Every /_astro/*.js a page references: script src, island component/renderer urls, modulepreload. */
+function pageJs(rel) {
+  const src = readFileSync(join(dist, rel), 'utf8');
+  const out = new Set();
+  for (const m of src.matchAll(/(?:src|href|component-url|renderer-url)="\/?(_astro\/[^"]+\.js)"/g))
+    out.add(m[1]);
+  return out;
+}
 
 // Astro emits framework renderer chunks even when no page references them.
-// Only JS that some HTML file actually loads counts against the budget.
+// Only JS that some HTML file actually loads counts.
 const referenced = new Set();
-for (const f of files.filter((f) => f.rel.endsWith('.html'))) {
-  const html = readFileSync(join(dist, f.rel), 'utf8');
-  for (const m of html.matchAll(/(?:src|href)="\/?(_astro\/[^"]+\.js)"/g)) referenced.add(m[1]);
-}
-const loaded = files.filter((f) => !f.rel.endsWith('.js') || referenced.has(f.rel));
+for (const h of html) for (const js of pageJs(h)) referenced.add(js);
+const worker = files.find((f) => /^_astro\/search\.worker-[^/]+\.js$/.test(f));
+const prefetched = worker ? [worker] : [];
 
+const rows = [];
 let failed = false;
-for (const [pattern, max] of Object.entries(budgets)) {
-  const re = new RegExp(pattern);
-  const total = loaded.filter((f) => re.test(f.rel)).reduce((s, f) => s + f.gz, 0);
-  const ok = total <= max;
+const check = (label, total, max) => {
+  const ok = max === undefined || total <= max;
   if (!ok) failed = true;
-  console.log(
-    `${ok ? 'ok  ' : 'OVER'} ${pattern}: ${(total / 1024).toFixed(1)} KB gz (budget ${(max / 1024).toFixed(0)} KB)`,
+  rows.push(
+    `${ok ? 'ok  ' : 'OVER'} ${label.padEnd(26)} ${kb(total).padStart(10)}${max ? `  (budget ${kb(max)})` : ''}`,
   );
+};
+
+// 1. Main-thread JS on the home page: everything it references except the worker.
+const home = [...pageJs('index.html')].filter((f) => !prefetched.includes(f));
+check(
+  'main-thread JS on /',
+  home.reduce((s, f) => s + gzOf(f), 0),
+  budgets.homeMainThreadJs,
+);
+for (const f of home) rows.push(`       ${kb(gzOf(f)).padStart(10)}  ${f}`);
+
+// 2. The worker chunk.
+if (!worker) {
+  failed = true;
+  rows.push('OVER search worker chunk       missing — no _astro/search.worker-*.js in dist');
+} else {
+  check('search worker chunk', gzOf(worker), budgets.workerJs);
 }
-const site = loaded.reduce((s, f) => s + f.gz, 0);
+
+// 3. Data layers (files served under /data, hashed by the manifest).
+const dataDir = join(dist, 'data');
+const layer = (names) =>
+  names.reduce((s, n) => s + gzipSync(readFileSync(join(dataDir, n))).length, 0);
+check('core data layer', layer(['books.json', 'entities.index.json']), budgets.coreLayer);
+check('text data layer (report)', layer(['verses.idx', 'verses.txt']));
+check('graph data layer (report)', layer(['graph.bin']));
+
+// 4. Site-wide loaded JS (the CP-00 gate).
+const loadedJs = [...referenced].filter((f) => !prefetched.includes(f));
+check(
+  'all loaded JS',
+  loadedJs.reduce((s, f) => s + gzOf(f), 0),
+  budgets.allLoadedJs,
+);
+
+console.log(rows.join('\n'));
+const site = files
+  .filter((f) => !f.endsWith('.js') || referenced.has(f))
+  .reduce((s, f) => s + gzOf(f), 0);
 console.log(
-  `total site gz: ${(site / 1024 / 1024).toFixed(2)} MB across ${loaded.length} loaded files (${files.length - loaded.length} unreferenced JS chunks ignored)`,
+  `total site gz: ${(site / KB / KB).toFixed(2)} MB across ${files.length} files (${files.filter((f) => f.endsWith('.js') && !referenced.has(f) && f !== worker).length} unreferenced JS chunks ignored)`,
 );
 if (failed) process.exit(1);

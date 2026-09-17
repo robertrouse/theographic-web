@@ -159,6 +159,7 @@ function entityToScored(
     raw: h.raw,
     label: h.label,
     sublabel: h.sublabel,
+    verseCount: row.vc,
     ...(why ? { why } : {}),
     pinned: false,
     canonical: row.order ?? FAR,
@@ -279,6 +280,7 @@ function executeClause(
         raw: MERGE.eventByGraph,
         label: row.name,
         sublabel: row.sub,
+        verseCount: row.vc,
         ...(explain
           ? {
               why: [

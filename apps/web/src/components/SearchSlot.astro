@@ -1,27 +1,22 @@
 ---
 /**
- * PLACEHOLDER for the CP-07 search island. A plain form that submits to
- * `/?q=` so the URL contract exists today; CP-07 replaces this component's
- * body with the React `SearchBox` island and keeps the same props.
+ * The header search box (CP-07): a React island that hydrates on idle. It
+ * carries the engine files' hashes from the manifest so the worker makes no
+ * manifest request. Home renders `SearchPage` instead (index.astro).
  */
+import { engineManifest } from '@theographic/core';
+import HeaderSearch from './search/HeaderSearch';
+import { getManifest } from '../lib/data';
+
 interface Props {
   class?: string;
+  /** Kept from the CP-06 placeholder; the header box is always compact today. */
   compact?: boolean;
-  value?: string;
 }
-const { class: className, compact = false, value } = Astro.props;
+const { class: className } = Astro.props;
+const manifest = engineManifest(getManifest());
 ---
 
-<form class={className} action="/" method="get" role="search" data-search-slot>
-  <label for={compact ? 'q-header' : 'q'} class="visually-hidden">Search the Bible</label>
-  <input
-    id={compact ? 'q-header' : 'q'}
-    type="search"
-    name="q"
-    value={value}
-    placeholder={compact ? 'Search' : 'Search the Bible'}
-    autocomplete="off"
-    autocapitalize="off"
-    spellcheck="false"
-  />
-</form>
+<div class={className} data-search-slot>
+  <HeaderSearch client:idle manifest={manifest} />
+</div>
