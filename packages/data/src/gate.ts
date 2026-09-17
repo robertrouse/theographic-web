@@ -242,7 +242,10 @@ export function gate(
         fail(`${where}: no such entity`);
         continue;
       }
-      if (d.kind !== kind) fail(`${where}: kind ${d.kind}, entity is a ${kind}`);
+      if (d.kind !== kind) {
+        fail(`${where}: kind ${d.kind}, entity is a ${kind}`);
+        continue;
+      }
       if (d.status !== 'draft' && d.status !== 'reviewed')
         fail(`${where}: status ${String(d.status)}`);
       if (typeof d.model !== 'string' || d.model.length === 0) fail(`${where}: no model`);

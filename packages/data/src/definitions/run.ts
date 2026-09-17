@@ -246,7 +246,10 @@ export function rowFromResult(
   meta: { model: string; generatedAt: string },
 ): { row: Definition; problems: string[] } | { reason: string } {
   if (res.result.type !== 'succeeded') {
-    const detail = res.result.type === 'errored' ? `${res.result.error.type}` : res.result.type;
+    const detail =
+      res.result.type === 'errored'
+        ? `${res.result.error.error.type}: ${res.result.error.error.message}`
+        : res.result.type;
     return { reason: detail };
   }
   const message = res.result.message;
