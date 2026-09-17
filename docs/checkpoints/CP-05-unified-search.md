@@ -150,12 +150,20 @@ graph hops, cross-group ranking, and a sub-16 ms `suggest()`. Public API frozen.
   8.48 ms). Gate 30 ms locally, 90 ms in CI.
 - Suggest, 196 prefixes (2–6 chars of every golden query), best of 5:
   **p50 0.020 ms · p95 0.074 ms · max 0.43 ms**. Gate 2 ms.
+- GitHub's 2-vCPU runner (run 35224199410, PR #89), the usual ~4–5× slower
+  and a fair stand-in for a mid phone: engine **p50 1.82 ms · p95 14.76 ms
+  · max 44.73 ms ("the")**; suggest p50 0.08 ms · p95 0.32 ms; graph.bin
+  open 22 ms (cold, first call). "the" is the all-weak case CP-04 already
+  flagged (its text layer alone measured 27–35 ms there); the CP-05 merge
+  adds little on top because it takes the fast path. The CI gate is 3× the
+  budget for this reason; the phone measurement in CP-07 decides whether
+  weak-word scoring needs the cap CP-04 describes.
 - Full `npm test`: 331 tests, 317 pass, 14 skipped (10 pending review, 1 deferred, 3 data-gated); core golden 125 = 114 pass + 11 skipped.
 
 ## Where I left off
 
-Everything in the task list is done and green locally. Next: PR into `v2`,
-CI green. Follow-ups for later checkpoints: the two new pending-review
+Everything in the task list is done; [PR #89](https://github.com/robertrouse/theographic-web/pull/89)
+into `v2` is green in CI (typecheck, data, tests, build, size budget). Follow-ups for later checkpoints: the two new pending-review
 goldens need Robert; CP-07 decides whether `recent` needs reserved suggest
 slots; phone timing still unmeasured (CP-07 has the worker).
 
