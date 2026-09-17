@@ -115,7 +115,15 @@ export interface FetchSourceOptions {
   cachePrefix?: string;
 }
 
-const CACHE_PREFIX = 'theographic-data';
+/**
+ * Prefix of the Cache API bucket the engine files live in:
+ * `theographic-data-<version>`. Exported so the site's service worker
+ * can (a) leave these buckets alone when it prunes its own and (b) tell
+ * the offline page whether the index is on the device — from this one
+ * constant, never a second copy of the string.
+ */
+export const DATA_CACHE_PREFIX = 'theographic-data';
+const CACHE_PREFIX = DATA_CACHE_PREFIX;
 
 function globals(): { fetch?: FetchLike; caches?: CacheStorageLike } {
   return globalThis as unknown as { fetch?: FetchLike; caches?: CacheStorageLike };
