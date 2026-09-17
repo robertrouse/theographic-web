@@ -10,6 +10,8 @@ import { getManifest } from '../lib/data';
 
 interface Props {
   class?: string;
+  /** Kept from the CP-06 placeholder; the header box is always compact today. */
+  compact?: boolean;
 }
 const { class: className } = Astro.props;
 const manifest = engineManifest(getManifest());

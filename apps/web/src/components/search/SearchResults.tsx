@@ -18,7 +18,6 @@ import type { Layers } from './useEngine';
 
 const PER_GROUP_ALL = 3;
 const PAGE = 20;
-const ALL_LIMIT = 10;
 
 export interface SearchResultsProps {
   q: string;
@@ -78,21 +77,19 @@ export function SearchResults({
     let alive = true;
     setPending(true);
     const t0 = performance.now();
-    engine
-      .search(q, { limitPerGroup: tab === 'all' ? ALL_LIMIT : Math.max(limit, ALL_LIMIT) })
-      .then(
-        (result) => {
-          if (!alive) return;
-          setTimed({ result, roundTripMs: performance.now() - t0, at: Date.now() });
-          setError(undefined);
-          setPending(false);
-        },
-        (err: unknown) => {
-          if (!alive || isAborted(err)) return;
-          setError(err instanceof Error ? err.message : String(err));
-          setPending(false);
-        },
-      );
+    engine.search(q, { limitPerGroup: limit }).then(
+      (result) => {
+        if (!alive) return;
+        setTimed({ result, roundTripMs: performance.now() - t0, at: Date.now() });
+        setError(undefined);
+        setPending(false);
+      },
+      (err: unknown) => {
+        if (!alive || isAborted(err)) return;
+        setError(err instanceof Error ? err.message : String(err));
+        setPending(false);
+      },
+    );
     return () => {
       alive = false;
     };
@@ -124,6 +121,11 @@ export function SearchResults({
 
   const tabs: Tab[] = ['all', ...order];
   const current: Tab = tabs.includes(tab) ? tab : 'all';
+  // One non-empty group needs no tab strip: All and the group would be the same list.
+  const showTabs = order.length > 1;
+  const refErrors = result
+    ? result.plan.clauses.flatMap((c) => c.refErrors.map((e) => e.message))
+    : [];
   const announce = !result
     ? `Searching for ${q}`
     : `${total} result${total === 1 ? '' : 's'} for ${q}${result.ready.verses ? '' : ', verses still loading'}`;
@@ -167,7 +169,14 @@ export function SearchResults({
       {debug && result && (
         <DebugPanel result={result} roundTripMs={timed!.roundTripMs} layers={layers} />
       )}
-      {result && !empty && (
+      {refErrors.length > 0 && (
+        <ul className="results__note" role="note">
+          {refErrors.map((m, i) => (
+            <li key={i}>{m}</li>
+          ))}
+        </ul>
+      )}
+      {result && !empty && showTabs && (
         <div className="results__tabs" role="tablist" aria-label="Result groups">
           {tabs.map((t, i) => {
             const n = t === 'all' ? total : result.groups[t].total;
@@ -204,12 +213,12 @@ export function SearchResults({
           {current === 'all' &&
             order.map((g) => {
               const gr = result.groups[g];
-              const shown = gr.hits.slice(0, PER_GROUP_ALL);
+              const shown = showTabs ? gr.hits.slice(0, PER_GROUP_ALL) : gr.hits;
               return (
                 <section className="results__group" key={g}>
                   <h2 className="results__h">
                     {GROUP_LABEL[g]}
-                    {gr.total > shown.length && (
+                    {showTabs && gr.total > shown.length && (
                       <button
                         type="button"
                         className="results__more"
@@ -220,6 +229,17 @@ export function SearchResults({
                     )}
                   </h2>
                   {list(g, shown)}
+                  {!showTabs && gr.total > shown.length && (
+                    <p className="results__load">
+                      <button
+                        type="button"
+                        className="results__more"
+                        onClick={() => setLimit((l) => l + PAGE)}
+                      >
+                        Load more ({shown.length} of {gr.total})
+                      </button>
+                    </p>
+                  )}
                 </section>
               );
             })}
@@ -256,21 +276,13 @@ export function SearchResults({
   );
 }
 
-/** Why nothing matched: the reference errors first, then the plan's own lines. */
+/** Why nothing matched: the plan's own lines (reference errors already show above). */
 function NoResults({ q, result }: { q: string; result: SearchResult }) {
-  const errors = result.plan.clauses.flatMap((c) => c.refErrors.map((e) => e.reason));
   const why = result.plan.why.filter((w) => !w.startsWith('groups:')).slice(0, 4);
   return (
     <div className="results__none">
       <p className="lead">No results for “{q}”.</p>
-      {errors.length > 0 && (
-        <ul className="results__why">
-          {errors.map((e, i) => (
-            <li key={i}>{e}</li>
-          ))}
-        </ul>
-      )}
-      {errors.length === 0 && why.length > 0 && (
+      {why.length > 0 && (
         <ul className="results__why muted">
           {why.map((w, i) => (
             <li key={i}>{w}</li>

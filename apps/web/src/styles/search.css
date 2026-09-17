@@ -240,6 +240,13 @@
     animation: none;
   }
 }
+.results__note {
+  list-style: none;
+  margin: 0 0 1em;
+  padding: 8px 14px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius);
+}
 .results__none {
   margin: 0.4em 0 1.2em;
 }

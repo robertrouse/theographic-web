@@ -7,7 +7,12 @@
  * The islands receive the engine files' hashes as a prop (inlined at build
  * from `manifest.json`), so the worker makes no manifest request.
  */
-import { createWorkerEngine, type EngineManifest, type WorkerEngine } from '@theographic/core';
+import {
+  createWorkerEngine,
+  type EngineManifest,
+  type WorkerEngine,
+  type WorkerLike,
+} from '@theographic/core';
 
 export interface EngineInit {
   manifest: EngineManifest;
@@ -20,7 +25,9 @@ let idleScheduled = false;
 export function getEngine(init: EngineInit): WorkerEngine {
   if (engine) return engine;
   const worker = new Worker(new URL('./search.worker.ts', import.meta.url), { type: 'module' });
-  engine = createWorkerEngine(worker, {
+  // `WorkerLike` names only `postMessage`/`onmessage`; the DOM's `onmessage`
+  // signature carries a `this: Worker` that the structural type cannot, hence the cast.
+  engine = createWorkerEngine(worker as unknown as WorkerLike, {
     baseUrl: init.baseUrl ?? '/data/',
     manifest: init.manifest,
     layers: ['core'],
