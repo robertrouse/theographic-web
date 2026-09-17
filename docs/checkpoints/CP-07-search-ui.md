@@ -189,12 +189,22 @@ budget tweak — Robert's call.
   is the stand-in, as `CLAUDE.md` asks for a throttled profile rather than a
   laptop number.
 
+## Netlify deploy preview ([PR #90](https://github.com/robertrouse/theographic-web/pull/90))
+
+Verified on `deploy-preview-90--theographic.netlify.app`: `/?q=Paul%20Antioch&debug=1`
+renders the CLI's order (events first, Acts 13:1 first verse), all three layers
+ready, no console errors; `/?q=Prov%2025:2` renders the passage with its verse.
+Headers: `/data/entities.index.json?v=…` and `/_astro/search.worker-*.js` come
+back `cache-control: public,max-age=31536000,immutable` with `content-encoding:
+br`; `/data/manifest.json` keeps `max-age=0,must-revalidate`. Unthrottled from
+this Mac on a cold CDN edge: worker start 1.88 s, core ready 2.06 s, first
+results 2.08 s, graph 2.42 s, verses 3.05 s.
+
 ## Where I left off
 
-Everything in the task list is done and measured; PR open into `v2`.
-Follow-ups: Preact decision (above); the Netlify deploy preview must be
-checked for `Cache-Control: immutable` on `/data/books.json?v=…` and for the
-worker starting (CSP is not set, so no `worker-src` issue expected).
+Everything in the task list is done and measured; [PR #90](https://github.com/robertrouse/theographic-web/pull/90)
+into `v2` is green (CI, Netlify header/redirect rules, deploy preview) and
+awaits review. Open for Robert: the Preact question above.
 
 ## Verify
 
