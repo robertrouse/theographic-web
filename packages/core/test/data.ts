@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Book, BooksBundle, EntitiesBundle, VersesBundle } from '../src/types.js';
+import type { EntityIndexFile } from '../src/entities/types.js';
 import type { deriveAmbiguousBooks } from '../src/refs/ambiguous.js';
 import { openTextIndex, type TextIndex } from '../src/text/index.js';
 
@@ -38,6 +39,11 @@ export function loadBooks(): Book[] | undefined {
 export function loadEntities(): EntitiesBundle | undefined {
   if (!hasData()) return undefined;
   return readJson<EntitiesBundle>('entities.json');
+}
+
+export function loadEntityIndexFile(): EntityIndexFile | undefined {
+  if (!hasData()) return undefined;
+  return readJson<EntityIndexFile>('entities.index.json');
 }
 
 export function loadVerses(osis: string): VersesBundle | undefined {

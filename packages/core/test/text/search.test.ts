@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { BM25, searchText, tfNorm } from '../../src/text/bm25.js';
 import { buildTextIndex } from '../../src/text/build.js';
-import { damerauLevenshtein } from '../../src/text/damerau.js';
+import { damerauLevenshtein } from '../../src/damerau.js';
 import { EXPANSION, expandWord } from '../../src/text/expand.js';
 import { openTextIndex } from '../../src/text/index.js';
 import { loadTextIndex, SKIP_REASON } from '../data.js';

@@ -79,17 +79,30 @@ bytes); no Date/random; ties break by group order → verseID → id.
 | Step        | Output                                                                                                                                                                                                        | Est. size           | Layer |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----- |
 | 01-books    | books + alias table (osis, name, short, order, versesPerChapter[])                                                                                                                                            | ~7 KB gz            | core  |
-| 02-entities | `entities.bin` rows `{t, id, name, norm, aliases:[[norm, w, source]], vc, order, sub}` + `names.sorted`                                                                                                       | ~130 KB gz          | core  |
+| 02-entities | `entities.index.json` rows `{t, id, name, norm, title?, aliases:[[norm, w, source]], vc, order?, sub, dupCount, ft?}` + `names` sorted `[string, row, alias]`                                                | 152 KB gz (measured; 119 without `names`) | core  |
 | 03-verses   | `verses.txt` (UTF-8 blob + Uint32 offsets + verseID array) + `verses.idx` (`TGIX` header; front-coded termDict; termMeta df/offset; varint gap+tf postings; Uint8 docLen; stemGroups; fuzzy-candidate bitset) | 1.5 MB + ~1.0 MB gz | text  |
 | 04-graph    | `graph.bin` CSR: entity→verseIDs, event→verseIDs, event→participants/locations                                                                                                                                | ~70 KB gz           | graph |
 | 05-manifest | `{version, files, hashes, counts, avgDocLen}`                                                                                                                                                                 | 1 KB                | core  |
 
 Alias mining: for each `[label](/person|place/slug)` in `richText`, normalize
 (strip possessive, `_`/`*`), count per (slug,label); keep count ≥ 2 or present in
-`alsoCalled`; `w = count(label→slug)/Σcount(label→any)`. Curated aliases get
-`w=1` unless they equal another entity's primary name or are a word with df>200
-(then link share, or 0.25). Precompute `sub` (disambiguation sublabel) and
-`dupCount` per name at build.
+`alsoCalled`; `w = count(label→slug)/Σcount(label→any)`. Curated aliases
+(`alsoCalled`/`aliases`, `surname`, `esvName`, each title token that is not
+the name itself or a function word, the un-hyphenated twin of a hyphenated
+name, a book's short name) get `w=1` unless they equal another entity's
+primary name or are a single word with df>200 (then link share, or 0.25 when
+the label is never linked). A curated alias whose link share is 0 is dropped
+— the text uses that name only for other entities ("Zebedee" on James). Every
+name and alias is normalized by `core/entities/normalizeName` (NFKC, lower,
+emphasis and possessive stripped, punctuation → space) so build and query
+agree byte for byte. Precompute `sub` (disambiguation sublabel) and
+`dupCount` per name (across all row types) at build. Measured on cfb1c48:
+4,880 rows (3,067 p · 1,274 l · 23 g · 450 e · 66 b), 2,158 with a duplicate
+name; 1,090 aliases (199 mined only, 450 curated+mined, 441 curated only;
+354 curated collisions of which 144 dropped at share 0); 40,690 links, 3 of
+whose target slugs resolve to nothing
+(`daughter_of_lot_-_younger_984` ×8, `daughter_of_lot_-_older_985` ×4,
+`timna_2859` ×2).
 
 Tokenizer: NFKC → lowercase → `’`→`'` → strip possessive → split `[^a-z0-9'-]+`
 → keep hyphens (emit un-hyphenated twin for entity names only) → drop Ps 119
@@ -127,6 +140,20 @@ Entity: tiers exact 1.00 · aliasExact(w≥.5) 0.95 · multiToken 0.85 · prefix
 Fuzzy only when exact/prefix yield <3 hits or single-word query; DL ≤1 for
 len<6 else ≤2; length-banded with early exit. `strictTiers` option for pure
 lexicographic tier order.
+
+Tier definitions (`core/entities/match.ts`, `ENTITY_TIERS`; a row keeps its
+highest band): _exact_ query = `norm` · _aliasExact_ query = alias with w ≥ 0.5
+· _multiToken_ ≥ 2 query tokens, every one a token of the name, the title or
+a strong alias · _prefix_ query is a proper prefix of the name or a strong
+alias, ratio = |query|/|matched| · _token_ a query token (≥ 2 chars, not a
+function word) equals a name token, where either side is multi-word ·
+_aliasWeak_ query = alias with w < 0.5 · _fuzzy_ whole query within DL of the
+name or a strong alias, tried only on rows no lexical tier hit, never for
+queries under 3 chars; "single-word" is read literally, so a single word is
+always typo-checked and a multi-word query only when the lexical tiers found
+fewer than 3 rows. Δlen is measured against the matched string. `raw` is the
+unclamped value (ranks entities among themselves; 1.019 beats 1.011);
+`score = min(1, raw)` is what merge sees. Ties: group order → first verse → id.
 
 Verse text: expansions per query word — exact 1.0, archaic map 0.9, stem group
 0.7, fuzzy 0.6/0.4 (only if not in dictionary or df<3, len≥4, over the 6,610

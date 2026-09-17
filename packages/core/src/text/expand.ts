@@ -20,7 +20,7 @@
  * exact match" rather than being inflated by the variant's own rarity.
  */
 import pairs from './archaic.json' with { type: 'json' };
-import { damerauLevenshtein } from './damerau.js';
+import { damerauLevenshtein } from '../damerau.js';
 import type { TextIndex } from './index.js';
 
 export type VariantKind = 'exact' | 'archaic' | 'stem' | 'archaic-stem' | 'fuzzy1' | 'fuzzy2';

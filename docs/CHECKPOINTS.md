@@ -15,8 +15,8 @@ merge. `v2` merges to `master` at CP-11.
 | 00  | [Scaffold + checkpoint system](checkpoints/CP-00-scaffold.md)   | done        | `v2` `6e33176` | —                                                |
 | 01  | [Data pipeline + bundles](checkpoints/CP-01-data-pipeline.md)   | done        | [#83](https://github.com/robertrouse/theographic-web/pull/83) | —                                                |
 | 02  | [Reference parser](checkpoints/CP-02-reference-parser.md)       | done        | [#84](https://github.com/robertrouse/theographic-web/pull/84) | —                                                |
-| 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | in-progress | `cp-03-entities` | agent working; review PR when it lands        |
-| 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | in-progress | [#87](https://github.com/robertrouse/theographic-web/pull/87) | review PR; decide the two pending-review goldens (#22, #24) |
+| 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | done        | [#86](https://github.com/robertrouse/theographic-web/pull/86) | 4 goldens pending Robert's review (see CP file) |
+| 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | in-progress | [#87](https://github.com/robertrouse/theographic-web/pull/87) | merged with CP-03; CI perf gate tolerance; merge |
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | todo        | —             |                                                  |
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | todo        | —             |                                                  |

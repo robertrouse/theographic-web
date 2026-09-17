@@ -16,6 +16,7 @@ import type {
   VersesBundle,
 } from '@theographic/core';
 import { sha256 } from './hash.js';
+import { buildEntityIndex } from './index-entities.js';
 import { buildVerseTextIndex } from './index-text.js';
 import type { Normalized } from './normalize.js';
 
@@ -78,6 +79,9 @@ export async function writeBundles(
 
   const events: EventsBundle = { events: n.events };
   await emit('events.json', events);
+
+  // 02-entities: name index with mined aliases and sublabels.
+  await emit('entities.index.json', buildEntityIndex(n));
 
   // 03-verses: the BM25 text layer (docs/search-design.md §Build outputs).
   const text = buildVerseTextIndex(n);
