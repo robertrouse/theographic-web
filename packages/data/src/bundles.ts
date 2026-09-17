@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import type {
   BooksBundle,
+  Definition,
   EntitiesBundle,
   EventsBundle,
   Manifest,
@@ -21,6 +22,11 @@ import { buildVerseTextIndex } from './index-text.js';
 import type { Normalized } from './normalize.js';
 
 export const OUT_DIR = fileURLToPath(new URL('../../../apps/web/public/data/', import.meta.url));
+
+/** `definitions.json` (CP-08): every generated or reviewed definition, by slug. */
+export interface DefinitionsBundle {
+  definitions: Definition[];
+}
 
 export interface WrittenFile {
   path: string;
@@ -90,6 +96,13 @@ export async function writeBundles(
 
   for (const [slug, d] of n.personDetail) await emit(`detail/person/${slug}.json`, d);
   for (const [slug, d] of n.placeDetail) await emit(`detail/place/${slug}.json`, d);
+
+  // 08-definitions: only when the source had a file. No file, no bundle —
+  // the site treats a missing definitions.json as "none yet" (invariant 6).
+  if (n.definitions) {
+    const definitions: DefinitionsBundle = { definitions: n.definitions };
+    await emit('definitions.json', definitions);
+  }
 
   const chapters = n.books.reduce((s, b) => s + b.versesPerChapter.length, 0);
   const verses = [...n.versesByBook.values()].reduce((s, v) => s + v.length, 0);

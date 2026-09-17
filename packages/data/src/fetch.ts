@@ -85,3 +85,84 @@ export async function fetchSources(opts: { log?: (s: string) => void } = {}): Pr
 export async function readSource<T = unknown>(dir: string, name: SourceFile): Promise<T> {
   return JSON.parse(await readFile(join(dir, `${name}.json`), 'utf8')) as T;
 }
+
+/**
+ * The optional ninth source: `json/definitions.json` (CP-08). Absent is a
+ * normal state, not an error — the metadata repo had no such file before the
+ * first generation run, and a local clone may not have it either.
+ *
+ * Resolution, first hit wins:
+ *   1. `THEOGRAPHIC_METADATA_DIR/json/definitions.json` when that is set. It is
+ *      the working copy the pipeline writes to, so it is re-copied into the
+ *      cache on every build and its hash is *updated* in `data.lock` rather
+ *      than verified — the lock diff in git is where the change becomes
+ *      deliberate. (The eight Airtable sources keep the strict rule; they do
+ *      not change between pins.)
+ *   2. The file at the pinned SHA on GitHub, hash-checked like every other
+ *      source. A 404 is memoised per SHA in `definitions.absent` so a build
+ *      with no definitions never refetches.
+ *   3. `<cache>/definitions/definitions.json` — the pipeline's scratch output
+ *      when no metadata dir is set. Not hashed into the lock: it is a preview
+ *      path, and a build from it is only as reproducible as the file.
+ *
+ * Returns the path of the file to read, or undefined when there is none.
+ */
+export async function fetchOptionalDefinitions(
+  lock: DataLock,
+  opts: { log?: (s: string) => void } = {},
+): Promise<string | undefined> {
+  const log = opts.log ?? (() => {});
+  const file = 'definitions.json';
+  const dir = cacheDir(lock);
+  await mkdir(dir, { recursive: true });
+  const dest = join(dir, file);
+  const marker = join(dir, 'definitions.absent');
+  const localDir = process.env['THEOGRAPHIC_METADATA_DIR'];
+
+  const record = async (strict: boolean): Promise<string> => {
+    const hash = sha256(await readFile(dest));
+    const expected = lock.files[file];
+    if (expected !== hash) {
+      if (expected !== undefined && strict) {
+        throw new Error(
+          `${file} does not match data.lock (expected ${expected.slice(0, 12)}…, got ${hash.slice(0, 12)}…). ` +
+            `Delete ${dest} to refetch, or update data.lock deliberately.`,
+        );
+      }
+      lock.files[file] = hash;
+      await writeLock(lock);
+      log(`data.lock: ${file} hash ${expected === undefined ? 'recorded' : 'updated'}`);
+    }
+    return dest;
+  };
+
+  if (localDir) {
+    const src = join(localDir, 'json', file);
+    if (await exists(src)) {
+      await copyFile(src, dest);
+      return record(false);
+    }
+    return undefined;
+  }
+
+  if (!(await exists(dest)) && !(await exists(marker))) {
+    const url = `https://raw.githubusercontent.com/${lock.repo}/${lock.sha}/json/${file}`;
+    const res = await fetch(url);
+    if (res.ok) {
+      await writeFile(dest, Buffer.from(await res.arrayBuffer()));
+      log(`fetched ${file}`);
+    } else if (res.status === 404) {
+      await writeFile(marker, '');
+    } else {
+      throw new Error(`fetch ${url}: ${res.status} ${res.statusText}`);
+    }
+  }
+  if (await exists(dest)) return record(true);
+
+  const scratch = join(CACHE_ROOT, 'definitions', file);
+  if (await exists(scratch)) {
+    log(`using ${scratch} (pipeline output, not in data.lock)`);
+    return scratch;
+  }
+  return undefined;
+}

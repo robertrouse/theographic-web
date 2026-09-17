@@ -5,7 +5,8 @@
  */
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { fetchSources, readSource, SOURCE_FILES } from './fetch.js';
+import { parseDefinitionsFile } from './definitions/merge.js';
+import { fetchOptionalDefinitions, fetchSources, readSource, SOURCE_FILES } from './fetch.js';
 import { normalize, type Normalized, type Overrides } from './normalize.js';
 import type { Sources } from './source.js';
 
@@ -16,6 +17,11 @@ export async function loadAll(
   const src = Object.fromEntries(
     await Promise.all(SOURCE_FILES.map(async (name) => [name, await readSource(dir, name)])),
   ) as unknown as Sources;
+  const defsPath = await fetchOptionalDefinitions(lock, { log });
+  if (defsPath) {
+    src.definitions = parseDefinitionsFile(await readFile(defsPath, 'utf8'));
+    log(`definitions: ${src.definitions.length} rows from ${defsPath}`);
+  }
   return { src, sha: lock.sha, repo: lock.repo };
 }
 
