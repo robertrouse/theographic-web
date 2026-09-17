@@ -31,18 +31,35 @@ group — never a throw, never an empty group pretending to be a real zero.
 
 ## Loading
 
-**In a worker (browser).** Implement `IndexSource` over `fetch` (plus the
-Cache API if you want offline) and hand it to `createEngine`; the engine
-never touches the DOM or Node. CP-07 adds the worker protocol.
+**In a worker (browser).** `fetchSource` is `IndexSource` over `fetch` and
+the Cache API: URLs carry `?v=<hash>` from the manifest so the files can be
+served `immutable`, and one named cache per data version keeps them offline.
+`serveEngine` is the whole worker body; `createWorkerEngine` is the
+main-thread side (the same API, every method async, `search`/`suggest`
+latest-wins: a newer call rejects the older promise with `AbortError`).
 
 ```ts
-import { createEngine, type IndexSource } from '@theographic/core';
-const source: IndexSource = {
-  read: async (path) => new Uint8Array(await (await fetch(`/data/${path}`)).arrayBuffer()),
-};
-const engine = await createEngine(source, { layers: ['core'] });
+// search.worker.ts
+import { serveEngine } from '@theographic/core';
+serveEngine(self);
+
+// page
+import { createWorkerEngine, engineManifest } from '@theographic/core';
+const worker = new Worker(new URL('./search.worker.ts', import.meta.url), { type: 'module' });
+const engine = createWorkerEngine(worker, {
+  baseUrl: '/data/',
+  manifest: engineManifest(manifest), // the five engine hashes + counts, inlined at build
+  layers: ['core'],
+});
+await engine.ready;
+const r = await engine.search('Paul Antioch');
+engine.onLayer((layer, state) => { /* re-render when text lands */ });
 void engine.preload('text');
 ```
+
+`fetchSource` lives in `core` because `fetch`, `Response` and `caches` are
+browser APIs, not DOM APIs — identical in a Worker, a WebView and a page —
+and the file declares them narrowly rather than pulling in `lib.dom`.
 
 **In Node.** `@theographic/core/node` adds `fsSource(dir)`. It is a separate
 entry point compiled with its own tsconfig (`node/tsconfig.json`, `types:
@@ -183,7 +200,8 @@ src/
   graph/      graph.bin format, build, DataView reader (hops)
   query/      grammar, classify (→ QueryPlan), plan (execute), merge (normalize), scope
   suggest/    typeahead
-  io/         IndexSource + memorySource
+  io/         IndexSource + memorySource; fetchSource (fetch + Cache API)
+  worker/     protocol, serveEngine (worker body), createWorkerEngine (client)
   engine.ts   openEngine / createEngine
 node/         fsSource — the @theographic/core/node entry
 bin/          theographic CLI
