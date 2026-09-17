@@ -25,7 +25,10 @@ const bg = /<rect width="100" height="100" fill="(#[0-9a-f]{6})"\/>/.exec(svg)?.
 // Same drawing, mark scaled to 60% about the centre, on the same background.
 const maskable = svg
   .replace(/<rect width="100" height="100" fill="#[0-9a-f]{6}"\/>/, '')
-  .replace(/(<\/defs>)/, `$1<rect width="100" height="100" fill="${bg}"/><g transform="translate(20 20) scale(0.6)">`)
+  .replace(
+    /(<\/defs>)/,
+    `$1<rect width="100" height="100" fill="${bg}"/><g transform="translate(20 20) scale(0.6)">`,
+  )
   .replace('</svg>', '</g></svg>');
 
 const out = [

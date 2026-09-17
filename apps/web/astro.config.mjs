@@ -201,7 +201,8 @@ export default defineConfig({
       // 6,300 of them: as a hashed file it is fetched once and precached;
       // inlined it is 1.3 KB per page and invisible to the size budget.
       // Vite hands the emitted chunk name, not the source path, hence the test.
-      assetsInlineLimit: (file) => (/\/Base\.astro_astro_type_script/.test(file) ? false : undefined),
+      assetsInlineLimit: (file) =>
+        /\/Base\.astro_astro_type_script/.test(file) ? false : undefined,
     },
   },
 });

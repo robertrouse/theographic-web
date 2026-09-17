@@ -17,7 +17,9 @@ import Base from '../layouts/Base.astro';
   </p>
   <h2>Available offline</h2>
   <ul class="offline-list" data-offline-list>
-    <li><a href="/">Search</a>, the <a href="/browse/">index</a> and <a href="/about/">about</a></li>
+    <li>
+      <a href="/">Search</a>, the <a href="/browse/">index</a> and <a href="/about/">about</a>
+    </li>
   </ul>
   <p class="muted" data-offline-search>Checking the search index…</p>
 </Base>
@@ -36,7 +38,9 @@ import Base from '../layouts/Base.astro';
     }
     const names = await caches.keys();
     const data = names.find((n) => n.startsWith(`${DATA_CACHE_PREFIX}-`));
-    const files = data ? (await (await caches.open(data)).keys()).map((r) => new URL(r.url).pathname) : [];
+    const files = data
+      ? (await (await caches.open(data)).keys()).map((r) => new URL(r.url).pathname)
+      : [];
     const core = files.some((p) => p.endsWith('/entities.index.json'));
     const text = files.some((p) => p.endsWith('/verses.txt'));
     search.textContent = core

@@ -43,7 +43,9 @@ self.addEventListener('install', (event) => {
         __PRECACHE__.map(async (url) => {
           // Hashed chunks may come from the HTTP cache; HTML and unhashed
           // files are re-fetched so a new build never installs a stale page.
-          const req = new Request(url, { cache: url.startsWith('/_astro/') ? 'default' : 'reload' });
+          const req = new Request(url, {
+            cache: url.startsWith('/_astro/') ? 'default' : 'reload',
+          });
           const res = await fetch(req);
           if (!res.ok) throw new Error(`precache ${url} → HTTP ${res.status}`);
           await cache.put(req, res);
@@ -142,7 +144,12 @@ async function page(event: FetchEvent): Promise<Response> {
 }
 
 /** Put, then trim the bucket to `max` entries (oldest first). */
-async function store(name: string, key: string | Request, res: Response, max: number): Promise<void> {
+async function store(
+  name: string,
+  key: string | Request,
+  res: Response,
+  max: number,
+): Promise<void> {
   try {
     const cache = await caches.open(name);
     await cache.put(key, res);
