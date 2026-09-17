@@ -17,10 +17,10 @@ merge. `v2` merges to `master` at CP-11.
 | 02  | [Reference parser](checkpoints/CP-02-reference-parser.md)       | done        | [#84](https://github.com/robertrouse/theographic-web/pull/84) | —                                                |
 | 03  | [Entity search](checkpoints/CP-03-entity-search.md)             | done        | [#86](https://github.com/robertrouse/theographic-web/pull/86) | 4 goldens pending Robert's review (see CP file) |
 | 04  | [Verse text search](checkpoints/CP-04-verse-text-search.md)     | done        | [#87](https://github.com/robertrouse/theographic-web/pull/87) | phone timing to confirm in CP-07                 |
-| 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | todo        | —             |                                                  |
+| 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | in-progress | `cp-05-search` | agent working; review PR when it lands |
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | todo        | —             |                                                  |
-| 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | todo        | —             | needs Robert: 30-entity review                   |
+| 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | in-progress | `cp-08-definitions` | agent building pipeline + 30-entity dry run; Robert reviews |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | todo        | —             |                                                  |
 | 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | todo        | —             |                                                  |
 | 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | todo        | —             | needs Robert: license decision                   |
