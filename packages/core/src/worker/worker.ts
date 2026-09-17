@@ -99,11 +99,13 @@ export function serveEngine(scope: WorkerScopeLike, opts: ServeOptions = {}): vo
         return;
       case 'preload': {
         const before = e.status().layers[req.layer];
+        // `preload` marks the layer `loading` synchronously; report after the call.
+        const loading = e.preload(req.layer);
         if (before !== 'ready') {
           post({ event: 'layer', layer: req.layer, state: 'loading', status: e.status() });
         }
         try {
-          await e.preload(req.layer);
+          await loading;
         } finally {
           const status = e.status();
           if (before !== 'ready') {
