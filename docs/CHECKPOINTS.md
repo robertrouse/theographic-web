@@ -20,7 +20,7 @@ merge. `v2` merges to `master` at CP-11.
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | in-progress | `cp-05-search` | agent working; review PR when it lands |
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | todo        | —             |                                                  |
-| 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | in-progress | `cp-08-definitions` | agent building pipeline + 30-entity dry run; Robert reviews |
+| 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | in-progress | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline + site done; needs Robert: API credential, run the 30-entity dry run, review |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | todo        | —             |                                                  |
 | 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | todo        | —             |                                                  |
 | 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | todo        | —             | needs Robert: license decision                   |

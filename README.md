@@ -27,6 +27,7 @@ npm run data      # build data bundles (from CP-01 on)
 npm run dev       # http://localhost:8001
 npm test
 npm run build     # static output in apps/web/dist
+npm run data:definitions -- submit --dry-run 30   # generated definitions (CP-08; needs an API key)
 ```
 
 ## Contributing
