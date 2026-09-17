@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import type { Book, BooksBundle, EntitiesBundle, VersesBundle } from '../src/types.js';
 import type { EntityIndexFile } from '../src/entities/types.js';
 import type { deriveAmbiguousBooks } from '../src/refs/ambiguous.js';
+import { openTextIndex, type TextIndex } from '../src/text/index.js';
 
 export const DATA_DIR = fileURLToPath(new URL('../../../apps/web/public/data/', import.meta.url));
 
@@ -56,6 +57,17 @@ export function listVerseFiles(): string[] {
     .filter((f) => f.endsWith('.json'))
     .map((f) => f.slice(0, -'.json'.length))
     .sort();
+}
+
+/** The binary text layer (`verses.idx` + `verses.txt`), opened through the core reader. */
+export function loadTextIndex(): TextIndex | undefined {
+  if (!hasData()) return undefined;
+  const idx = join(DATA_DIR, 'verses.idx');
+  const txt = join(DATA_DIR, 'verses.txt');
+  if (!existsSync(idx) || !existsSync(txt)) {
+    throw new Error(`${DATA_DIR} has books.json but no verses.idx/.txt — rerun \`npm run data\``);
+  }
+  return openTextIndex(new Uint8Array(readFileSync(idx)), new Uint8Array(readFileSync(txt)));
 }
 
 /** The TypeScript literal for the GENERATED block in `src/refs/ambiguous.ts`. */

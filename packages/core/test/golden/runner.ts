@@ -32,6 +32,9 @@
  *                      non-entity tier name ("phrase") is deferred to CP-04
  *   count              {group, equals | min}; verses deferred to CP-04
  *
+ * CP-04's text kinds live in `text.ts` and are routed there per query by
+ * `ownsTextExpectation` before anything below runs.
+ *
  * A `pendingReview` map on a line names kinds whose expectation disagrees
  * with the real data or the formula; the test runs them and skips with the
  * note while they still fail, and fails loudly once they pass so the flag
@@ -46,6 +49,7 @@ import type { BookAliasTable } from '../../src/refs/bookAliases.js';
 import { parseReference } from '../../src/refs/parseReference.js';
 import type { ParseReferenceResult } from '../../src/refs/types.js';
 import { verseCountInRef } from '../../src/refs/verseIds.js';
+import { ownsTextExpectation, runTextExpectation } from './text.js';
 
 export interface GoldenQuery {
   n: number;
@@ -88,7 +92,7 @@ export const KIND_OWNER: Record<string, string> = {
 
 export const IMPLEMENTED_KINDS: ReadonlySet<string> = new Set(
   Object.entries(KIND_OWNER)
-    .filter(([, owner]) => owner.startsWith('CP-02') || owner.startsWith('CP-03'))
+    .filter(([, owner]) => /CP-0[234]/.test(owner))
     .map(([kind]) => kind),
 );
 
@@ -471,6 +475,11 @@ export function runExpectation(
   query: GoldenQuery,
   ctx: GoldenContext,
 ): RunResult | undefined {
+  // CP-04 owns the text kinds for text queries (and `expansion` everywhere).
+  if (ownsTextExpectation(kind, query)) {
+    const failures = runTextExpectation(kind, value, query);
+    return failures === undefined ? undefined : { failures };
+  }
   if (!IMPLEMENTED_KINDS.has(kind)) return undefined;
   const { table, index } = ctx;
   switch (kind) {

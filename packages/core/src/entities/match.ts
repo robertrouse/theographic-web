@@ -10,7 +10,7 @@
  * score part (invariant 3). Deterministic: rows are visited in index order
  * and ties break by group order → first verse → id (invariant 9).
  */
-import { damerauLevenshtein } from './damerau.js';
+import { damerauLevenshtein } from '../damerau.js';
 import { labelFor, sublabelFor } from './disambiguate.js';
 import { ALIAS_STRONG, ENTITY_GROUP, ENTITY_GROUP_ORDER, type EntityIndex } from './entityIndex.js';
 import { NAME_STOPWORDS, nameTokens, normalizeName } from './normalizeName.js';

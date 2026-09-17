@@ -8,7 +8,7 @@
 import { afterAll, describe, expect, it } from 'vitest';
 import { loadEntityIndex } from '../src/entities/entityIndex.js';
 import { buildBookAliasTable } from '../src/refs/bookAliases.js';
-import { loadBooks, loadEntityIndexFile, SKIP_REASON } from './data.js';
+import { loadBooks, loadEntityIndexFile, loadTextIndex, SKIP_REASON } from './data.js';
 import {
   IMPLEMENTED_KINDS,
   KIND_OWNER,
@@ -18,13 +18,14 @@ import {
 
 const books = loadBooks();
 const indexFile = loadEntityIndexFile();
+const textIndex = loadTextIndex();
 const queries = loadGoldenQueries();
 const skipped = new Map<string, number[]>();
 const partial: string[] = [];
 const pending: string[] = [];
 
-describe.skipIf(!books || !indexFile)(`golden set (${queries.length} lines)`, () => {
-  if (!books || !indexFile) return; // the body still runs when skipped
+describe.skipIf(!books || !indexFile || !textIndex)(`golden set (${queries.length} lines)`, () => {
+  if (!books || !indexFile || !textIndex) return; // the body still runs when skipped
   const ctx = { table: buildBookAliasTable(books), index: loadEntityIndex(indexFile) };
 
   for (const query of queries) {
@@ -93,4 +94,4 @@ describe.skipIf(!books || !indexFile)(`golden set (${queries.length} lines)`, ()
   });
 });
 
-it.skipIf(books && indexFile)(`golden set skipped: ${SKIP_REASON}`, () => {});
+it.skipIf(books && indexFile && textIndex)(`golden set skipped: ${SKIP_REASON}`, () => {});

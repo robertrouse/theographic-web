@@ -4,7 +4,7 @@
  * The real-data behaviour is the golden set; timing is `entities.perf.test.ts`.
  */
 import { describe, expect, it } from 'vitest';
-import { damerauLevenshtein } from '../src/entities/damerau.js';
+import { damerauLevenshtein } from '../src/damerau.js';
 import { loadEntityIndex, prefixRange, rowsWithPrefix } from '../src/entities/entityIndex.js';
 import { ENTITY_TIERS, matchEntities, type EntityHit } from '../src/entities/match.js';
 import { nameTokens, normalizeName } from '../src/entities/normalizeName.js';

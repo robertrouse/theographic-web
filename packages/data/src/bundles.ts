@@ -17,6 +17,7 @@ import type {
 } from '@theographic/core';
 import { sha256 } from './hash.js';
 import { buildEntityIndex } from './index-entities.js';
+import { buildVerseTextIndex } from './index-text.js';
 import type { Normalized } from './normalize.js';
 
 export const OUT_DIR = fileURLToPath(new URL('../../../apps/web/public/data/', import.meta.url));
@@ -55,6 +56,16 @@ export async function writeBundles(
     });
   };
 
+  const emitBinary = async (rel: string, bytes: Uint8Array): Promise<void> => {
+    await writeFile(join(outDir, rel), bytes);
+    files.push({
+      path: rel,
+      bytes: bytes.length,
+      gzip: gzipSync(bytes).length,
+      sha256: sha256(bytes),
+    });
+  };
+
   const books: BooksBundle = { books: n.books };
   await emit('books.json', books);
 
@@ -69,7 +80,13 @@ export async function writeBundles(
   const events: EventsBundle = { events: n.events };
   await emit('events.json', events);
 
+  // 02-entities: name index with mined aliases and sublabels.
   await emit('entities.index.json', buildEntityIndex(n));
+
+  // 03-verses: the BM25 text layer (docs/search-design.md §Build outputs).
+  const text = buildVerseTextIndex(n);
+  await emitBinary('verses.idx', text.idx);
+  await emitBinary('verses.txt', text.txt);
 
   for (const [slug, d] of n.personDetail) await emit(`detail/person/${slug}.json`, d);
   for (const [slug, d] of n.placeDetail) await emit(`detail/place/${slug}.json`, d);
@@ -94,6 +111,7 @@ export async function writeBundles(
       events: n.events.length,
       groups: n.groups.length,
     },
+    avgVerseTokens: text.stats.avgDocLen,
   };
   await writeFile(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   return { manifest, files };
