@@ -13,6 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
     "@theographic/core": "*"
   },
   "devDependencies": {
