@@ -39,4 +39,8 @@ export * from './query/merge.js';
 export * from './query/plan.js';
 export * from './suggest/suggest.js';
 export * from './io/IndexSource.js';
+export * from './io/fetchSource.js';
+export * from './worker/protocol.js';
+export * from './worker/client.js';
+export * from './worker/worker.js';
 export * from './engine.js';

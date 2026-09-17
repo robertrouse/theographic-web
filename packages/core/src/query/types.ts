@@ -138,6 +138,8 @@ export interface Hit {
   sublabel?: string;
   snippet?: Snippet;
   ref?: Ref;
+  /** Entities only: verses linking the entity (`vc`). Informational; never a ranking input here. */
+  verseCount?: number;
   why?: string[];
 }
 
