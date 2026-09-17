@@ -18,6 +18,7 @@ import type {
 } from '@theographic/core';
 import { sha256 } from './hash.js';
 import { buildEntityIndex } from './index-entities.js';
+import { buildGraphBundle } from './index-graph.js';
 import { buildVerseTextIndex } from './index-text.js';
 import type { Normalized } from './normalize.js';
 
@@ -93,6 +94,9 @@ export async function writeBundles(
   const text = buildVerseTextIndex(n);
   await emitBinary('verses.idx', text.idx);
   await emitBinary('verses.txt', text.txt);
+
+  // 04-graph: entity → verses and event → verses/participants/locations (CSR).
+  await emitBinary('graph.bin', buildGraphBundle(n).bytes);
 
   for (const [slug, d] of n.personDetail) await emit(`detail/person/${slug}.json`, d);
   for (const [slug, d] of n.placeDetail) await emit(`detail/place/${slug}.json`, d);

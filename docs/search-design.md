@@ -81,7 +81,7 @@ bytes); no Date/random; ties break by group order → verseID → id.
 | 01-books    | books + alias table (osis, name, short, order, versesPerChapter[])                                                                                                                                            | ~7 KB gz            | core  |
 | 02-entities | `entities.index.json` rows `{t, id, name, norm, title?, aliases:[[norm, w, source]], vc, order?, sub, dupCount, ft?}` + `names` sorted `[string, row, alias]`                                                | 152 KB gz (measured; 119 without `names`) | core  |
 | 03-verses   | `verses.txt` (UTF-8 blob + Uint32 offsets + verseID array) + `verses.idx` (`TGIX` header; front-coded termDict; termMeta df/offset; varint gap+tf postings; Uint8 docLen; stemGroups; fuzzy-candidate bitset) | 1.5 MB + ~1.0 MB gz | text  |
-| 04-graph    | `graph.bin` CSR: entity→verseIDs, event→verseIDs, event→participants/locations                                                                                                                                | ~70 KB gz           | graph |
+| 04-graph    | `graph.bin` CSR: entity→verseIDs, event→verseIDs, event→participants/locations                                                                                                                                | ~70 KB gz (measured 85)           | graph |
 | 05-manifest | `{version, files, hashes, counts, avgDocLen}`                                                                                                                                                                 | 1 KB                | core  |
 
 Alias mining: for each `[label](/person|place/slug)` in `richText`, normalize
@@ -199,10 +199,44 @@ Guarantees: reference first; exact entity (≥0.95) beats any text hit (≤0.80)
 perfect phrase (0.80) beats prefix/fuzzy entities; fuzzy entity interleaves with
 partial-coverage text by score. Stable sort by score → group order → canonical.
 
+Points the paragraph leaves open, settled in CP-05 (`core/src/query/merge.ts`,
+`MERGE`; measured against the goldens, not tuned to them):
+
+- **Span coverage.** An entity read from part of a clause is a partial
+  reading: its score is `min(1, s) · (0.55 + 0.45 · words/contentWords)`,
+  where `contentWords` excludes filters and consumed references. At half
+  coverage that is 0.775 — below a perfect-phrase verse (0.80), above a
+  mention-only verse (0.70) — which is what puts John 11:35 ahead of Jesus
+  for "Jesus wept" while "Paul" still leads with Paul (coverage 1).
+- **Strong-span words stay in the text query** (weak-span words do too, as
+  written above). The verse layer sees the whole clause, and a verse that is
+  both linked to a span's entity and a full-coverage text hit earns the
+  **mention+text** band `0.90·q`, ordered canonically within the band. That is
+  the concordance reading — "Paul" answers with Acts 13:9, the first verse
+  that calls him Paul, then every verse naming him in order — and it is what
+  the golden's "Acts 13:9 via mention hop" needs: by hop alone (0.70,
+  canonical) that verse is 19th behind the Saul verses. Bands, best wins:
+  co-mention 0.90 (linked from ≥ 2 spans) · mention+text 0.90·q · text
+  0.80·(score/top)·q · mention-only 0.70.
+- **Events through the graph** (participants ∩ locations, only when the
+  clause named both a person and a place) score 0.90, the same evidence
+  class as a co-mention; title matches keep their entity score.
+- **Passages are pinned by a flag**, not by score: an exact entity at 1.0
+  never sorts above a bare-ambiguous book at 0.85. Within the pinned set,
+  explicit > bare > ambiguous > alternative reading (its own confidence).
+- A reference in a clause that also has words is a **scope** for that
+  clause's verses as well as a passage ("Moses Exodus 3"); "… in <book>" is
+  scope only. A bare ambiguous book ("John", "Ruth") is neither consumed nor
+  a scope — its word is the clause's content.
+- **A clause that is only a reference has no verse hits** (#18): the passage
+  carries the reference; `versesFor` shows the text.
+- Strong candidates per span that hop: 20. Weak spans never hop.
+
 Graph hops: `mentions(X)` → verseIDs canonical; co-mention = sorted intersection
 of each span's candidate entities' verse lists; events by participants ∩
 locations; `in:` scope applied as a verseID-range predicate during postings
-traversal.
+traversal. `graph.bin` measured on cfb1c48: 4,791 nodes (3,067 people ·
+1,274 places · 450 events), **170 KB raw · 85 KB gz**, opens in ~1 ms.
 
 Suggest: trigger at 2 chars; book aliases + partial-reference completions →
 entity prefix range (binary search, ≤50 read) ranked tier→prom → recent (host

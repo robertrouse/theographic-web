@@ -168,6 +168,7 @@ describe('writeBundles', () => {
       'entities.index.json',
       'entities.json',
       'events.json',
+      'graph.bin',
       'manifest.json',
       'verses.idx',
       'verses.txt',
