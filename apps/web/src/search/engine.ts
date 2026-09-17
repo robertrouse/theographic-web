@@ -58,8 +58,11 @@ export function preloadOnIdle(e: WorkerEngine): void {
       .then(() => e.preload('graph').catch(() => undefined))
       .then(() => e.preload('text').catch(() => undefined));
   };
-  const ric = (globalThis as { requestIdleCallback?: (cb: () => void) => void })
-    .requestIdleCallback;
-  if (ric) ric(go);
+  // Idle, but not indefinitely: on a 4G profile Chrome held the callback
+  // ~1.3 s past the page going quiet, which is verses arriving 1.3 s late.
+  const ric = (
+    globalThis as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }
+  ).requestIdleCallback;
+  if (ric) ric(go, { timeout: 1000 });
   else setTimeout(go, 200);
 }
