@@ -1,0 +1,28 @@
+{
+  "name": "@theographic/mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Capacitor shells (iOS, Android) over the Theographic web build",
+  "type": "module",
+  "scripts": {
+    "sync": "npm run build -w @theographic/web && cap sync",
+    "sync:ios": "npm run build -w @theographic/web && cap sync ios",
+    "sync:android": "npm run build -w @theographic/web && cap sync android",
+    "ios": "cap open ios",
+    "android": "cap open android",
+    "run:ios": "cap run ios",
+    "run:android": "cap run android",
+    "assets": "npx --yes @capacitor/assets@3 generate --iconBackgroundColor \"#fbfaf7\" --iconBackgroundColorDark \"#15171a\" --splashBackgroundColor \"#fbfaf7\" --splashBackgroundColorDark \"#15171a\""
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
+}
