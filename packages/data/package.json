@@ -10,7 +10,8 @@
     "data": "tsx src/cli.ts build",
     "data:fetch": "tsx src/cli.ts fetch",
     "data:gate": "tsx src/cli.ts gate",
-    "test": "vitest run"
+    "test": "vitest run",
+    "data:definitions": "tsx src/cli-defs.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.126.0",
