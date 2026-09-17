@@ -147,6 +147,15 @@ Both were left exactly as the design wrote them and skipped by name
   under `entities/`). Dedupe once both land — same OSA semantics, so either
   copy can win.
 
+## Follow-up for CP-05/CP-07 (from CI)
+GitHub's 2-vCPU runner is ~4–5× slower than the laptop numbers above and is a
+fair stand-in for a mid phone: "the" p50 27 ms / p95 35 ms, "in the beginning"
+p50 16 ms / p95 45 ms, everything else < 20 ms. The hot path is candidate
+generation for weak words. If the throttled-phone measurement in CP-07 is over
+budget, cap weak-word scoring (score only the top-K candidates from non-weak
+words, or skip weak-word tf when the candidate set exceeds ~5k) before touching
+the formula. The CI gate is 3× the design budget for this reason (`perf.test.ts`).
+
 ## Where I left off
 
 Everything in the task list is done and green locally: `npm run typecheck`,
