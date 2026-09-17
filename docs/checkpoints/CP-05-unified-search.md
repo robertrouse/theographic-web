@@ -150,7 +150,7 @@ graph hops, cross-group ranking, and a sub-16 ms `suggest()`. Public API frozen.
   8.48 ms). Gate 30 ms locally, 90 ms in CI.
 - Suggest, 196 prefixes (2–6 chars of every golden query), best of 5:
   **p50 0.020 ms · p95 0.074 ms · max 0.43 ms**. Gate 2 ms.
-- Full `npm test`: 342 tests (core golden 125 = 114 pass + 11 skipped).
+- Full `npm test`: 331 tests, 317 pass, 14 skipped (10 pending review, 1 deferred, 3 data-gated); core golden 125 = 114 pass + 11 skipped.
 
 ## Where I left off
 
