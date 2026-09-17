@@ -22,6 +22,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Custom scheme: theographic://person/moses_2108 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="theographic" />
+            </intent-filter>
+
+            <!-- App Links: the site's own URLs open here once
+                 /.well-known/assetlinks.json carries the signing certificate's
+                 SHA-256 (apps/mobile/README.md). Until then Android offers the
+                 app as a choice rather than opening it directly. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="theographic.netlify.app" />
+            </intent-filter>
+
         </activity>
 
         <provider
