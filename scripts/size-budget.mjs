@@ -17,6 +17,10 @@
 //   text data layer          report    verses.idx + verses.txt (prefetched on
 //                                      idle; not gated)
 //   all loaded JS            ≤ 200 KB  the CP-00 site-wide gate, kept
+//   service worker           report    sw.js; never on the main thread, so
+//                                      reported, not gated. The registration
+//                                      script (pwa/register.ts) is in every
+//                                      page's JS and IS inside the gates.
 import { readdirSync, statSync, readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
@@ -100,7 +104,14 @@ check('core data layer', layer(['books.json', 'entities.index.json']), budgets.c
 check('text data layer (report)', layer(['verses.idx', 'verses.txt']));
 check('graph data layer (report)', layer(['graph.bin']));
 
-// 4. Site-wide loaded JS (the CP-00 gate).
+// 4. The service worker (its registration is already counted in 1 and 5).
+if (files.includes('sw.js')) check('service worker (report)', gzOf('sw.js'));
+else {
+  failed = true;
+  rows.push('OVER service worker            missing — no sw.js in dist');
+}
+
+// 5. Site-wide loaded JS (the CP-00 gate).
 const loadedJs = [...referenced].filter((f) => !prefetched.includes(f));
 check(
   'all loaded JS',

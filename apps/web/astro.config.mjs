@@ -196,6 +196,12 @@ export default defineConfig({
       // MapLibre is imported lazily on place pages that have coordinates;
       // its chunk is large by nature and must not trip the chunk warning.
       chunkSizeWarningLimit: 1200,
+      // Astro inlines a hoisted script under 4 KB into every page. The
+      // service-worker registration (Base.astro's one script) is on all
+      // 6,300 of them: as a hashed file it is fetched once and precached;
+      // inlined it is 1.3 KB per page and invisible to the size budget.
+      // Vite hands the emitted chunk name, not the source path, hence the test.
+      assetsInlineLimit: (file) => (/\/Base\.astro_astro_type_script/.test(file) ? false : undefined),
     },
   },
 });

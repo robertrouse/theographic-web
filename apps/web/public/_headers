@@ -22,3 +22,8 @@
   Cache-Control: public, max-age=31536000, immutable
 /data/graph.bin
   Cache-Control: public, max-age=31536000, immutable
+
+# The service worker must be revalidated on every check or an update sits
+# behind the HTTP cache for up to a day (the browser's cap).
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate

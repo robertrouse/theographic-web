@@ -1,0 +1,72 @@
+---
+/**
+ * The navigation fallback: what the service worker serves for a page that
+ * is not cached while the network is down. Precached with the shell; the
+ * script lists what IS on the device by reading the Cache API buckets.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Offline" description="This page is not saved on this device.">
+  <Fragment slot="head"><meta name="robots" content="noindex" /></Fragment>
+  <h1>Offline</h1>
+  <p class="lead">That page is not saved on this device.</p>
+  <p>
+    Pages you have opened before and the search index, once it has loaded, stay available without a
+    connection.
+  </p>
+  <h2>Available offline</h2>
+  <ul class="offline-list" data-offline-list>
+    <li><a href="/">Search</a>, the <a href="/browse/">index</a> and <a href="/about/">about</a></li>
+  </ul>
+  <p class="muted" data-offline-search>Checking the search index…</p>
+</Base>
+
+<script>
+  import { DATA_CACHE_PREFIX, PAGES_CACHE } from '../pwa/caches';
+
+  const list = document.querySelector<HTMLUListElement>('[data-offline-list]');
+  const search = document.querySelector<HTMLElement>('[data-offline-search]');
+
+  async function report(): Promise<void> {
+    if (!list || !search) return;
+    if (!('caches' in globalThis)) {
+      search.textContent = 'This browser keeps nothing offline.';
+      return;
+    }
+    const names = await caches.keys();
+    const data = names.find((n) => n.startsWith(`${DATA_CACHE_PREFIX}-`));
+    const files = data ? (await (await caches.open(data)).keys()).map((r) => new URL(r.url).pathname) : [];
+    const core = files.some((p) => p.endsWith('/entities.index.json'));
+    const text = files.some((p) => p.endsWith('/verses.txt'));
+    search.textContent = core
+      ? text
+        ? 'Search: people, places, events, passages and verse text are all on this device.'
+        : 'Search: people, places, events and passages are on this device; verse text has not loaded yet.'
+      : 'Search: the index has not loaded yet — open the site online once and it will be saved.';
+
+    const pages = await (await caches.open(PAGES_CACHE)).keys();
+    const shown = pages.slice(-100).reverse();
+    for (const req of shown) {
+      const url = new URL(req.url);
+      const res = await caches.match(req);
+      const html = res ? await res.text() : '';
+      const title = /<title>([^<]*)<\/title>/.exec(html)?.[1]?.replace(/ · Theographic$/, '');
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = url.pathname;
+      a.textContent = title || url.pathname;
+      li.append(a);
+      list.append(li);
+    }
+    if (pages.length > shown.length) {
+      const li = document.createElement('li');
+      li.className = 'muted';
+      li.textContent = `… and ${pages.length - shown.length} more`;
+      list.append(li);
+    }
+  }
+  report().catch(() => {
+    if (search) search.textContent = '';
+  });
+</script>
