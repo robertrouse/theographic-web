@@ -14,15 +14,17 @@
  * and no hits from it — never a throw, never a zero pretending to be a
  * count (invariant 6).
  *
- * `searchSync` is a pure function of (query, options, index bytes); `search`
- * is the same plus an optional `rewriter` that may author the plan.
+ * `openEngine(files)` is the synchronous core: hand it bytes already in
+ * memory (tests, a browser fallback build) and it is ready at once.
+ * `searchSync` is a pure function of (query, options, index bytes);
+ * `search` is the same plus an optional `rewriter` that may author the plan.
  */
 import { loadEntityIndex, type EntityIndex } from './entities/entityIndex.js';
 import type { EntityIndexFile } from './entities/types.js';
 import { openGraph, type Graph } from './graph/adjacency.js';
 import type { IndexSource } from './io/IndexSource.js';
 import { classify, type ClassifyContext } from './query/classify.js';
-import { executePlan } from './query/plan.js';
+import { executePlan, type ExecuteContext } from './query/plan.js';
 import type {
   QueryPlan,
   SearchOptions,
@@ -62,9 +64,19 @@ export interface SearchEngine {
   /** Verse ids linking an entity, canonical order; throws if the graph layer is not loaded. */
   mentions(entityId: string): VerseId[];
   status(): EngineStatus;
+  /** Load a layer from the source; resolves at once if it is already there. */
   preload(layer: Layer): Promise<void>;
   /** The plan the rule classifier would execute, without executing it. */
   plan(q: string, opts?: SearchOptions): QueryPlan;
+}
+
+/** Bytes already in memory. `text` and `graph` may be added later through `preload`. */
+export interface EngineFiles {
+  books: BooksBundle;
+  entities: EntityIndexFile;
+  manifest?: Manifest;
+  text?: { idx: Uint8Array; txt: Uint8Array };
+  graph?: Uint8Array;
 }
 
 const decoder = new TextDecoder('utf-8');
@@ -73,63 +85,51 @@ function json<T>(bytes: Uint8Array): T {
   return JSON.parse(decoder.decode(bytes)) as T;
 }
 
-export async function createEngine(
-  source: IndexSource,
-  opts: EngineOptions = {},
-): Promise<SearchEngine> {
-  const wanted = new Set<Layer>(opts.layers ?? ['core', 'text', 'graph']);
-  wanted.add('core');
-  const state: EngineStatus['layers'] = { core: 'absent', text: 'absent', graph: 'absent' };
-
-  let books: Book[] = [];
-  let table: BookAliasTable | undefined;
-  let entities: EntityIndex | undefined;
+/**
+ * Open an engine over files already in memory. Synchronous. Without a
+ * `source`, `preload` of a missing layer rejects.
+ */
+export function openEngine(files: EngineFiles, source?: IndexSource): SearchEngine {
+  const state: EngineStatus['layers'] = { core: 'ready', text: 'absent', graph: 'absent' };
+  const books: Book[] = files.books.books;
+  const table: BookAliasTable = buildBookAliasTable(books);
+  const entities: EntityIndex = loadEntityIndex(files.entities);
+  const manifest = files.manifest
+    ? {
+        format: files.manifest.format,
+        source: files.manifest.source,
+        counts: files.manifest.counts,
+      }
+    : undefined;
   let text: TextIndex | undefined;
   let graph: Graph | undefined;
-  let manifest: EngineStatus['manifest'];
+  if (files.text) {
+    text = openTextIndex(files.text.idx, files.text.txt);
+    state.text = 'ready';
+  }
+  if (files.graph) {
+    graph = openGraph(files.graph);
+    state.graph = 'ready';
+  }
   const pending = new Map<Layer, Promise<void>>();
 
-  const load = (layer: Layer): Promise<void> => {
+  const preload = (layer: Layer): Promise<void> => {
     if (state[layer] === 'ready') return Promise.resolve();
     const have = pending.get(layer);
     if (have) return have;
+    if (!source) return Promise.reject(new Error(`preload(${layer}): engine has no source`));
     state[layer] = 'loading';
     const p = (async () => {
-      switch (layer) {
-        case 'core': {
-          const [b, e] = await Promise.all([
-            source.read('books.json'),
-            source.read('entities.index.json'),
-          ]);
-          books = json<BooksBundle>(b).books;
-          entities = loadEntityIndex(json<EntityIndexFile>(e));
-          table = buildBookAliasTable(books);
-          try {
-            const m = json<Manifest>(await source.read('manifest.json'));
-            manifest = { format: m.format, source: m.source, counts: m.counts };
-          } catch {
-            manifest = undefined;
-          }
-          break;
-        }
-        case 'text': {
-          const [idx, txt] = await Promise.all([
-            source.read('verses.idx'),
-            source.read('verses.txt'),
-          ]);
-          text = openTextIndex(idx, txt);
-          break;
-        }
-        case 'graph': {
-          graph = openGraph(await source.read('graph.bin'));
-          break;
-        }
-        default:
-          break;
+      if (layer === 'text') {
+        const [idx, txt] = await Promise.all([
+          source.read('verses.idx'),
+          source.read('verses.txt'),
+        ]);
+        text = openTextIndex(idx, txt);
+      } else if (layer === 'graph') {
+        graph = openGraph(await source.read('graph.bin'));
       }
-    })();
-    pending.set(layer, p);
-    return p.then(
+    })().then(
       () => {
         state[layer] = 'ready';
         pending.delete(layer);
@@ -140,28 +140,27 @@ export async function createEngine(
         throw err;
       },
     );
+    pending.set(layer, p);
+    return p;
   };
 
-  await load('core');
-  await Promise.all([...wanted].filter((l) => l !== 'core').map(load));
-
-  const classifyContext = (): ClassifyContext => ({ table: table!, entities: entities!, books });
-  const executeContext = () => ({
-    table: table!,
-    entities: entities!,
+  const classifyContext: ClassifyContext = { table, entities, books };
+  const executeContext = (): ExecuteContext => ({
+    table,
+    entities,
     books,
     ...(text ? { text } : {}),
     ...(graph ? { graph } : {}),
   });
 
   const searchSync = (q: string, o: SearchOptions = {}): SearchResult => {
-    const { plan, cache } = classify(q, classifyContext(), o);
+    const { plan, cache } = classify(q, classifyContext, o);
     return executePlan(plan, executeContext(), o, cache);
   };
 
   const search = async (q: string, o: SearchOptions = {}): Promise<SearchResult> => {
     if (!o.rewriter) return searchSync(q, o);
-    const { plan, cache } = classify(q, classifyContext(), o);
+    const { plan, cache } = classify(q, classifyContext, o);
     const rewritten = await o.rewriter(q, { plan });
     if (typeof rewritten === 'string') {
       const r = searchSync(rewritten, o);
@@ -179,20 +178,20 @@ export async function createEngine(
     return executePlan(authored, executeContext(), o, cache);
   };
 
-  const suggestContext = (): SuggestContext => ({ table: table!, entities: entities!, books });
+  const suggestContext: SuggestContext = { table, entities, books };
 
   return {
     search,
     searchSync,
-    plan: (q, o = {}) => classify(q, classifyContext(), o).plan,
-    suggest: (prefix, o = {}) => runSuggest(prefix, suggestContext(), o),
-    parseReference: (q) => parseReference(q, table!),
+    plan: (q, o = {}) => classify(q, classifyContext, o).plan,
+    suggest: (prefix, o = {}) => runSuggest(prefix, suggestContext, o),
+    parseReference: (q) => parseReference(q, table),
     versesFor: (ref) => {
       if (!text) throw new Error('versesFor: text layer not loaded (preload("text"))');
       const out: { id: VerseId; text: string }[] = [];
       let doc = text.docIndexOf(ref.verseIdStart);
       if (doc < 0) {
-        // The first verse may be absent only if the ref is hand-built; walk to the range.
+        // Only a hand-built ref can start on a missing id; walk to the range.
         doc = 0;
         while (doc < text.docCount && text.verseIdAt(doc) < ref.verseIdStart) doc++;
       }
@@ -210,14 +209,36 @@ export async function createEngine(
     status: () => ({
       layers: { ...state },
       ...(manifest ? { manifest } : {}),
-      ...(source.description ? { source: source.description } : {}),
+      ...(source?.description ? { source: source.description } : {}),
       counts: {
         books: books.length,
-        entities: entities?.rows.length ?? 0,
+        entities: entities.rows.length,
         ...(text ? { verses: text.docCount } : {}),
         ...(graph ? { graphNodes: graph.nodeCount } : {}),
       },
     }),
-    preload: load,
+    preload,
   };
+}
+
+export async function createEngine(
+  source: IndexSource,
+  opts: EngineOptions = {},
+): Promise<SearchEngine> {
+  const wanted = new Set<Layer>(opts.layers ?? ['core', 'text', 'graph']);
+  const [b, e] = await Promise.all([source.read('books.json'), source.read('entities.index.json')]);
+  const files: EngineFiles = {
+    books: json<BooksBundle>(b),
+    entities: json<EntityIndexFile>(e),
+  };
+  try {
+    files.manifest = json<Manifest>(await source.read('manifest.json'));
+  } catch {
+    // A source without a manifest is fine; status() just has no counts from it.
+  }
+  const engine = openEngine(files, source);
+  await Promise.all(
+    [...wanted].filter((l): l is 'text' | 'graph' => l !== 'core').map((l) => engine.preload(l)),
+  );
+  return engine;
 }

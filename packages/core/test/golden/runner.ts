@@ -33,7 +33,11 @@
  *   count              {group, equals | min}; verses deferred to CP-04
  *
  * CP-04's text kinds live in `text.ts` and are routed there per query by
- * `ownsTextExpectation` before anything below runs.
+ * `ownsTextExpectation` before anything below runs. CP-05's cross-group
+ * kinds live in `engine.ts`, which also answers the `verses` parts of
+ * `empty` / `nonEmpty` / `top` / `inTop` / `count` on the queries `text.ts`
+ * does not own; the entity parts stay here, and both sets of failures are
+ * joined so one expectation line is still one test.
  *
  * A `pendingReview` map on a line names kinds whose expectation disagrees
  * with the real data or the formula; the test runs them and skips with the
@@ -42,6 +46,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import type { SearchEngine } from '../../src/engine.js';
 import type { EntityIndex } from '../../src/entities/entityIndex.js';
 import { matchEntities, TIER_RANK, type EntityHit } from '../../src/entities/match.js';
 import type { EntityGroup, EntityIndexType } from '../../src/entities/types.js';
@@ -49,6 +54,7 @@ import type { BookAliasTable } from '../../src/refs/bookAliases.js';
 import { parseReference } from '../../src/refs/parseReference.js';
 import type { ParseReferenceResult } from '../../src/refs/types.js';
 import { verseCountInRef } from '../../src/refs/verseIds.js';
+import { ENGINE_KINDS, runEngineExpectation } from './engine.js';
 import { ownsTextExpectation, runTextExpectation } from './text.js';
 
 export interface GoldenQuery {
@@ -74,7 +80,7 @@ export const KIND_OWNER: Record<string, string> = {
   sublabels: 'CP-03',
   scoreBelow: 'CP-03',
   why: 'CP-03',
-  count: 'CP-03 (entity groups) / CP-04 (verses)',
+  count: 'CP-03 (entity groups) / CP-04, CP-05 (verses)',
   sameSetAs: 'CP-04',
   rankBelow: 'CP-04',
   snippet: 'CP-04',
@@ -92,7 +98,7 @@ export const KIND_OWNER: Record<string, string> = {
 
 export const IMPLEMENTED_KINDS: ReadonlySet<string> = new Set(
   Object.entries(KIND_OWNER)
-    .filter(([, owner]) => /CP-0[234]/.test(owner))
+    .filter(([, owner]) => /CP-0[2345]/.test(owner))
     .map(([kind]) => kind),
 );
 
@@ -250,25 +256,19 @@ function describe(h: EntityHit): string {
 
 function checkGroupsEmpty(run: EntityRun, groups: string[], wantEmpty: boolean): RunResult {
   const failures: string[] = [];
-  const deferred: string[] = [];
   for (const g of groups) {
-    if (!ENTITY_GROUPS.has(g)) {
-      deferred.push(g);
-      continue;
-    }
+    if (!ENTITY_GROUPS.has(g)) continue; // verses/topics: engine.ts
     const hits = groupHits(run, g);
     if (wantEmpty && hits.length > 0)
       failures.push(`${g} not empty: ${hits.slice(0, 5).map(describe).join(', ')}`);
     if (!wantEmpty && hits.length === 0) failures.push(`${g} empty`);
   }
-  const r: RunResult = { failures };
-  if (deferred.length) r.deferred = `groups ${deferred.join(', ')} — CP-05`;
-  return r;
+  return { failures };
 }
 
 function checkTop(run: EntityRun, value: Record<string, unknown>): RunResult {
   const group = value['group'] as string;
-  if (!ENTITY_GROUPS.has(group)) return { failures: [], deferred: `group ${group} — CP-05` };
+  if (!ENTITY_GROUPS.has(group)) return ok(); // verses: engine.ts
   const hits = groupHits(run, group);
   const top = hits[0];
   if (!top) return fail(`${group} has no hits`);
@@ -293,13 +293,9 @@ function checkTop(run: EntityRun, value: Record<string, unknown>): RunResult {
 
 function checkInTop(run: EntityRun, items: Record<string, unknown>[]): RunResult {
   const failures: string[] = [];
-  const deferred: string[] = [];
   for (const item of items) {
     const group = item['group'] as string;
-    if (!ENTITY_GROUPS.has(group)) {
-      deferred.push(group);
-      continue;
-    }
+    if (!ENTITY_GROUPS.has(group)) continue; // verses: engine.ts
     const n = typeof item['n'] === 'number' ? item['n'] : 10;
     const top = groupHits(run, group).slice(0, n);
     const topIds = new Set(top.map((h) => h.id));
@@ -344,9 +340,7 @@ function checkInTop(run: EntityRun, items: Record<string, unknown>[]): RunResult
       }
     }
   }
-  const r: RunResult = { failures };
-  if (deferred.length) r.deferred = `groups ${deferred.join(', ')} — CP-05`;
-  return r;
+  return { failures };
 }
 
 function checkOrder(run: EntityRun, value: { group: string; ids: string[] }): RunResult {
@@ -428,7 +422,6 @@ function checkScoreBelow(run: EntityRun, items: Record<string, unknown>[]): RunR
 
 function checkWhy(run: EntityRun, values: string[]): RunResult {
   const entityTiers = values.filter((v) => v in TIER_RANK);
-  const other = values.filter((v) => !(v in TIER_RANK));
   const failures: string[] = [];
   if (entityTiers.length) {
     const top = run.hits[0];
@@ -440,14 +433,12 @@ function checkWhy(run: EntityRun, values: string[]): RunResult {
       }
     }
   }
-  const r: RunResult = { failures };
-  if (other.length) r.deferred = `why ${other.join(', ')} — CP-04`;
-  return r;
+  return { failures };
 }
 
 function checkCount(run: EntityRun, value: Record<string, unknown>): RunResult {
   const group = value['group'] as string;
-  if (!ENTITY_GROUPS.has(group)) return { failures: [], deferred: `group ${group} — CP-04` };
+  if (!ENTITY_GROUPS.has(group)) return ok(); // verses: text.ts or engine.ts
   const hits = groupHits(run, group);
   const failures: string[] = [];
   if (typeof value['equals'] === 'number' && hits.length !== value['equals']) {
@@ -466,6 +457,8 @@ function checkCount(run: EntityRun, value: Record<string, unknown>): RunResult {
 export interface GoldenContext {
   table: BookAliasTable;
   index: EntityIndex;
+  /** The whole engine over the same bundle, for the CP-05 kinds. */
+  engine: SearchEngine;
 }
 
 /** Run one expectation kind for one query. `undefined` if the kind is not implemented here. */
@@ -481,6 +474,12 @@ export function runExpectation(
     return failures === undefined ? undefined : { failures };
   }
   if (!IMPLEMENTED_KINDS.has(kind)) return undefined;
+  if (ENGINE_KINDS.has(kind)) {
+    const failures = runEngineExpectation(kind, value, query, ctx);
+    return failures === undefined ? undefined : { failures };
+  }
+  // The verses parts of the shared kinds: engine.ts answers them, the entity parts run below.
+  const engineFailures = runEngineExpectation(kind, value, query, ctx) ?? [];
   const { table, index } = ctx;
   switch (kind) {
     case 'refs':
@@ -501,30 +500,42 @@ export function runExpectation(
       break;
   }
   const run = runEntityQuery(query.q, table, index);
+  let r: RunResult | undefined;
   switch (kind) {
     case 'empty':
-      return checkGroupsEmpty(run, value as string[], true);
+      r = checkGroupsEmpty(run, value as string[], true);
+      break;
     case 'nonEmpty':
-      return checkGroupsEmpty(run, value as string[], false);
+      r = checkGroupsEmpty(run, value as string[], false);
+      break;
     case 'top':
-      return checkTop(run, value as Record<string, unknown>);
+      r = checkTop(run, value as Record<string, unknown>);
+      break;
     case 'inTop':
-      return checkInTop(run, value as Record<string, unknown>[]);
+      r = checkInTop(run, value as Record<string, unknown>[]);
+      break;
     case 'order':
-      return checkOrder(run, value as { group: string; ids: string[] });
+      r = checkOrder(run, value as { group: string; ids: string[] });
+      break;
     case 'exactly':
-      return checkExactly(run, value as { group: string; ids: string[] });
+      r = checkExactly(run, value as { group: string; ids: string[] });
+      break;
     case 'sublabels':
-      return checkSublabels(run, value as Record<string, unknown>);
+      r = checkSublabels(run, value as Record<string, unknown>);
+      break;
     case 'scoreBelow':
-      return checkScoreBelow(run, value as Record<string, unknown>[]);
+      r = checkScoreBelow(run, value as Record<string, unknown>[]);
+      break;
     case 'why':
-      return checkWhy(run, value as string[]);
+      r = checkWhy(run, value as string[]);
+      break;
     case 'count':
-      return checkCount(run, value as Record<string, unknown>);
+      r = checkCount(run, value as Record<string, unknown>);
+      break;
     default:
       return undefined;
   }
+  return { failures: [...r.failures, ...engineFailures] };
 }
 
 export type { EntityGroup };
