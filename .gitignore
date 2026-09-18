@@ -14,10 +14,34 @@ dist-node/
 apps/web/public/data/
 packages/data/.cache/
 
-# native shells
+# native shells (CP-10). `cap sync` copies apps/web/dist into the two
+# `public` dirs (126 MB of prerendered pages) — regenerated, never committed.
+apps/mobile/ios/App/App/public/
+apps/mobile/ios/App/App/capacitor.config.json
+apps/mobile/ios/App/App/config.xml
 apps/mobile/ios/App/Pods/
+apps/mobile/ios/App/build/
+apps/mobile/ios/App/output/
+apps/mobile/ios/DerivedData/
+apps/mobile/ios/capacitor-cordova-ios-plugins/
+apps/mobile/android/app/src/main/assets/public/
+apps/mobile/android/app/src/main/assets/capacitor.config.json
+apps/mobile/android/app/src/main/assets/capacitor.plugins.json
+apps/mobile/android/app/src/main/res/xml/config.xml
 apps/mobile/android/.gradle/
 apps/mobile/android/build/
+apps/mobile/android/app/build/
+apps/mobile/android/local.properties
+apps/mobile/android/.idea/
+apps/mobile/android/capacitor-cordova-android-plugins/
+xcuserdata/
+*.xcuserstate
+# signing material never goes in
+*.keystore
+*.jks
+*.mobileprovision
+*.p12
+*.cer
 
 # agent worktrees
 .claude/worktrees/

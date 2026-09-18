@@ -29,6 +29,14 @@
   --gutter: 16px;
   --header-h: 56px;
   --bottom-nav-h: 56px;
+  /* Safe areas (viewport-fit=cover): the notch / status bar above, the
+     home indicator below. Zero on a plain browser page. The `--safe-area-*`
+     variables are what a Capacitor Android shell injects for WebViews too
+     old to fill env() (CP-10); env() is what iOS and new WebViews provide. */
+  --inset-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --inset-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --inset-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --inset-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
   --radius: 8px;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
