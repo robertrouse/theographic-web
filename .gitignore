@@ -45,3 +45,6 @@ xcuserdata/
 
 # agent worktrees
 .claude/worktrees/
+
+# stale agent worktree copies awaiting deletion (rm is slow under the sandbox)
+.orphaned-worktrees/

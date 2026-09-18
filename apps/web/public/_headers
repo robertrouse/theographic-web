@@ -23,6 +23,16 @@
 /data/graph.bin
   Cache-Control: public, max-age=31536000, immutable
 
+# The service worker must be revalidated on every check or an update sits
+# behind the HTTP cache for up to a day (the browser's cap).
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Netlify serves .webmanifest as application/octet-stream; Chrome parses
+# it anyway, but the registered type is the honest one.
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+
 # Native-app association files (CP-10). Apple requires application/json on
 # the extensionless AASA file; Netlify would otherwise send octet-stream.
 /.well-known/apple-app-site-association
