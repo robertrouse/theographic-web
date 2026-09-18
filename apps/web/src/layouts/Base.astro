@@ -41,6 +41,14 @@ const current = (s: string) => (section === s ? 'page' : undefined);
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL('/brand/og-square-100.png', Astro.site)} />
     <slot name="head" />
+    <script>
+      // Inside a Capacitor shell (CP-10) the native bridge defines
+      // `window.Capacitor` before any page script runs; only then is the
+      // shell module (status bar, hardware back, deep links) fetched, so the
+      // site itself never loads @capacitor/*.
+      const cap = (window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+      if (cap?.isNativePlatform?.()) void import('../shell/native');
+    </script>
   </head>
   <body>
     <header class="site-header">
