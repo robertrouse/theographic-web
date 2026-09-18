@@ -21,7 +21,7 @@ merge. `v2` merges to `master` at CP-11.
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | in-progress | `cp-07-ui` PR | review PR; decide Preact (main-thread JS 74 KB, react-dom 64 of it) |
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | blocked     | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline merged; needs Robert: run the 30-entity dry run with an API key, review, then full run |
-| 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | todo        | —             |                                                  |
+| 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | in-progress | `cp-09-pwa` PR | review PR; verify install + offline on the deploy preview |
 | 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | todo        | —             |                                                  |
 | 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | todo        | —             | needs Robert: license decision                   |
 
