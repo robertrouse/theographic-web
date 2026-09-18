@@ -13,3 +13,5 @@ README.md
 apps/mobile/ios
 apps/mobile/android
 apps/mobile/resources
+.claude/
+.orphaned-worktrees/
