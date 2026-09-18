@@ -21,9 +21,9 @@ merge. `v2` merges to `master` at CP-11.
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | done        | [#90](https://github.com/robertrouse/theographic-web/pull/90) | Preact swap is an open ADR question (main-thread JS 74 KB) |
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | blocked     | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline merged; needs Robert: run the 30-entity dry run with an API key, review, then full run |
-| 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | in-progress | `cp-09-pwa`   | agent working |
+| 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | done        | [#92](https://github.com/robertrouse/theographic-web/pull/92) | map tiles not cached offline (decision open) |
 | 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | blocked     | [#91](https://github.com/robertrouse/theographic-web/pull/91) | shells merged, type-checked, unlaunched; needs Robert: iOS simulator runtime + Team ID (see apps/mobile/README.md) |
-| 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | todo        | —             | needs Robert: license decision                   |
+| 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | blocked     | —             | needs Robert: license text + go/no-go; then merge v2 → master |
 
 ## Dependencies
 
