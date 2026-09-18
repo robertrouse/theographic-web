@@ -21,7 +21,7 @@ cached on first search, pages cached as visited.
 - [x] Offline verified in Chrome with the server stopped (below).
 - [x] Installability verified (Chrome's own check, below — Lighthouse 13 has
       no PWA audits left).
-- [ ] Verified on the Netlify deploy preview (PR).
+- [x] Verified on the Netlify deploy preview (PR #92, below).
 
 ## What was built
 
@@ -112,6 +112,33 @@ name, start_url, display, 192 + 512 icons; a service worker with a fetch
 handler; secure origin) are met. Not re-run through Lighthouse's
 best-practices category, which has nothing to say about it.
 
+### Deploy preview ([PR #92](https://github.com/robertrouse/theographic-web/pull/92))
+
+`deploy-preview-92--theographic.netlify.app`, headless Chrome 152 via
+puppeteer-core. Headers: `/sw.js` comes back `cache-control:
+public,max-age=0,must-revalidate`, `content-type: application/javascript`.
+`beforeinstallprompt` fires (`platforms: ["web"]`). Online walk: `/`,
+`/?q=Saul`, `/person/moses_2108/`, `/john/3/`, `/place/bethlehem_218/`
+(18 tile requests to openfreemap.org, none intercepted). Buckets after:
+data 5, shell 21, pages 3, assets 3 (MapLibre's js, worker and css).
+
+**A CDP "offline" is per target.** `page.setOfflineMode(true)` alone left
+the worker online — its `fetch()` still reached Netlify and an unvisited
+page came back 200 "from the service worker". The worker target has to be
+taken offline through its own CDP session as well; with both offline:
+
+| request                    | result                                                        |
+| -------------------------- | ------------------------------------------------------------- |
+| `/`, `/?q=Saul`            | render; **359 results for Saul**                              |
+| `/person/moses_2108/`, `/john/3/`, `/place/bethlehem_218/` | render with the marker; Bethlehem's map is empty (tiles are not cached — decision below) |
+| `/person/david_994/` (unvisited) | `/offline/`, listing Bethlehem, John 3, Moses           |
+
+Netlify served `manifest.webmanifest` as `application/octet-stream`; Chrome
+parsed it regardless, and a `_headers` rule now sets
+`application/manifest+json`. The deploy-preview toolbar only appears for a
+logged-in Netlify user, so its bypass is covered by the cross-origin rule
+and its unit test rather than observed.
+
 ## Decisions made
 
 - **Hand-rolled worker, not `@vite-pwa/astro`.** The routing table is four
@@ -159,8 +186,10 @@ best-practices category, which has nothing to say about it.
 
 ## Where I left off
 
-All tasks verified locally. PR open into `v2`; deploy-preview verification
-pending (see the PR).
+Everything in the task list is done and measured, locally and on the
+deploy preview. [PR #92](https://github.com/robertrouse/theographic-web/pull/92)
+into `v2` awaits review. Open for CP-10: whether the native shells want a
+bounded tile cache for place pages.
 
 ## Verify
 

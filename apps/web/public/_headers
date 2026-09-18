@@ -27,3 +27,8 @@
 # behind the HTTP cache for up to a day (the browser's cap).
 /sw.js
   Cache-Control: public, max-age=0, must-revalidate
+
+# Netlify serves .webmanifest as application/octet-stream; Chrome parses
+# it anyway, but the registered type is the honest one.
+/manifest.webmanifest
+  Content-Type: application/manifest+json
