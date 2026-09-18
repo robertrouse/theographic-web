@@ -22,7 +22,7 @@ merge. `v2` merges to `master` at CP-11.
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | done        | [#90](https://github.com/robertrouse/theographic-web/pull/90) | Preact swap is an open ADR question (main-thread JS 74 KB) |
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | blocked     | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline merged; needs Robert: run the 30-entity dry run with an API key, review, then full run |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | in-progress | `cp-09-pwa`   | agent working |
-| 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | in-progress | `cp-10-capacitor` | agent working |
+| 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | blocked     | [#91](https://github.com/robertrouse/theographic-web/pull/91) | shells merged, type-checked, unlaunched; needs Robert: iOS simulator runtime + Team ID (see apps/mobile/README.md) |
 | 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | todo        | —             | needs Robert: license decision                   |
 
 ## Dependencies
@@ -44,6 +44,7 @@ lands; they touch different packages.
 - [ ] `theographic-bible-metadata`: pull (`cfb1c48` adds `geo/pauls_journeys_all.geojson`), push the 3 local commits, decide what to do with the untracked `geo/` work.
 - [ ] License: repo `LICENSE` is CC BY-SA 4.0, readme/Notion/old About say CC BY 4.0. Pick one before CP-11.
 - [x] Netlify: linked; branch deploys on.
+- [ ] CP-10: `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`, install the iOS platform in Xcode, then `cd apps/mobile && npm run sync && npx cap open ios`; supply Apple Team ID / bundle id / Android package + signing SHA-256 (`apps/mobile/README.md`).
 - [ ] CP-08 dry run (needs `ANTHROPIC_API_KEY` in a plain shell): `cd packages/data && npm run data:definitions -- submit --dry-run 30`, then `… collect <batchId>`; review the 30 drafts; decide on the full run (~$50–130 at Opus 5 batch rates).
 
 ## Protocol for a session
