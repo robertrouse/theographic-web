@@ -38,6 +38,12 @@ same core powers native shells, a CLI, and later an MCP server and an LLM layer.
   `geo/pauls_journeys_all.geojson`; LPF geojson integration; Strong's linking.
 - Easton topical pages if wanted (`topics` layer, golden #43).
 
+## Status (2026-09-18)
+CP-00–CP-10 merged into `v2`; CP-11 (cutover to `master`) awaits Robert's
+license decision and go/no-go. Metadata pinned at `cfb1c48`. Branch deploy:
+https://v2--theographic.netlify.app/. Open items are listed in
+[CHECKPOINTS.md](CHECKPOINTS.md) under "Outside this repo".
+
 ## Data provenance
 
 - Passages: KJV 1769 Cambridge (public domain).

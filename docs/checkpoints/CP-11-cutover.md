@@ -15,8 +15,9 @@ intact.
 
 - [ ] Merge `v2` → `master`; tag `v2.0.0`.
 - [ ] Netlify production build; `_redirects` verified; sitemap submitted.
-- [ ] `scripts/smoke.mjs` over the old-URL list.
-- [ ] README, About, ROADMAP.
+- [x] `scripts/smoke.mjs` over the old-URL list — 33 checks, all clear against the `v2` branch deploy (2026-09-18).
+- [x] README and ROADMAP updated.
+- [ ] About page license text (needs Robert: CC BY vs CC BY-SA).
 
 ## Decisions made
 
