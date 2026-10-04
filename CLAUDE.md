@@ -8,7 +8,8 @@ transcript.
 
 Spec for the search engine: [`docs/search-design.md`](docs/search-design.md).
 Why the stack is what it is: [`docs/adr/`](docs/adr/). What is in and out of
-scope: [`docs/ROADMAP.md`](docs/ROADMAP.md).
+scope: [`docs/ROADMAP.md`](docs/ROADMAP.md). UI design iterations:
+[`docs/DESIGN-WORKFLOW.md`](docs/DESIGN-WORKFLOW.md).
 
 ## What this is
 
