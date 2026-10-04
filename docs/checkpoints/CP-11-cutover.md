@@ -17,11 +17,11 @@ intact.
 - [ ] Netlify production build; `_redirects` verified; sitemap submitted.
 - [x] `scripts/smoke.mjs` over the old-URL list — 33 checks, all clear against the `v2` branch deploy (2026-09-18).
 - [x] README and ROADMAP updated.
-- [ ] About page license text (needs Robert: CC BY vs CC BY-SA).
+- [x] About page license text: data CC BY-SA 4.0 (About, footer, README, `LICENSE-DATA`); code stays GPL-3.0.
 
 ## Decisions made
 
-_(fill in)_
+- License: data CC BY-SA 4.0, code GPL-3.0 (Robert, 2026-10-04)
 
 ## Where I left off
 
