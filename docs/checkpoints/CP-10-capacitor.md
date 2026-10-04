@@ -23,7 +23,17 @@ iOS and Android apps wrapping `apps/web/dist`, store-ready structure.
 - [x] Icons/splash from the mark (`apps/mobile/resources/`, generated with
       `@capacitor/assets` via npx).
 - [x] Checklist: `apps/mobile/README.md` — each item done or "needs Robert".
-- [ ] **Run on the iOS Simulator** — blocked on this Mac (see Verify).
+- [x] **Run on the iOS Simulator** — 2026-10-04, iPhone 17 / iOS 26.3, Xcode 26.2.
+  Home, search (`Saul`: 359 hits from the bundled worker), `/browse/`, and the
+  `theographic://person/moses_2108` deep link all work. Found and fixed:
+  `SceneDelegate` installed a bare `CAPBridgeViewController`, so
+  `StaticSiteRouter` never ran and every path served the home page.
+  **Not verified: place pages.** The WebContent process crashes on them
+  (JavaScriptCore DFG JIT fault while compiling MapLibre, then dyld faults on
+  respawn). The same page crashes in the simulator's own Safari loading the
+  Netlify site, so it is the simulator on this host (macOS 27.0.1 running the
+  iOS 26.3 runtime), not the app. Recheck on a real iPhone or a matching
+  Xcode/runtime.
 - [ ] **Run on an Android emulator** — blocked, no Android tooling.
 
 ## What was built
@@ -153,12 +163,8 @@ Java has not been compiled. Once Robert installs the platform, the README's
 
 ## Where I left off
 
-Everything buildable on this machine is built and pushed on
-`cp-10-capacitor`; the PR against `v2` is open. The two unchecked tasks are
-the simulator/emulator runs, blocked on tooling Robert has to install (see
-Environment). After `sudo xcode-select -s …` and the iOS platform download:
-`npm run sync -w @theographic/mobile`, then the `xcodebuild` / `simctl` block
-in `apps/mobile/README.md`, screenshots of `/`, `?q=Saul`,
-`/person/moses_2108`, a place page, and `simctl openurl` for the scheme.
-Android: install Android Studio, `./gradlew assembleDebug` — the Java in
-`MainActivity.java` has not been compiled yet.
+iOS shell runs on the simulator (see the ticked task); the SceneDelegate fix is
+[#98](https://github.com/robertrouse/theographic-web/pull/98). Next: place pages
+on a real iPhone, or after updating Xcode to the release matching macOS 27 and
+its iOS simulator runtime. Then the store items in `apps/mobile/README.md`
+(bundle id first — it is permanent). Android is untouched: needs Android Studio.
