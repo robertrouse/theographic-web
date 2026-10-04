@@ -28,12 +28,12 @@ iOS and Android apps wrapping `apps/web/dist`, store-ready structure.
   `theographic://person/moses_2108` deep link all work. Found and fixed:
   `SceneDelegate` installed a bare `CAPBridgeViewController`, so
   `StaticSiteRouter` never ran and every path served the home page.
-  **Not verified: place pages.** The WebContent process crashes on them
-  (JavaScriptCore DFG JIT fault while compiling MapLibre, then dyld faults on
-  respawn). The same page crashes in the simulator's own Safari loading the
-  Netlify site, so it is the simulator on this host (macOS 27.0.1 running the
-  iOS 26.3 runtime), not the app. Recheck on a real iPhone or a matching
-  Xcode/runtime.
+  Place pages: on the iOS 26.3 runtime under Xcode 26.2 and 27.0 the
+  WebContent process crashed (JavaScriptCore DFG JIT fault compiling MapLibre;
+  the simulator's own Safari crashed the same way on the Netlify site). On the
+  **iOS 27.0 runtime (Xcode 27.0, macOS 27.0.1 host)** `/place/bethlehem_218`
+  renders: map, marker, attribution, coordinates, Easton's entry; no crash
+  reports. Use the iOS 27 runtime on this Mac.
 - [ ] **Run on an Android emulator** — blocked, no Android tooling.
 
 ## What was built
@@ -164,7 +164,6 @@ Java has not been compiled. Once Robert installs the platform, the README's
 ## Where I left off
 
 iOS shell runs on the simulator (see the ticked task); the SceneDelegate fix is
-[#98](https://github.com/robertrouse/theographic-web/pull/98). Next: place pages
-on a real iPhone, or after updating Xcode to the release matching macOS 27 and
-its iOS simulator runtime. Then the store items in `apps/mobile/README.md`
+[#98](https://github.com/robertrouse/theographic-web/pull/98). Place pages verified
+on the iOS 27 simulator. Not yet on a real iPhone. Then the store items in `apps/mobile/README.md`
 (bundle id first — it is permanent). Android is untouched: needs Android Studio.
