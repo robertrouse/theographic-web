@@ -22,7 +22,7 @@ text over the KJV (`"search the scriptures"`, `shew`), mixed queries
 
 - `packages/core` — the search engine and data model (pure TypeScript; also a CLI: `npx theographic search "Paul Antioch"`)
 - `packages/data` — build pipeline from the metadata JSON to static bundles and indexes; the generated-definitions pipeline
-- `apps/web` — the Astro site (prerendered pages, React islands for search, service worker)
+- `apps/web` — the Astro site (prerendered pages, Preact islands for search, service worker)
 - `apps/mobile` — Capacitor shells for iOS and Android
 - `docs/` — roadmap, checkpoints, search design, decisions
 

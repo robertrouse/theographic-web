@@ -9,7 +9,7 @@
   reference parser, entity and text search, graph hops.
 - `packages/data`: Node build pipeline from the metadata JSON to static bundles
   and binary indexes; also the Claude batch pipeline for definitions.
-- `apps/web`: Astro 7 with React 19 islands; fully prerendered; search runs in a
+- `apps/web`: Astro 7 with React 19 islands (Preact since [ADR-0002](0002-preact.md)); fully prerendered; search runs in a
   Web Worker from static index files.
 - `apps/mobile`: Capacitor shells over the web build.
 - Hosting: Netlify. Maps: MapLibre GL with open tiles.

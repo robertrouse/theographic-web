@@ -2,15 +2,15 @@
 // Sizes are gzip bytes of the files under apps/web/dist (CP-07 set the
 // values; docs/checkpoints/CP-07-search-ui.md has the measurements).
 //
-//   main-thread JS on /      ≤ 80 KB   every JS chunk the home page loads or
-//                                      preloads on the main thread (React,
-//                                      react-dom, the islands) — not the worker.
-//                                      CP-07 asked for 60 KB; react-dom/client
-//                                      alone is 64.3 KB gz (React 19.3), so 60
-//                                      is unreachable without swapping the
-//                                      renderer (Preact/compat ≈ 5 KB — an ADR,
-//                                      not a budget tweak). The islands
-//                                      themselves are ~10 KB.
+//   main-thread JS on /      ≤ 25 KB   every JS chunk the home page loads or
+//                                      preloads on the main thread (Preact,
+//                                      its hooks, Astro's island client, the
+//                                      islands) — not the worker. 14.8 KB at
+//                                      the Preact swap (ADR-0002; React 19 was
+//                                      75.2 KB, 64.3 of it react-dom). The gate
+//                                      leaves ~10 KB for island growth and
+//                                      trips if React or preact/compat creeps
+//                                      back in.
 //   search worker chunk      ≤ 60 KB   the engine, bundled for the worker
 //   core data layer          ≤ 200 KB  books.json + entities.index.json, the
 //                                      files that gate the first search
@@ -28,7 +28,7 @@ import { join } from 'node:path';
 const dist = new URL('../apps/web/dist/', import.meta.url).pathname;
 const KB = 1024;
 const budgets = {
-  homeMainThreadJs: 80 * KB,
+  homeMainThreadJs: 25 * KB,
   workerJs: 60 * KB,
   coreLayer: 200 * KB,
   allLoadedJs: 200 * KB,

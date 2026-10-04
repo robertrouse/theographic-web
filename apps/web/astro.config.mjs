@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
+import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -31,7 +31,7 @@ function netlifyRedirects() {
  * renderer and every chunk they statically import, and `<link rel="prefetch">`
  * for the search worker chunk, to every built page. Astro's hydration
  * script discovers the entry chunks after the HTML is parsed and their
- * dependencies (react, the shared search chunk) and the worker one round
+ * dependencies (preact, the shared search chunk) and the worker one round
  * trip at a time — ~600 ms each on a Slow 4G profile, on the way to the
  * first search. `prefetch` rather than `preload as="worker"`: Chrome does
  * not implement the latter, while a prefetched file is served to the
@@ -173,7 +173,8 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
   integrations: [
-    react(),
+    // Native Preact, no compat layer (ADR-0002): the islands use preact/hooks.
+    preact(),
     // The offline fallback is not a page for a crawler.
     sitemap({ filter: (page) => !page.endsWith('/offline/') }),
     netlifyRedirects(),

@@ -182,12 +182,78 @@ budget tweak — Robert's call.
 
 ## Deviations from the brief
 
-- Main-thread budget 80 KB, not 60 (above).
+- Main-thread budget 80 KB, not 60 (above) — superseded by the Preact swap: 25 KB.
 - "First search ready < 1 s" holds on 4G (1.01 s), not on Slow 4G (2.81 s):
   the bytes do not fit. Both numbers are in the table.
 - Not measured on a physical phone; Lighthouse devtools throttling on a Mac
   is the stand-in, as `CLAUDE.md` asks for a throttled profile rather than a
   laptop number.
+
+## Preact swap (2026-10-04, [ADR-0002](../adr/0002-preact.md))
+
+Robert decided the open question above: the islands now render with Preact
+10.29 via `@astrojs/preact`, **native, no `preact/compat`**. Nothing needed
+it: the islands use only function components and `useState` / `useEffect` /
+`useRef` / `useCallback` / `useMemo` / `useId`, all in `preact/hooks`, and no
+third-party React component is imported.
+
+**Method** (same as the budget table above): `npm run build`, then
+`node scripts/size-budget.mjs` — gzip (zlib default) of every `/_astro/*.js`
+that `dist/index.html` references by `src`, `href` (incl. the injected
+`modulepreload`s), `component-url` or `renderer-url`, minus the prefetched
+worker chunk. Before = `v2` @ `f5437254` built from the pinned `data.lock`;
+after = this branch, same data.
+
+| main-thread JS on `/` (gz)                | before (React 19.3) | after (Preact 10.29) |
+| ----------------------------------------- | ------------------- | -------------------- |
+| renderer (`react-dom` / Astro client)     | 64.3 KB             | 0.8 KB               |
+| runtime (`react` / `preact` + hooks)      | 3.0 KB              | 5.5 KB               |
+| islands (SearchPage + useEngine chunk)    | 7.0 KB              | 6.9 KB               |
+| preload-helper (lazy signals import)      | —                   | 0.7 KB               |
+| Base scripts (theme + SW registration)    | 0.8 KB              | 0.8 KB               |
+| **total**                                 | **75.2 KB**         | **14.8 KB**          |
+| all loaded JS (site)                      | 76.2 KB             | 15.8 KB              |
+| a reader page (`/about/`, HeaderSearch)   | —                   | 11.5 KB              |
+
+(The 75.2 "before" is CP-07's 74.2 plus CP-09's 0.8 KB service-worker
+registration script.) The main-thread gate in `scripts/size-budget.mjs` drops
+from 80 KB to **25 KB** — under the brief's original 60, with ~10 KB of room
+for the islands, and it trips if React or `compat` comes back. Worker chunk
+and data layers are unchanged (22.5 KB, 155.7 KB).
+
+Astro's Preact client imports `@preact/signals` lazily, only when a prop is a
+signal; none is, so the signals chunk is emitted but never loaded (the
+budget script already ignores unreferenced chunks).
+
+Code changes beyond imports, all from Preact's DOM semantics:
+
+- `SearchBox`: `onInput` instead of React's per-keystroke synthetic
+  `onChange` (Preact's `onChange` is the native commit event — the one trap).
+- `class`/`for`, and lowercase `autocomplete` / `autocapitalize` /
+  `spellcheck` / `enterkeyhint` so the SSR markup carries the real attribute
+  names.
+- Event types from `preact` (`TargetedKeyboardEvent`), `ComponentChild` for
+  `Marked`'s return.
+
+Not re-measured: the Lighthouse throttled runs. The expectation from the
+table above is ~0.2–0.25 s off "core ready" on both profiles (react-dom was
+the last download before hydration on Slow 4G); that is an estimate until
+someone re-runs the 4G / Slow 4G profiles.
+
+Verified in the browser (dev server on 8001, then `astro preview` of the
+build): "Paul" typeahead + debounced results (206); ↑/↓ moves
+`aria-activedescendant`, Enter chooses, Escape closes then clears and the
+URL returns to `/`; recent searches under an empty box on focus and by
+click; "John 3:16" → the passage with its verse; `?q=Jerusalm&debug=1` →
+Debug panel (layers, timings, plan) and per-hit `why[]`, `<mark>` highlights,
+tablist ←/→ moves focus and writes `&tab=verses`, "Load more (20 of 767)";
+`/` focuses the header box on `/about/`, typeahead there, Enter navigates to
+`/?q=…`; `/?q=Paul%20Antioch&debug=1` all three layers ready. No errors from
+the islands. The one console error seen ("unknown error occurred when
+fetching the script") is the service-worker registration, and the browser
+pane fails to register _any_ worker on `http://localhost` (a two-line test
+worker fails the same way) while `v2--theographic.netlify.app` registers
+fine — an environment limit, not this change.
 
 ## Netlify deploy preview ([PR #90](https://github.com/robertrouse/theographic-web/pull/90))
 
@@ -204,7 +270,8 @@ results 2.08 s, graph 2.42 s, verses 3.05 s.
 
 Everything in the task list is done and measured; [PR #90](https://github.com/robertrouse/theographic-web/pull/90)
 into `v2` is green (CI, Netlify header/redirect rules, deploy preview) and
-awaits review. Open for Robert: the Preact question above.
+awaits review. The Preact question is decided and done on `cp-07-preact`
+("Preact swap" above): 75.2 → 14.8 KB main-thread JS on `/`, gate 25 KB.
 
 ## Verify
 

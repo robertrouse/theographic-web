@@ -5,7 +5,7 @@
  * URL (`replaceState`) so a view can be pasted into a message, and a
  * load with `?q=` searches as soon as the core layer is open.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { EngineManifest } from '@theographic/core';
 import { indexBooks, type BookLite } from '../../search/hrefs';
 import { readRecent, rememberRecent } from '../../search/recent';
@@ -34,7 +34,7 @@ export default function SearchPage({ manifest, books, hints }: SearchPageProps) 
   const [value, setValue] = useState('');
   const [recent, setRecent] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const debounce = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const debounce = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { engine, layers, readyVersion, error } = useEngine(manifest);
   const bookIndex = useMemo(() => indexBooks(books), [books]);
 
@@ -88,7 +88,7 @@ export default function SearchPage({ manifest, books, hints }: SearchPageProps) 
   );
 
   return (
-    <div className="search-page">
+    <div class="search-page">
       <SearchBox
         value={value}
         onChange={onChange}
@@ -98,9 +98,9 @@ export default function SearchPage({ manifest, books, hints }: SearchPageProps) 
         loading={hydrated && layers.core === 'loading'}
       />
       {!state.q && (
-        <div className="home__hints">
-          <p className="muted">Try searching for</p>
-          <ul className="chips">
+        <div class="home__hints">
+          <p class="muted">Try searching for</p>
+          <ul class="chips">
             {hints.map((q) => (
               <li key={q}>
                 <a

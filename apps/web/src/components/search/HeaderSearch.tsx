@@ -3,7 +3,7 @@
  * submit navigates to `/?q=`. The worker starts on idle after hydration
  * so a reader who never searches pays only for a cached, tiny fetch.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import type { EngineManifest } from '@theographic/core';
 import { readRecent, rememberRecent } from '../../search/recent';
 import { searchHref } from '../../search/urlState';
