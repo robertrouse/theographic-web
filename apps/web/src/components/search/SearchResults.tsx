@@ -7,7 +7,8 @@
  *
  * The plan and every hit's `why` are one `?debug=1` away (invariant 3).
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import type { TargetedKeyboardEvent } from 'preact';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Group, Hit, SearchResult, WorkerEngine } from '@theographic/core';
 import { isAborted } from '@theographic/core';
 import { mark } from '../../search/engine';
@@ -123,8 +124,8 @@ export function SearchResults({
 
   if (engineError) {
     return (
-      <section className="results" aria-live="polite">
-        <p className="results__error">Search could not start: {engineError}</p>
+      <section class="results" aria-live="polite">
+        <p class="results__error">Search could not start: {engineError}</p>
       </section>
     );
   }
@@ -145,7 +146,7 @@ export function SearchResults({
     onTab(t, focus);
   };
 
-  const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>, i: number): void => {
+  const onTabKey = (e: TargetedKeyboardEvent<HTMLButtonElement>, i: number): void => {
     let next = i;
     if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
     else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
@@ -157,7 +158,7 @@ export function SearchResults({
   };
 
   const list = (group: Group, hits: Hit[]) => (
-    <ul className="hits">
+    <ul class="hits">
       {hits.map((h) => (
         <HitItem
           key={`${group}:${h.id}`}
@@ -172,22 +173,22 @@ export function SearchResults({
   );
 
   return (
-    <section className="results" aria-busy={pending}>
-      <p className="visually-hidden" role="status" aria-live="polite">
+    <section class="results" aria-busy={pending}>
+      <p class="visually-hidden" role="status" aria-live="polite">
         {announce}
       </p>
       {debug && result && (
         <DebugPanel result={result} roundTripMs={timed!.roundTripMs} layers={layers} />
       )}
       {refErrors.length > 0 && (
-        <ul className="results__note" role="note">
+        <ul class="results__note" role="note">
           {refErrors.map((m, i) => (
             <li key={i}>{m}</li>
           ))}
         </ul>
       )}
       {result && !empty && showTabs && (
-        <div className="results__tabs" role="tablist" aria-label="Result groups">
+        <div class="results__tabs" role="tablist" aria-label="Result groups">
           {tabs.map((t, i) => {
             const n = t === 'all' ? total : result.groups[t].total;
             return (
@@ -203,11 +204,11 @@ export function SearchResults({
                 aria-selected={t === current}
                 aria-controls={`panel-${t}`}
                 tabIndex={t === current ? 0 : -1}
-                className="results__tab"
+                class="results__tab"
                 onClick={() => switchTab(t, false)}
                 onKeyDown={(e) => onTabKey(e, i)}
               >
-                {t === 'all' ? 'All' : GROUP_LABEL[t]} <span className="results__n">{n}</span>
+                {t === 'all' ? 'All' : GROUP_LABEL[t]} <span class="results__n">{n}</span>
               </button>
             );
           })}
@@ -218,20 +219,20 @@ export function SearchResults({
           role="tabpanel"
           id={`panel-${current}`}
           aria-labelledby={`tab-${current}`}
-          className="results__panel"
+          class="results__panel"
         >
           {current === 'all' &&
             order.map((g) => {
               const gr = result.groups[g];
               const shown = showTabs ? gr.hits.slice(0, PER_GROUP_ALL) : gr.hits;
               return (
-                <section className="results__group" key={g}>
-                  <h2 className="results__h">
+                <section class="results__group" key={g}>
+                  <h2 class="results__h">
                     {GROUP_LABEL[g]}
                     {showTabs && gr.total > shown.length && (
                       <button
                         type="button"
-                        className="results__more"
+                        class="results__more"
                         onClick={() => switchTab(g, true)}
                       >
                         {gr.total} {GROUP_LABEL[g].toLowerCase()} →
@@ -240,10 +241,10 @@ export function SearchResults({
                   </h2>
                   {list(g, shown)}
                   {!showTabs && gr.total > shown.length && (
-                    <p className="results__load">
+                    <p class="results__load">
                       <button
                         type="button"
-                        className="results__more"
+                        class="results__more"
                         onClick={() => setLimit((l) => l + PAGE)}
                       >
                         Load more ({shown.length} of {gr.total})
@@ -257,13 +258,13 @@ export function SearchResults({
             (() => {
               const gr = result.groups[current];
               return (
-                <section className="results__group">
+                <section class="results__group">
                   {list(current, gr.hits)}
                   {gr.total > gr.hits.length && (
-                    <p className="results__load">
+                    <p class="results__load">
                       <button
                         type="button"
-                        className="results__more"
+                        class="results__more"
                         onClick={() => setLimit((l) => l + PAGE)}
                       >
                         Load more ({gr.hits.length} of {gr.total})
@@ -274,14 +275,14 @@ export function SearchResults({
               );
             })()}
           {!result.ready.verses && (current === 'all' || current === 'verses') && (
-            <p className="results__wait muted" aria-live="off">
-              <span className="results__spinner" aria-hidden="true" /> Searching verses…
+            <p class="results__wait muted" aria-live="off">
+              <span class="results__spinner" aria-hidden="true" /> Searching verses…
             </p>
           )}
           {empty && allReady && <NoResults q={q} result={result} />}
         </div>
       )}
-      {error && <p className="results__error">{error}</p>}
+      {error && <p class="results__error">{error}</p>}
     </section>
   );
 }
@@ -290,10 +291,10 @@ export function SearchResults({
 function NoResults({ q, result }: { q: string; result: SearchResult }) {
   const why = result.plan.why.filter((w) => !w.startsWith('groups:')).slice(0, 4);
   return (
-    <div className="results__none">
-      <p className="lead">No results for “{q}”.</p>
+    <div class="results__none">
+      <p class="lead">No results for “{q}”.</p>
       {why.length > 0 && (
-        <ul className="results__why muted">
+        <ul class="results__why muted">
           {why.map((w, i) => (
             <li key={i}>{w}</li>
           ))}

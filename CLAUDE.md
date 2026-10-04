@@ -23,7 +23,7 @@ backend is gone; this is the rebuild. Robert Rouse owns both repos.
 ```
 packages/core   @theographic/core — pure TS: types, refs, entities, text, graph, query, suggest
 packages/data   build pipeline: metadata JSON @ pinned SHA → apps/web/public/data/*; definitions batch
-apps/web        Astro + React islands; prerenders every page; search island in a worker
+apps/web        Astro + Preact islands; prerenders every page; search island in a worker
 apps/mobile     Capacitor shells (CP-10)
 docs/           CHECKPOINTS, checkpoints/CP-NN, search-design, ROADMAP, adr/
 scripts/        CI helpers (size budget, smoke)

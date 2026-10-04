@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { EngineManifest, EngineStatus, WorkerEngine } from '@theographic/core';
 import { getEngine, preloadOnIdle } from '../../search/engine';
 

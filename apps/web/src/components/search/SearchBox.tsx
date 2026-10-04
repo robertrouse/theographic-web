@@ -9,7 +9,8 @@
  * Escape closes the list and, when it is already closed, clears the box.
  * ⌘K / Ctrl+K / `/` focus it from anywhere on the page.
  */
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import type { TargetedKeyboardEvent } from 'preact';
+import { useCallback, useEffect, useId, useRef, useState } from 'preact/hooks';
 import type { Group, Suggestion } from '@theographic/core';
 import { isAborted } from '@theographic/core';
 import { SHOW_RECENT } from '../../search/recent';
@@ -118,7 +119,7 @@ export function SearchBox({
     onSubmit(s.query);
   };
 
-  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const onKeyDown = (e: TargetedKeyboardEvent<HTMLInputElement>): void => {
     switch (e.key) {
       case 'ArrowDown':
         if (!open && items.length) setOpen(true);
@@ -159,7 +160,7 @@ export function SearchBox({
 
   // ⌘K / Ctrl+K / "/" from anywhere that is not another field.
   useEffect(() => {
-    const onKey = (e: globalThis.KeyboardEvent): void => {
+    const onKey = (e: KeyboardEvent): void => {
       const cmdK =
         (e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'k';
       const slash = e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && !isEditable(e.target);
@@ -179,38 +180,40 @@ export function SearchBox({
   const activeId = open && active >= 0 ? `${listId}-${active}` : undefined;
 
   return (
-    <div className={`sb${compact ? ' sb--compact' : ''}`}>
+    <div class={`sb${compact ? ' sb--compact' : ''}`}>
       <form
         role="search"
-        className="sb__form"
+        class="sb__form"
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit(value.trim());
         }}
       >
-        <label htmlFor={id} className="visually-hidden">
+        <label for={id} class="visually-hidden">
           Search the Bible
         </label>
         <input
           ref={inputRef}
           id={id}
-          className="sb__input"
+          class="sb__input"
           type="search"
           name="q"
           value={value}
           placeholder={placeholder ?? (compact ? 'Search' : 'Search the Bible')}
-          autoComplete="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          enterKeyHint="search"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck={false}
+          enterkeyhint="search"
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={open}
           aria-controls={listId}
           aria-activedescendant={activeId}
-          onChange={(e) => {
-            onChange(e.target.value);
-            refresh(e.target.value);
+          // Preact has no synthetic per-keystroke onChange (ADR-0002): `input` is the event.
+          onInput={(e) => {
+            const v = e.currentTarget.value;
+            onChange(v);
+            refresh(v);
           }}
           onFocus={() => {
             focused.current = true;
@@ -222,23 +225,23 @@ export function SearchBox({
           }}
           onKeyDown={onKeyDown}
         />
-        <div className="sb__progress" aria-hidden="true" hidden={!loading} />
+        <div class="sb__progress" aria-hidden="true" hidden={!loading} />
       </form>
-      <ul id={listId} role="listbox" aria-label="Suggestions" className="sb__list" hidden={!open}>
+      <ul id={listId} role="listbox" aria-label="Suggestions" class="sb__list" hidden={!open}>
         {items.map((s, i) => (
           <li
             key={`${s.kind}:${s.id ?? s.query}`}
             id={`${listId}-${i}`}
             role="option"
             aria-selected={i === active}
-            className={`sb__item${i === active ? ' is-active' : ''}`}
+            class={`sb__item${i === active ? ' is-active' : ''}`}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => choose(s)}
             onMouseEnter={() => setActive(i)}
           >
-            <span className="sb__label">{s.label}</span>
-            {s.sublabel && <span className="sb__sub">{s.sublabel}</span>}
-            <span className="sb__kind">{kindLabel(s)}</span>
+            <span class="sb__label">{s.label}</span>
+            {s.sublabel && <span class="sb__sub">{s.sublabel}</span>}
+            <span class="sb__kind">{kindLabel(s)}</span>
           </li>
         ))}
       </ul>
