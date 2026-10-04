@@ -23,7 +23,16 @@ merge. `v2` merges to `master` at CP-11.
 | 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | blocked     | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline merged; needs Robert: run the 30-entity dry run with an API key, review, then full run |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | done        | [#92](https://github.com/robertrouse/theographic-web/pull/92) | map tiles not cached offline (decision open) |
 | 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | blocked     | [#91](https://github.com/robertrouse/theographic-web/pull/91) | shells merged, type-checked, unlaunched; needs Robert: iOS simulator runtime + Team ID (see apps/mobile/README.md) |
-| 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | blocked     | —             | needs Robert: license text + go/no-go; then merge v2 → master |
+| 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | blocked     | —             | license decided (#93); open PRs #93–#95 to merge, then Robert's go/no-go → merge v2 → master |
+
+## Design track
+
+Post-cutover UI work. Process: [DESIGN-WORKFLOW.md](DESIGN-WORKFLOW.md). Style
+changes run on `design/*` branches without a row; in-depth sections get a
+`D-NN` file and a row here.
+
+| #   | Section | Status | Branch / PR | Next action |
+| --- | ------- | ------ | ----------- | ----------- |
 
 ## Dependencies
 
@@ -42,7 +51,7 @@ lands; they touch different packages.
 
 - [ ] Rotate the Airtable PAT committed in `theographic-bible-metadata/scripts/airtable_etl.ipynb`.
 - [ ] `theographic-bible-metadata`: pull (`cfb1c48` adds `geo/pauls_journeys_all.geojson`), push the 3 local commits, decide what to do with the untracked `geo/` work.
-- [ ] License: repo `LICENSE` is CC BY-SA 4.0, readme/Notion/old About say CC BY 4.0. Pick one before CP-11.
+- [x] License: data CC BY-SA 4.0 (matches the metadata repo), code GPL-3.0 — decided 2026-10-04; [#93](https://github.com/robertrouse/theographic-web/pull/93).
 - [x] Netlify: linked; branch deploys on.
 - [ ] CP-10: `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`, install the iOS platform in Xcode, then `cd apps/mobile && npm run sync && npx cap open ios`; supply Apple Team ID / bundle id / Android package + signing SHA-256 (`apps/mobile/README.md`).
 - [ ] CP-08 dry run (needs `ANTHROPIC_API_KEY` in a plain shell): `cd packages/data && npm run data:definitions -- submit --dry-run 30`, then `… collect <batchId>`; review the 30 drafts; decide on the full run (~$50–130 at Opus 5 batch rates).
