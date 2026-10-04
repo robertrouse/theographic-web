@@ -28,7 +28,8 @@ cached on first search, pages cached as visited.
 ```
 apps/web/src/sw.ts                 the worker: install/activate/fetch/message
 apps/web/src/pwa/caches.ts         bucket names; isStaleCache(); re-exports DATA_CACHE_PREFIX
-apps/web/src/pwa/routes.ts         routeFor() — bypass | page | asset | static; pageKey()
+apps/web/src/pwa/routes.ts         routeFor() — bypass | page | asset | static | tile; pageKey()
+apps/web/src/pwa/tiles.ts          tile host, tileKey() (date-less planet keys), caps, TileLru, storableTile()
 apps/web/src/pwa/register.ts       registration, update toast, offline marker (0.6 KB gz, no imports)
 apps/web/src/pages/offline.astro   navigation fallback; lists cached pages + index state
 apps/web/public/manifest.webmanifest
@@ -48,9 +49,11 @@ Caches, all under `theographic-sw-*` except the last:
 | `shell-<build>`  | `/`, `/browse/`, `/about/`, `/offline/`, every `/_astro/*` except MapLibre, brand, icons, manifest — 21 URLs | filled on install; other builds' deleted on activate |
 | `pages`          | visited HTML, keyed by path (query dropped, slash-normalised) | stale-while-revalidate, ≤ 200 entries    |
 | `assets`         | `/_astro/*` not in the shell (MapLibre, an old build's chunk a cached page still names) | cache-first, ≤ 60 entries |
+| `tiles-v1`       | OpenFreeMap responses the reader's maps fetched, plus the LRU index | cache-first (style/TileJSON: SWR); LRU, ≤ 1,500 entries **and** ≤ 40 MB; other `tiles-v*` deleted on activate |
 | `theographic-data-<v>` | the five engine files                                  | **`fetchSource`'s; the worker never touches it** |
 
-Routing (`routeFor`): non-GET, cross-origin (tiles, the Netlify toolbar),
+Routing (`routeFor`): anything on `tiles.openfreemap.org` is a `tile` (see
+"Map tiles"); non-GET, other cross-origin (the Netlify toolbar),
 `/.netlify/*`, `/sw.js` and `/data/*` are not intercepted. Navigations:
 shell → pages → network (stored if 200, final, same-origin) → `/offline/`.
 When a page is served from cache because the network failed, the worker
@@ -152,10 +155,8 @@ and its unit test rather than observed.
   `DATA_CACHE_PREFIX` is exported from core so `isStaleCache()` cannot
   delete those buckets and `/offline/` can report them; the test asserts
   the string appears nowhere else in `src/pwa` or `sw.ts`.
-- **Map tiles: uncached.** Cross-origin, unbounded, and a place page's own
-  HTML and the MapLibre chunk do cache, so the page renders offline with
-  an empty map. A bounded tile cache is a CP-10 question if the native
-  shells want it.
+- **Map tiles: cached, bounded** (Robert, 2026-10-04; was "uncached" at
+  first merge). Details and verification under "Map tiles" below.
 - **Pages are stale-while-revalidate, bounded, never cleared on update.**
   A new build does not drop what the reader has visited. A stale page can
   name an old chunk; that chunk is in `assets` if it was ever fetched, and
@@ -184,12 +185,87 @@ and its unit test rather than observed.
   on pages that were rendered before this checkpoint existed (they come
   out of the cache unchanged).
 
+## Map tiles (decided 2026-10-04: cache them)
+
+**Provider and terms.** One provider: OpenFreeMap's public instance,
+style `https://tiles.openfreemap.org/styles/liberty` (`PlaceMap.astro`; a
+test asserts the worker's tile host is the one the component draws from).
+Read 2026-10-04: no keys, no request limits; the
+[ToS](https://openfreemap.org/tos/) (updated 2026-09-09) says nothing on
+caching and forbids collecting "data from the service in automated ways
+without permission"; attribution is required and MapLibre renders it from
+the TileJSON. The server itself sends tiles, Natural Earth rasters and
+sprites with `cache-control: public, max-age=315360000` (10 years), the
+style and TileJSON with `max-age=86400`, glyphs with `max-age=604800`, all
+with `access-control-allow-origin: *`. **Keeping what the reader's own map
+fetched is allowed; pre-fetching tiles nobody viewed is the "automated"
+case, so there is no precache of low zooms.** If Robert wants the region
+available before any map is opened, the route is self-hosting: OpenFreeMap
+publishes weekly planet MBTiles, and a Levant/Mediterranean extract at
+z0–8 could ship from our own origin. Not sized or built here.
+
+**Keys.** Vector tiles live under a weekly-dated path
+(`/planet/20260927_080001_pt/7/76/51.pbf`) named by the TileJSON at
+`/planet`. Keyed by full URL, the first online visit after a planet
+rebuild would point the cached TileJSON at a new date and orphan every
+saved tile. So `tileKey()` drops the date (`/planet/7/76/51.pbf`) and the
+LRU records which date is stored. Same date → cache; different date →
+network, stored copy if the network fails. One copy per z/x/y.
+
+**Policies.** Style and TileJSON (small, unversioned, carry the
+attribution): stale-while-revalidate. Everything else on the host: cache-
+first. Only `type === 'cors'` 200s are stored — MapLibre fetches in CORS
+mode, so nothing opaque (Chrome pads opaque entries to ~7 MB of quota and
+their size cannot be measured; `storableTile()` refuses them).
+
+**Caps: 1,500 entries and 40 MB, LRU.** The index (`TileLru`, a `Map` in
+recency order, no clocks) lives in the tiles bucket at
+`https://theographic.invalid/tiles-lru.json`, is loaded once per worker
+life (rebuilt from the bucket if missing), updated on every hit and
+store through one promise chain, saved 1 s after the last change.
+Eviction drops oversize entries first, then least recently used until
+both caps hold. A stored entry missing from the index (worker stopped
+before a save) is adopted on its next hit. Sizing: Bethlehem at its
+default zoom is 24 files, 1.9 MB (vector tiles 50–250 KB, the Natural
+Earth raster up to ~320 KB); places cluster in the Levant and share tiles,
+so 40 MB is a few dozen distinct place views. Bumping `TILES_VERSION`
+drops the whole bucket on activate.
+
+`sw.js`: 2.7 KB gz (6,383 raw), was 1.4 KB. Main-thread JS on `/` 75.2 KB
+(gate 80); `/offline/`'s script is not on `/`.
+
+**`/offline/`** gains one line: "Maps: 24 map files saved (1.9 MB) from
+places you have viewed." The offline marker is unchanged — a place page
+from cache already shows "Offline · saved copy", and its map now draws.
+
+### Verified (2026-10-04, headless Chrome via puppeteer-core, `astro preview`)
+
+The Claude browser pane cannot register a service worker ("unknown error
+when fetching the script" on any origin), so this ran in headless Chrome
+with a fresh profile, SwiftShader WebGL, and every target — page,
+service worker, MapLibre's worker — taken offline over CDP (the per-target
+lesson above).
+
+| step | result |
+| ---- | ------ |
+| `/place/bethlehem_218/` online, then reload | 24 tile-host responses, **24 from the worker**; `tiles-v1` holds 24 entries, all `type: cors`, + the index; index 24 rows, 1,999,242 bytes |
+| offline reload | **24/24 tile-host responses 200 from the worker**, map draws (screenshot), attribution "OpenFreeMap © OpenMapTiles Data from OpenStreetMap", marker "Offline · saved copy" |
+| offline, a tile never fetched | `fetch` rejects (no fabricated response) |
+| offline, cached TileJSON rewritten to a new planet date | 6/6 tile requests for the new date answered 200 with the stored copies; map draws |
+| offline, unvisited page → `/offline/` | "Maps: 24 map files saved (1.9 MB) …" |
+| eviction, caps temporarily 10 entries / 1 MB (reverted, not committed): Bethlehem, Bethlehem again, Babylon, Rome | bucket at 10 entries every step (817–937 KB), bucket keys == index keys, a revisit reorders the index, each new place's files displace the oldest |
+
+Not verified: a real phone, iOS Safari (its Cache API quota and worker
+lifetime differ), the deploy preview, and a real weekly planet rebuild
+(simulated by rewriting the TileJSON). Panning or zooming beyond what was
+viewed online shows blank squares offline, by design.
+
 ## Where I left off
 
 Everything in the task list is done and measured, locally and on the
 deploy preview. [PR #92](https://github.com/robertrouse/theographic-web/pull/92)
-into `v2` awaits review. Open for CP-10: whether the native shells want a
-bounded tile cache for place pages.
+into `v2` was merged. Map tiles: decided "cache", built and verified on
+branch `cp-09-map-tiles` (section above), PR into `v2` awaiting review.
 
 ## Verify
 
@@ -199,4 +275,7 @@ npm run build && npm run preview       # Chrome: load /, /?q=Saul, a person page
 # "Offline · saved copy", an unvisited page shows /offline/
 node scripts/size-budget.mjs           # sw.js on the "service worker (report)" line
 npx vitest run --project web test/pwa.test.ts
+# map tiles: open a place page online twice, go offline in DevTools
+# (Application → Service workers → Offline also covers the worker), reload:
+# the map draws; /offline/ shows the "Maps: N map files saved" line
 ```
