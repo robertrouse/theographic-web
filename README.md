@@ -45,4 +45,4 @@ This project is backed by individuals passionate about applying our best technol
 
 ## License
 
-Code: GNU General Public License v3.0 ([`LICENSE`](LICENSE)). Data: Creative Commons Attribution 4.0 International, CC BY 4.0 ([`LICENSE-DATA`](LICENSE-DATA)), except the King James text and Easton's dictionary, which are public domain.
+Code: GNU General Public License v3.0 ([`LICENSE`](LICENSE)). Data: Creative Commons Attribution-ShareAlike 4.0 International, CC BY-SA 4.0 ([`LICENSE-DATA`](LICENSE-DATA)), except the King James text and Easton's dictionary, which are public domain.
