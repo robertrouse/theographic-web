@@ -2,8 +2,8 @@
  * Which caching strategy a request gets. Pure function so the routing table
  * is testable without a worker; `../sw.ts` applies it.
  *
- *   bypass  the worker does not touch it: non-GET; cross-origin (map tiles
- *           from openfreemap.org, the Netlify deploy-preview toolbar and its
+ *   bypass  the worker does not touch it: non-GET; cross-origin other than
+ *           the tile host (the Netlify deploy-preview toolbar and its
  *           API); `/.netlify/*`; the worker script itself; and `/data/*`,
  *           which `fetchSource` serves from its own Cache API bucket before
  *           the request exists, so intercepting it would double the storage
@@ -13,8 +13,13 @@
  *           in a bounded bucket when not precached
  *   static  anything else on this origin (brand images, icons, manifest,
  *           sitemap): precached shell → network. Not stored at runtime.
+ *   tile    anything on `TILE_ORIGIN` (OpenFreeMap: style, TileJSON,
+ *           tiles, sprites, glyphs): the bounded LRU tiles bucket, keyed
+ *           and policed by `tiles.ts`
  */
-export type Route = 'bypass' | 'page' | 'asset' | 'static';
+import { TILE_ORIGIN } from './tiles';
+
+export type Route = 'bypass' | 'page' | 'asset' | 'static' | 'tile';
 
 export interface RequestLike {
   url: string;
@@ -25,6 +30,7 @@ export interface RequestLike {
 export function routeFor(req: RequestLike, origin: string): Route {
   if (req.method !== 'GET') return 'bypass';
   const url = new URL(req.url);
+  if (url.origin === TILE_ORIGIN) return 'tile';
   if (url.origin !== origin) return 'bypass';
   const p = url.pathname;
   if (p.startsWith('/data/') || p.startsWith('/.netlify/') || p === '/sw.js') return 'bypass';

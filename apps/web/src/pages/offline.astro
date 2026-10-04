@@ -13,7 +13,7 @@ import Base from '../layouts/Base.astro';
   <p class="lead">That page is not saved on this device.</p>
   <p>
     Pages you have opened before and the search index, once it has loaded, stay available without a
-    connection.
+    connection. So do the map tiles those pages showed, up to a fixed amount of storage.
   </p>
   <h2>Available offline</h2>
   <ul class="offline-list" data-offline-list>
@@ -22,13 +22,28 @@ import Base from '../layouts/Base.astro';
     </li>
   </ul>
   <p class="muted" data-offline-search>Checking the search index…</p>
+  <p class="muted" data-offline-maps></p>
 </Base>
 
 <script>
-  import { DATA_CACHE_PREFIX, PAGES_CACHE } from '../pwa/caches';
+  import { DATA_CACHE_PREFIX, PAGES_CACHE, TILES_CACHE, TILES_LRU_KEY } from '../pwa/caches';
 
   const list = document.querySelector<HTMLUListElement>('[data-offline-list]');
   const search = document.querySelector<HTMLElement>('[data-offline-search]');
+  const maps = document.querySelector<HTMLElement>('[data-offline-maps]');
+
+  /** "Maps: 214 tiles saved (13.2 MB)" from the worker's LRU index. */
+  async function reportMaps(): Promise<void> {
+    if (!maps || !(await caches.has(TILES_CACHE))) return;
+    const res = await (await caches.open(TILES_CACHE)).match(TILES_LRU_KEY);
+    const rows: unknown = res ? await res.json() : [];
+    if (!Array.isArray(rows) || rows.length === 0) return;
+    const bytes = rows.reduce(
+      (n: number, r: unknown) => n + (Array.isArray(r) ? Number(r[1]) || 0 : 0),
+      0,
+    );
+    maps.textContent = `Maps: ${rows.length} map files saved (${(bytes / 1048576).toFixed(1)} MB) from places you have viewed.`;
+  }
 
   async function report(): Promise<void> {
     if (!list || !search) return;
@@ -73,4 +88,5 @@ import Base from '../layouts/Base.astro';
   report().catch(() => {
     if (search) search.textContent = '';
   });
+  reportMaps().catch(() => undefined);
 </script>

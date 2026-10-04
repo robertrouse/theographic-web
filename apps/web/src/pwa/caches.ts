@@ -27,13 +27,31 @@ export const ASSETS_CACHE = `${SW_PREFIX}-assets`;
 export const ASSETS_MAX = 60;
 
 /**
+ * Map tiles the reader's maps fetched from OpenFreeMap (`tiles.ts` has the
+ * keys, caps and LRU). Versioned: bump the suffix when the key scheme or
+ * the provider changes and `activate` drops the old bucket whole. Carried
+ * across site builds otherwise — a deploy does not change a tile.
+ */
+export const TILES_VERSION = 'v1';
+export const tilesCache = (version: string = TILES_VERSION): string =>
+  `${SW_PREFIX}-tiles-${version}`;
+export const TILES_CACHE = tilesCache();
+/**
+ * The LRU index is stored in the tiles bucket itself, under a key no tile
+ * can have, so the two are deleted together.
+ */
+export const TILES_LRU_KEY = 'https://theographic.invalid/tiles-lru.json';
+
+/**
  * Whether `activate` for build `build` should delete the bucket `name`.
- * Only this worker's own shell buckets from other builds qualify; the
- * pages and assets buckets carry across builds, and the engine's data
- * buckets are `fetchSource`'s to prune.
+ * This worker's own shell buckets from other builds qualify, and tiles
+ * buckets of another `TILES_VERSION`; the pages, assets and current tiles
+ * buckets carry across builds, and the engine's data buckets are
+ * `fetchSource`'s to prune.
  */
 export function isStaleCache(name: string, build: string): boolean {
   if (name.startsWith(`${DATA_CACHE_PREFIX}-`)) return false;
+  if (name.startsWith(`${SW_PREFIX}-tiles-`)) return name !== TILES_CACHE;
   if (!name.startsWith(`${SW_PREFIX}-shell-`)) return false;
   return name !== shellCache(build);
 }
