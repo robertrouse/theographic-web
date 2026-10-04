@@ -1,0 +1,22 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Chapter from '../../components/Chapter.astro';
+import { getBooks, getBook, getChapter } from '../../lib/data';
+
+export const getStaticPaths = (() =>
+  getBooks().flatMap((b) =>
+    Array.from({ length: b.chapterCount }, (_, i) => ({
+      params: { book: b.slug, chapter: String(i + 1) },
+    })),
+  )) satisfies GetStaticPaths;
+
+const book = getBook(Astro.params.book)!;
+const chapter = Number.parseInt(Astro.params.chapter, 10);
+const first = getChapter(book.osis, chapter)[0];
+const description = first ? `${book.name} ${chapter}: ${first.text}` : `${book.name} ${chapter}`;
+---
+
+<Base title={`${book.name} ${chapter}`} description={description} section="browse">
+  <Chapter book={book} chapter={chapter} />
+</Base>

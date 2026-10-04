@@ -1,0 +1,45 @@
+---
+/**
+ * "N verses" collapsed behind a details element; the first `limit` listed as
+ * `Book C:V` links to the reader anchor. The full list is the search
+ * island's job (CP-07) — a page for God would otherwise carry 8,587 links.
+ */
+import type { VerseId } from '@theographic/core';
+import { getBookByOrder } from '../lib/data';
+import { verseHref, verseLabel } from '../lib/refs';
+
+interface Props {
+  verses: VerseId[];
+  limit?: number;
+  /** Used in the summary: "mentioned in 774 verses". */
+  verb?: string;
+}
+const { verses, limit = 10, verb = 'mentioned in' } = Astro.props;
+const shown = verses.slice(0, limit).map((id) => ({
+  id,
+  label: verseLabel(id, getBookByOrder),
+  href: verseHref(id, getBookByOrder),
+}));
+const rest = verses.length - shown.length;
+const n = verses.length;
+---
+
+{
+  n > 0 && (
+    <details>
+      <summary>
+        {verb} {n.toLocaleString('en')} {n === 1 ? 'verse' : 'verses'}
+      </summary>
+      <ul class="chips">
+        {shown.map((v) => (
+          <li>{v.href ? <a href={v.href}>{v.label}</a> : <span>{v.label}</span>}</li>
+        ))}
+      </ul>
+      {rest > 0 && (
+        <p class="muted" style="margin-top:8px">
+          First {shown.length} of {n.toLocaleString('en')}; {rest.toLocaleString('en')} more.
+        </p>
+      )}
+    </details>
+  )
+}

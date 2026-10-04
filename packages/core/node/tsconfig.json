@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "../dist-node",
+    "tsBuildInfoFile": "../dist-node/.tsbuildinfo",
+    "lib": ["ES2022"],
+    "types": ["node"]
+  },
+  "include": [".", "../src", "../src/**/*.json"],
+  "exclude": ["../src/text/encoding.d.ts"]
+}

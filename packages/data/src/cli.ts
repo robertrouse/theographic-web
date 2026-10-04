@@ -1,0 +1,58 @@
+/**
+ * `npm run data` entry point.
+ *   fetch  — pull json/ from theographic-bible-metadata at the SHA in data.lock
+ *   build  — fetch → normalize → gate → write apps/web/public/data/ (default)
+ *   gate   — normalize and gate without writing anything
+ */
+import { sizeTable, writeBundles } from './bundles.js';
+import { fetchSources } from './fetch.js';
+import { gate } from './gate.js';
+import { loadAll, loadOverrides } from './load.js';
+import { normalize, NormalizeError } from './normalize.js';
+
+const [, , command = 'build'] = process.argv;
+const log = (s: string): void => console.log(s);
+
+async function main(): Promise<number> {
+  switch (command) {
+    case 'fetch': {
+      await fetchSources({ log });
+      return 0;
+    }
+    case 'gate':
+    case 'build': {
+      const t0 = performance.now();
+      const { src, sha, repo } = await loadAll(log);
+      const overrides = await loadOverrides();
+      let n;
+      try {
+        n = normalize(src, overrides);
+      } catch (e) {
+        if (e instanceof NormalizeError) {
+          console.error(`normalize: ${e.message}`);
+          return 1;
+        }
+        throw e;
+      }
+      const g = gate(n, src);
+      for (const f of g.facts) log(`  ${f}`);
+      if (!g.ok) {
+        console.error(`gate FAILED with ${g.errors.length} error(s):`);
+        for (const e of g.errors.slice(0, 40)) console.error(`  - ${e}`);
+        if (g.errors.length > 40) console.error(`  … ${g.errors.length - 40} more`);
+        return 1;
+      }
+      log(`gate passed (${((performance.now() - t0) / 1000).toFixed(1)}s)`);
+      if (command === 'gate') return 0;
+      const report = await writeBundles(n, { repo, sha });
+      log(sizeTable(report.files));
+      log(`wrote ${report.files.length} files from ${repo}@${sha.slice(0, 7)}`);
+      return 0;
+    }
+    default:
+      console.error(`unknown command: ${command}`);
+      return 2;
+  }
+}
+
+process.exitCode = await main();

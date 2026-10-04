@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Theographic</string>
+    <string name="title_activity_main">Theographic</string>
+    <string name="package_name">bible.viz.theographic</string>
+    <string name="custom_url_scheme">bible.viz.theographic</string>
+</resources>

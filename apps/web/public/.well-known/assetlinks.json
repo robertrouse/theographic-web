@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "bible.viz.theographic",
+      "sha256_cert_fingerprints": [
+        "TODO:REPLACE:WITH:THE:SHA256:OF:THE:UPLOAD:OR:SIGNING:CERTIFICATE:SEE:APPS:MOBILE:README"
+      ]
+    }
+  }
+]

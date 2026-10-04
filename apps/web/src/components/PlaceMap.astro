@@ -1,0 +1,89 @@
+---
+/**
+ * A MapLibre map centred on one place. Only rendered when the place HAS
+ * coordinates (invariant 6 — a missing coordinate is never 0,0), so the
+ * script below, and the ~250 KB MapLibre chunk it pulls in on demand, only
+ * reach pages that draw a map. Tiles: OpenFreeMap "liberty" (no key).
+ */
+import type { FeatureType } from '@theographic/core';
+
+interface Props {
+  name: string;
+  lat: number;
+  lon: number;
+  featureType?: FeatureType | undefined;
+}
+const { name, lat, lon, featureType } = Astro.props;
+
+const zoom =
+  featureType === 'Region' || featureType === 'Water' ? 4 : featureType === 'Island' ? 5 : 7.5;
+const coords = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+---
+
+<div
+  class="map"
+  data-map
+  data-lat={lat}
+  data-lon={lon}
+  data-zoom={zoom}
+  data-name={name}
+  role="region"
+  aria-label={`Map of ${name} at ${coords}`}
+>
+  <noscript
+    ><p class="muted" style="padding:12px">Map needs JavaScript. {name}: {coords}.</p></noscript
+  >
+</div>
+
+<script>
+  import cssHref from 'maplibre-gl/dist/maplibre-gl.css?url';
+  // MapLibre 6 ships its worker as a sibling module resolved from
+  // import.meta.url, which does not survive bundling. Vite builds it as a
+  // separate worker chunk here and MapLibre is told where it landed.
+  import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+
+  const el = document.querySelector<HTMLElement>('[data-map]');
+
+  async function mount(root: HTMLElement) {
+    const { lat, lon, zoom, name } = root.dataset;
+    if (lat === undefined || lon === undefined) return;
+
+    if (!document.querySelector(`link[href="${cssHref}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = cssHref;
+      document.head.append(link);
+    }
+
+    const { Map, Marker, Popup, NavigationControl, setWorkerUrl } = await import('maplibre-gl');
+    setWorkerUrl(workerUrl);
+    const center: [number, number] = [Number(lon), Number(lat)];
+    const map = new Map({
+      container: root,
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+      center,
+      zoom: Number(zoom ?? 7.5),
+      attributionControl: { compact: true },
+      cooperativeGestures: true,
+    });
+    map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
+    const popup = new Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 28,
+    }).setText(name ?? '');
+    new Marker().setLngLat(center).setPopup(popup).addTo(map);
+    popup.setLngLat(center).addTo(map);
+  }
+
+  if (el) {
+    mount(el).catch((err) => {
+      console.error('map failed to load', err);
+      const p = document.createElement('p');
+      p.className = 'muted';
+      p.style.padding = '12px';
+      p.textContent = `Map unavailable. ${el.dataset.name ?? ''}: ${el.dataset.lat}, ${el.dataset.lon}.`;
+      el.replaceChildren(p);
+    });
+  }
+</script>
