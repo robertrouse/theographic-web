@@ -79,7 +79,8 @@ the golden test runs them, skips while they fail, and **fails once they pass**
 so the flag cannot go stale. None was fixed by weakening the formula. Robert's
 call on each: #15 relax DL for 4–5-char queries or drop the Judas clause; #35
 and #38 either mean "exact-tier count" (then the expectation kind should say
-so) or the numbers should be 17 and 33; #46 needs a place row.
+so) or the numbers should be 17 and 33. #46 resolved 2026-10-13: metadata d811458 adds
+the United and Northern Kingdom of Israel as places named Israel; the flag is removed.
 
 ## Decisions made
 

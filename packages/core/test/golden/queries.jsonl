@@ -51,6 +51,6 @@
 {"n":43,"q":"","deferred":true,"expect":{},"note":"topics; deferred (seam only in v1)"}
 {"n":44,"q":"Apostles","expect":{"refs":[],"count":{"group":"groups","min":3}},"note":"groups ≥3"}
 {"n":45,"q":"Gen 1:1; John 1:1","expect":{"refs":[{"bookOsis":"Gen","kind":"verse","verseIdStart":1001001,"verseIdEnd":1001001},{"bookOsis":"John","kind":"verse","verseIdStart":43001001,"verseIdEnd":43001001}],"consumed":[[0,7],[9,17]]},"note":"two refs"}
-{"n":46,"q":"Israel","expect":{"refs":[],"inTop":[{"group":"all","ids":["israel_682"],"n":3},{"group":"all","names":["Israel"],"kind":"place","featureType":"Region","n":3}]},"note":"israel_682 and region Israel both in All top-3","pendingReview":{"inTop":"No place named Israel exists in metadata cfb1c48 (places matching /israel/: none; nearest are the group \"Nation of Israel\" and event \"Northern Kingdom (Israel)\"). israel_682 is All #1."}}
+{"n":46,"q":"Israel","expect":{"refs":[],"inTop":[{"group":"all","ids":["israel_682"],"n":3},{"group":"all","names":["Israel"],"kind":"place","featureType":"Region","n":3}]},"note":"israel_682 and region Israel both in All top-3 (the United and Northern Kingdom place records, added in metadata d811458, carry the name Israel)"}
 {"n":47,"q":"charity","expect":{"refs":[],"inTop":[{"group":"verses","ids":[46013013]}],"notSurfacedBy":{"q":"love","id":46013013}},"note":"1Cor.13.13 in top; `love` does NOT surface it (no synonyms — documented non-goal)"}
 {"n":48,"q":"the","expect":{"refs":[],"noCrash":true,"allWeak":true,"perf":{"maxMs":30}},"note":"all-weak; no crash; <30 ms"}
