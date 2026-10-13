@@ -50,7 +50,7 @@ lands; they touch different packages.
 ## Outside this repo (Robert)
 
 - [ ] Rotate the Airtable PAT committed in `theographic-bible-metadata/scripts/airtable_etl.ipynb`.
-- [ ] `theographic-bible-metadata`: pull (`cfb1c48` adds `geo/pauls_journeys_all.geojson`), push the 3 local commits, decide what to do with the untracked `geo/` work.
+- [x] `theographic-bible-metadata`: pulled, local commits and the `geo/` work pushed as [metadata#55](https://github.com/robertrouse/theographic-bible-metadata/pull/55) (2026-10-13); `data.lock` pins its `d811458`. Merge #55 before this repo's data PR.
 - [x] License: data CC BY-SA 4.0 (matches the metadata repo), code GPL-3.0 — decided 2026-10-04; [#93](https://github.com/robertrouse/theographic-web/pull/93).
 - [x] Netlify: linked; branch deploys on.
 - [ ] CP-10: `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`, install the iOS platform in Xcode, then `cd apps/mobile && npm run sync && npx cap open ios`; supply Apple Team ID / bundle id / Android package + signing SHA-256 (`apps/mobile/README.md`).
