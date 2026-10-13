@@ -15,8 +15,9 @@ emit anything that fails the sanity gate.
 
 ## Inputs
 `https://raw.githubusercontent.com/robertrouse/theographic-bible-metadata/<SHA>/json/{books,chapters,verses,people,places,events,peopleGroups,easton}.json`
-Pinned SHA in `packages/data/data.lock`: `cfb1c48` (origin/master 2026-04-21;
-`json/` identical to Robert's local HEAD). `THEOGRAPHIC_METADATA_DIR=<clone>`
+Pinned SHA in `packages/data/data.lock`: `d811458` (2026-10-13: the LPF place sync
+adds 24 place records, `canonicalPlace` / `partOf` / `near` links and kingdom years;
+previously `cfb1c48`). `THEOGRAPHIC_METADATA_DIR=<clone>`
 builds from a local checkout instead of the network; hashes still apply.
 
 ## Tasks
