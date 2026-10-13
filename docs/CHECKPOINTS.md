@@ -49,7 +49,7 @@ lands; they touch different packages.
 
 ## Outside this repo (Robert)
 
-- [ ] Rotate the Airtable PAT committed in `theographic-bible-metadata/scripts/airtable_etl.ipynb`.
+- [ ] Rotate the Airtable PAT that was hard-coded in `theographic-bible-metadata/scripts/airtable_etl.ipynb` (never committed: `scripts/` is gitignored). Since 2026-10-13 the notebook is deprecated in favour of `etl/export_airtable.py` and reads `AIRTABLE_TOKEN` from the environment; after rotating, update the metadata repo's `AIRTABLE_TOKEN` Actions secret and revoke the old token.
 - [x] `theographic-bible-metadata`: pulled, local commits and the `geo/` work pushed as [metadata#55](https://github.com/robertrouse/theographic-bible-metadata/pull/55) (2026-10-13); `data.lock` pins its `d811458`. Merge #55 before this repo's data PR.
 - [x] License: data CC BY-SA 4.0 (matches the metadata repo), code GPL-3.0 — decided 2026-10-04; [#93](https://github.com/robertrouse/theographic-web/pull/93).
 - [x] Netlify: linked; branch deploys on.
