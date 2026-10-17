@@ -1,0 +1,9 @@
+# Generated from apps/web/src/redirects.ts — edit that file, not this one.
+/passages  /browse/#bible  301
+/passages/  /browse/#bible  301
+/people  /browse/#people  301
+/people/  /browse/#people  301
+/places  /browse/#places  301
+/places/  /browse/#places  301
+/periods  /browse/#periods  301
+/periods/  /browse/#periods  301

@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TODO_APPLE_TEAM_ID.bible.viz.theographic"],
+        "components": [{ "/": "*" }]
+      }
+    ]
+  }
+}

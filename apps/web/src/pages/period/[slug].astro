@@ -1,0 +1,121 @@
+---
+/**
+ * `/period/{slug}` — kept for the 2020 site's routes (invariant 8). A period
+ * is a top-level event (no `partOf`); its child events are listed by year,
+ * the way the 2020 period template did. Everything else about an event is on
+ * `/event/{slug}`.
+ */
+import type { GetStaticPaths } from 'astro';
+import type { EventEntity } from '@theographic/core';
+import Base from '../../layouts/Base.astro';
+import {
+  getBookByOrder,
+  getChildEvents,
+  getTopLevelEvents,
+  getEventBySlug,
+  resolvePeople,
+  resolvePlaces,
+} from '../../lib/data';
+import { entityHref, eventYear, formatDuration, rangeLabel, verseHref } from '../../lib/refs';
+
+export const getStaticPaths = (() =>
+  getTopLevelEvents().map((e) => ({ params: { slug: e.slug } }))) satisfies GetStaticPaths;
+
+const period = getEventBySlug(Astro.params.slug)!;
+const children = getChildEvents(period.id);
+const start = eventYear(period);
+
+/** Child events grouped by their formatted year, chronology order kept. */
+const byYear: { year: string; events: EventEntity[] }[] = [];
+for (const e of children) {
+  const y = eventYear(e) ?? '—';
+  const last = byYear[byYear.length - 1];
+  if (last && last.year === y) last.events.push(e);
+  else byYear.push({ year: y, events: [e] });
+}
+const range = period.verseRange;
+const rangeText = range ? rangeLabel(range, getBookByOrder) : undefined;
+const rangeLink = range ? verseHref(range[0], getBookByOrder) : undefined;
+const passage = (e: EventEntity) => {
+  const r = e.verseRange;
+  if (!r) return undefined;
+  return { text: rangeLabel(r, getBookByOrder), href: verseHref(r[0], getBookByOrder) };
+};
+---
+
+<Base
+  title={period.name}
+  description={`${period.name}${start ? `, ${start}` : ''}: ${children.length} events.`}
+  section="browse"
+>
+  <header class="page-head">
+    <p class="page-head__kicker">Period</p>
+    <h1>{period.name}</h1>
+    <p class="page-head__sub">
+      {start}
+      {period.duration && <> · {formatDuration(period.duration)}</>}
+      {rangeText && <> · {rangeLink ? <a href={rangeLink}>{rangeText}</a> : rangeText}</>}
+      {' '}· <a href={entityHref(period)}>event details</a>
+    </p>
+  </header>
+
+  {
+    byYear.length === 0 ? (
+      <p class="muted">No events recorded within this period.</p>
+    ) : (
+      <ol class="timeline" aria-label={`Events in ${period.name}`}>
+        {byYear.map((g) => (
+          <li>
+            <span class="when">{g.year}</span>
+            <ul class="period-events">
+              {g.events.map((e) => {
+                const people = resolvePeople(e.participants);
+                const places = resolvePlaces(e.locations);
+                const p = passage(e);
+                return (
+                  <li>
+                    <a href={entityHref(e)}>{e.name}</a>
+                    {p && (
+                      <span class="muted">
+                        {' '}
+                        · {p.href ? <a href={p.href}>{p.text}</a> : p.text}
+                      </span>
+                    )}
+                    {(people.length > 0 || places.length > 0) && (
+                      <div class="muted">
+                        {people.map((x, i) => (
+                          <>
+                            {i > 0 && ', '}
+                            <a href={entityHref(x)}>{x.name}</a>
+                          </>
+                        ))}
+                        {people.length > 0 && places.length > 0 && ' — '}
+                        {places.map((x, i) => (
+                          <>
+                            {i > 0 && ', '}
+                            <a href={entityHref(x)}>{x.name}</a>
+                          </>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</Base>
+
+<style>
+  .period-events {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .period-events li + li {
+    margin-top: 8px;
+  }
+</style>

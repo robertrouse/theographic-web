@@ -1,0 +1,209 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+import preact from '@astrojs/preact';
+import sitemap from '@astrojs/sitemap';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/**
+ * Writes `public/_redirects` from `src/redirects.ts` so the table has one
+ * source (invariant 8). Runs at config time so `dev` and `build` agree; the
+ * generated file is committed so a review diff shows what changed.
+ * @returns {import('astro').AstroIntegration}
+ */
+function netlifyRedirects() {
+  return {
+    name: 'theographic:redirects',
+    hooks: {
+      'astro:config:setup': async ({ logger }) => {
+        const { renderNetlifyRedirects } = await import('./src/redirects.ts');
+        const out = fileURLToPath(new URL('./public/_redirects', import.meta.url));
+        writeFileSync(out, renderNetlifyRedirects());
+        logger.info(`wrote ${out}`);
+      },
+    },
+  };
+}
+
+/**
+ * Adds `<link rel="modulepreload">` for each island's entry chunk, its
+ * renderer and every chunk they statically import, and `<link rel="prefetch">`
+ * for the search worker chunk, to every built page. Astro's hydration
+ * script discovers the entry chunks after the HTML is parsed and their
+ * dependencies (preact, the shared search chunk) and the worker one round
+ * trip at a time — ~600 ms each on a Slow 4G profile, on the way to the
+ * first search. `prefetch` rather than `preload as="worker"`: Chrome does
+ * not implement the latter, while a prefetched file is served to the
+ * worker from the HTTP cache. Runs after the build so the hashed names
+ * are known; the graph is read from the emitted JS (`from"./x.js"` and the
+ * worker's `new URL`).
+ * @returns {import('astro').AstroIntegration}
+ */
+function preloadIslandChunks() {
+  return {
+    name: 'theographic:preload-chunks',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const astroDir = join(root, '_astro');
+        /** @type {Map<string, {imports: string[], workers: string[]}>} */
+        const graph = new Map();
+        for (const name of readdirSync(astroDir)) {
+          if (!name.endsWith('.js')) continue;
+          const js = readFileSync(join(astroDir, name), 'utf8');
+          const imports = [...js.matchAll(/from\s*["'`]\.\/([^"'`]+\.js)["'`]/g)].map((m) => m[1]);
+          const workers = [
+            ...js.matchAll(/new Worker\(new URL\(["'`]\/_astro\/([^"'`]+\.js)["'`]/g),
+          ].map((m) => m[1]);
+          graph.set(name, { imports, workers });
+        }
+        /** @param {string} entry */
+        const closure = (entry) => {
+          const mods = new Set();
+          const workers = new Set();
+          const walk = (n) => {
+            const g = graph.get(n);
+            if (!g) return;
+            for (const w of g.workers) workers.add(w);
+            for (const i of g.imports) {
+              if (mods.has(i)) continue;
+              mods.add(i);
+              walk(i);
+            }
+          };
+          walk(entry);
+          return { mods, workers };
+        };
+        let pages = 0;
+        const walkHtml = (d) => {
+          for (const name of readdirSync(d)) {
+            const p = join(d, name);
+            if (statSync(p).isDirectory()) {
+              if (name !== '_astro') walkHtml(p);
+              continue;
+            }
+            if (!name.endsWith('.html')) continue;
+            const html = readFileSync(p, 'utf8');
+            const entries = [
+              ...html.matchAll(/(?:component|renderer)-url="\/_astro\/([^"]+\.js)"/g),
+            ].map((m) => m[1]);
+            if (entries.length === 0) continue;
+            const mods = new Set();
+            const workers = new Set();
+            for (const e of entries) {
+              mods.add(e);
+              const c = closure(e);
+              for (const m of c.mods) mods.add(m);
+              for (const w of c.workers) workers.add(w);
+            }
+            const links = [
+              ...[...mods].map((m) => `<link rel="modulepreload" href="/_astro/${m}">`),
+              ...[...workers].map((w) => `<link rel="prefetch" href="/_astro/${w}">`),
+            ].join('');
+            if (!links) continue;
+            writeFileSync(p, html.replace('</head>', `${links}</head>`));
+            pages++;
+          }
+        };
+        walkHtml(root);
+        logger.info(`preload links added to ${pages} pages`);
+      },
+    },
+  };
+}
+
+/**
+ * Bundles `src/sw.ts` to `dist/sw.js` with esbuild (already a Vite
+ * dependency) and defines its precache list: the shell pages, every
+ * `/_astro/*` chunk except MapLibre's (1.5 MB, fetched on first place
+ * page and cached at runtime instead), the brand images, icons and
+ * manifest. `__BUILD__` is a digest of the precached HTML and the list,
+ * so a rebuild that changes nothing installs nothing. Runs after
+ * `preloadIslandChunks` so the HTML it hashes is the HTML that ships.
+ * @returns {import('astro').AstroIntegration}
+ */
+function serviceWorker() {
+  const SHELL_PAGES = ['/', '/browse/', '/about/', '/offline/'];
+  return {
+    name: 'theographic:service-worker',
+    hooks: {
+      'astro:build:done': async ({ dir, logger }) => {
+        const { build } = await import('esbuild');
+        const { createHash } = await import('node:crypto');
+        const root = fileURLToPath(dir);
+        const hash = createHash('sha256');
+        const precache = [];
+        for (const p of SHELL_PAGES) {
+          const file = join(root, p, 'index.html');
+          hash.update(readFileSync(file));
+          precache.push(p);
+        }
+        for (const name of readdirSync(join(root, '_astro'))) {
+          if (name.startsWith('maplibre-gl')) continue;
+          precache.push(`/_astro/${name}`);
+        }
+        for (const d of ['brand', 'icons']) {
+          for (const name of readdirSync(join(root, d))) precache.push(`/${d}/${name}`);
+        }
+        precache.push('/manifest.webmanifest');
+        hash.update(precache.join('\n'));
+        const buildId = hash.digest('hex').slice(0, 8);
+        const result = await build({
+          entryPoints: [fileURLToPath(new URL('./src/sw.ts', import.meta.url))],
+          outfile: join(root, 'sw.js'),
+          bundle: true,
+          minify: true,
+          format: 'iife',
+          target: 'es2020',
+          define: { __PRECACHE__: JSON.stringify(precache), __BUILD__: JSON.stringify(buildId) },
+          legalComments: 'none',
+          logLevel: 'silent',
+        });
+        if (result.errors.length) throw new Error(result.errors.map((e) => e.text).join('\n'));
+        const size = statSync(join(root, 'sw.js')).size;
+        logger.info(`sw.js build ${buildId}: ${precache.length} precached URLs, ${size} bytes`);
+      },
+    },
+  };
+}
+
+export default defineConfig({
+  site: 'https://theographic.netlify.app',
+  output: 'static',
+  trailingSlash: 'ignore',
+  integrations: [
+    // Native Preact, no compat layer (ADR-0002): the islands use preact/hooks.
+    preact(),
+    // The offline fallback is not a page for a crawler.
+    sitemap({ filter: (page) => !page.endsWith('/offline/') }),
+    netlifyRedirects(),
+    preloadIslandChunks(),
+    serviceWorker(),
+  ],
+  build: {
+    // Entity pages are many (4,500+); keep each as /path/index.html so
+    // Netlify serves clean URLs without a rewrite table.
+    format: 'directory',
+  },
+  vite: {
+    define: {
+      // Absolute path of the bundles for src/lib/data.ts. Injected here because
+      // a built chunk's import.meta.url points into dist/.prerender, not src/.
+      __DATA_DIR__: JSON.stringify(fileURLToPath(new URL('./public/data/', import.meta.url))),
+    },
+    worker: { format: 'es' },
+    build: {
+      // MapLibre is imported lazily on place pages that have coordinates;
+      // its chunk is large by nature and must not trip the chunk warning.
+      chunkSizeWarningLimit: 1200,
+      // Astro inlines a hoisted script under 4 KB into every page. The
+      // service-worker registration (Base.astro's one script) is on all
+      // 6,300 of them: as a hashed file it is fetched once and precached;
+      // inlined it is 1.3 KB per page and invisible to the size budget.
+      // Vite hands the emitted chunk name, not the source path, hence the test.
+      assetsInlineLimit: (file) =>
+        /\/Base\.astro_astro_type_script/.test(file) ? false : undefined,
+    },
+  },
+});

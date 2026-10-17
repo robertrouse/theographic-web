@@ -1,0 +1,50 @@
+---
+import { engineManifest } from '@theographic/core';
+import Base from '../layouts/Base.astro';
+import SearchPage from '../components/search/SearchPage';
+import { getBooks, getManifest } from '../lib/data';
+
+/** The ten hint queries CP-07's definition of done is measured against. */
+const hints = [
+  'Prov 25:2',
+  'Acts 13',
+  'John 3:16',
+  'in the beginning',
+  'search the scriptures',
+  'Abraham',
+  'Saul',
+  'Zechariah',
+  'Bethlehem',
+  'Antioch',
+];
+const manifest = engineManifest(getManifest());
+const books = getBooks().map((b) => ({ order: b.order, osis: b.osis, slug: b.slug, name: b.name }));
+/**
+ * The core layer starts downloading with the HTML rather than three
+ * round trips later (island JS → worker JS → data). Same hashed URLs the
+ * worker's fetchSource asks for, so the preload is what it consumes.
+ */
+const preload = ['books.json', 'entities.index.json'].map(
+  (f) => `/data/${f}?v=${manifest.files[f]!.slice(0, 12)}`,
+);
+---
+
+<Base title="Theographic" section="search" hideHeaderSearch>
+  <Fragment slot="head">
+    {preload.map((href) => <link rel="preload" href={href} as="fetch" crossorigin="anonymous" />)}
+  </Fragment>
+  <div class="home">
+    <h1 class="visually-hidden">Theographic: a knowledge graph of the Bible</h1>
+    <img
+      class="home__logo"
+      src="/brand/theographic-logo.png"
+      alt="Theographic"
+      width="950"
+      height="444"
+      fetchpriority="high"
+    />
+    <SearchPage client:load manifest={manifest} books={books} hints={hints} />
+    <p class="lead"><a href="/browse/">Browse the full index</a></p>
+    <p class="muted">People, places, periods and passages of the Bible, and how they connect.</p>
+  </div>
+</Base>

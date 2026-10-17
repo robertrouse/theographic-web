@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!--
+    The Theographic mark: the three-link chain that stands in for the
+    "o-g-o" of the logotype (brand/theographic-logo.png), redrawn as vector
+    so it renders sharp at 512px. brand/og-square-100.png is the same mark
+    at 100px — too small to upscale for an install icon.
+
+    Each link is a stadium; where a link passes in front of its neighbour
+    the crossing is redrawn with a background-coloured halo so the chain
+    reads as interlocked. Regenerate the PNGs with `node scripts/pwa-icons.mjs`.
+  -->
+  <defs>
+    <rect id="link" x="35" y="2" width="30" height="40" rx="15" ry="15" fill="none"/>
+    <clipPath id="c1"><circle cx="62" cy="36" r="8"/></clipPath>
+    <clipPath id="c2"><circle cx="38" cy="64" r="8"/></clipPath>
+  </defs>
+  <rect width="100" height="100" fill="#fbfaf7"/>
+  <g stroke="#1f2328" stroke-width="5.5">
+    <use href="#link" y="0"/>
+    <use href="#link" y="56"/>
+    <use href="#link" y="28"/>
+  </g>
+  <g clip-path="url(#c1)">
+    <use href="#link" y="0" stroke="#fbfaf7" stroke-width="11"/>
+    <use href="#link" y="0" stroke="#1f2328" stroke-width="5.5"/>
+  </g>
+  <g clip-path="url(#c2)">
+    <use href="#link" y="56" stroke="#fbfaf7" stroke-width="11"/>
+    <use href="#link" y="56" stroke="#1f2328" stroke-width="5.5"/>
+  </g>
+</svg>

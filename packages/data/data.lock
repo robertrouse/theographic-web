@@ -1,0 +1,14 @@
+{
+  "repo": "robertrouse/theographic-bible-metadata",
+  "sha": "d8114581d10cc79a3a5029db50207890fd1be070",
+  "files": {
+    "books.json": "fdaebcc53eff498e52b161be67bbc278a619cdcab843a439202d89388affd99a",
+    "chapters.json": "7370622bd800990f26efa426b4240e9e012f88ac6faa86d4c942e239d24ffdd7",
+    "easton.json": "3b8b86a5ec0fba3a3c157e703d1d809d0de055a427d7c4d86fd918d0333740d4",
+    "events.json": "e616381e79402b15842ce668d0884f6659250487c260a0cc41dada2e1748ddf5",
+    "people.json": "6fb7b4e7aaae55f244867e74252ec7f91f3a583b8811b49f8966733f08f44047",
+    "peopleGroups.json": "fcda249cb8b122919e22d1d1d3aa5760237832ac300507ca34e4311d4ae940fb",
+    "places.json": "9900903564e452c997ac0c711b9c1e1d6d2f1a0f2cbca9ea317fda2c80e0c1e0",
+    "verses.json": "056ca2a13683ca4aca020aae6655f0b488a8abc291959b385ef83ba1c7db0fff"
+  }
+}
