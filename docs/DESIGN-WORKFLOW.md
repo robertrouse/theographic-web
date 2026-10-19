@@ -60,7 +60,7 @@ Every design PR checks these at 375 px and 1280 px, light and dark:
 | `/person/david_994`                              | many relations, long verse list                      |
 | `/person/jesus_904`                              | the densest person; aliases ("Lord", "Word")          |
 | `/place/bethlehem_218`                           | map, two same-name places                            |
-| a place with no coordinates                      | "no data" ≠ `0,0` (invariant 6) — pick one, add here |
+| `/place/eden_354`                                | no coordinates: "no data" ≠ `0,0` (invariant 6)      |
 | `/event/crucifixion_and_burial_459/`             | dense event                                          |
 | `/event/exodus_from_egypt_125/`                  | event spanning a long passage                        |
 | `/period/creation_of_all_things_1`               | period page                                          |
