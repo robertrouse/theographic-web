@@ -23,7 +23,17 @@ iOS and Android apps wrapping `apps/web/dist`, store-ready structure.
 - [x] Icons/splash from the mark (`apps/mobile/resources/`, generated with
       `@capacitor/assets` via npx).
 - [x] Checklist: `apps/mobile/README.md` — each item done or "needs Robert".
-- [ ] **Run on the iOS Simulator** — blocked on this Mac (see Verify).
+- [x] **Run on the iOS Simulator** — 2026-10-04, iPhone 17 / iOS 26.3, Xcode 26.2.
+  Home, search (`Saul`: 359 hits from the bundled worker), `/browse/`, and the
+  `theographic://person/moses_2108` deep link all work. Found and fixed:
+  `SceneDelegate` installed a bare `CAPBridgeViewController`, so
+  `StaticSiteRouter` never ran and every path served the home page.
+  Place pages: on the iOS 26.3 runtime under Xcode 26.2 and 27.0 the
+  WebContent process crashed (JavaScriptCore DFG JIT fault compiling MapLibre;
+  the simulator's own Safari crashed the same way on the Netlify site). On the
+  **iOS 27.0 runtime (Xcode 27.0, macOS 27.0.1 host)** `/place/bethlehem_218`
+  renders: map, marker, attribution, coordinates, Easton's entry; no crash
+  reports. Use the iOS 27 runtime on this Mac.
 - [ ] **Run on an Android emulator** — blocked, no Android tooling.
 
 ## What was built
@@ -153,12 +163,7 @@ Java has not been compiled. Once Robert installs the platform, the README's
 
 ## Where I left off
 
-Everything buildable on this machine is built and pushed on
-`cp-10-capacitor`; the PR against `v2` is open. The two unchecked tasks are
-the simulator/emulator runs, blocked on tooling Robert has to install (see
-Environment). After `sudo xcode-select -s …` and the iOS platform download:
-`npm run sync -w @theographic/mobile`, then the `xcodebuild` / `simctl` block
-in `apps/mobile/README.md`, screenshots of `/`, `?q=Saul`,
-`/person/moses_2108`, a place page, and `simctl openurl` for the scheme.
-Android: install Android Studio, `./gradlew assembleDebug` — the Java in
-`MainActivity.java` has not been compiled yet.
+iOS shell runs on the simulator (see the ticked task); the SceneDelegate fix is
+[#98](https://github.com/robertrouse/theographic-web/pull/98). Place pages verified
+on the iOS 27 simulator. Not yet on a real iPhone. Then the store items in `apps/mobile/README.md`
+(bundle id first — it is permanent). Android is untouched: needs Android Studio.
