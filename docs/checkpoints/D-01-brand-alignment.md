@@ -107,15 +107,18 @@ preview updates. Phase 3 depends on the decisions below.
       was unused and is gone. The last hard-coded colours (map popup text,
       search highlight, two shadows, the mono stack) now use tokens.
 - [x] Body 18px with `letter-spacing: 0.025em` (on `html`; Georgia headings
-      reset to `normal`). Keep the 15px floor for small text. Check whether
-      `tracking-wide` hurts long reading on `/ps/119/`; if it does, apply it to
-      UI prose only and not to verse text. Note the result here.
+      reset to `normal`). 15px floor for small text kept. 2026-10-19, `/ps/119/`
+      at 375 px light and dark: tracking does not hurt long reading; PT Sans
+      is narrow enough that lines hold about the same word count as before.
+      It stays on verse text.
 - [x] Page texture: viz.bible's `handmadepaper.png` / `congruent_outline.png`
       as `src/assets/paper-light.png` / `paper-dark.png`, set on `html` and on
       the sticky letter headings in `/browse/`. **Finding:** viz.bible's dark
       pattern is opaque and neutral (#313131–#3d3d3d), so its dark page is
       grey, not slate-900; `--color-bg` dark is `#343434` to match.
-      Check verse text and the map edges over it at 375 px.
+      2026-10-19: verse text and the map frame read cleanly over both
+      textures at 375 px. The basemap stays light in dark mode (as before);
+      that is Phase 3's map restyle.
 - [x] `theme-color` metas and `manifest.webmanifest` → `#f0f2f3` / `#343434`.
       The PWA icons still have the old `#fbfaf7` ground; they get redrawn
       with the logo decision (Phase 2).
@@ -152,7 +155,8 @@ preview updates. Phase 3 depends on the decisions below.
 
 **Phase 4: verify and hand back**
 
-- [ ] After shots of every reference page; before/after pairs in the PR.
+- [x] Phase 1 after shots: 52 from `deploy-preview-106` (2026-10-19), in local
+      `shots/after/`; `before/` and `vizbible/` alongside. Repeat after Phase 2.
 - [ ] Throttled-phone font timing written into this file.
 - [ ] Robert's review on the preview; iterate Lane-1 style on the same branch.
 
@@ -206,15 +210,16 @@ preview updates. Phase 3 depends on the decisions below.
 
 ## Where I left off
 
-2026-10-19: Phases 0 and 1 done on `design/brand-vizbible`; PR into `v2` opened
-for the deploy preview. Typecheck and tests pass locally (417). **Not verified
-locally:** `npm run build` and the size budget. The local build stalls copying
-`public/data` because this checkout lives in iCloud-synced `~/Documents` (see
-below); the PR's CI run and Netlify preview are the build check. Still open in
-Phase 1: the `/ps/119/` tracking check and the map-edge check at 375 px, both
-from `after` shots of the preview
-(`node scripts/shots.mjs https://deploy-preview-<PR>--theographic.netlify.app after`).
-Then Phase 2 waits on decision 1 (logo).
+2026-10-19: Phases 0–1 merged to `v2` in
+[#106](https://github.com/robertrouse/theographic-web/pull/106). Verified on
+`deploy-preview-106`: CI `verify` green (typecheck, tests, build, size budget:
+main-thread JS 14.8 KB, unchanged); `smoke.mjs` all clear; fonts and textures
+served from `/_astro/` with immutable caching and listed in the service
+worker's precache; after shots taken. Seen in the shots, for Phase 2: the
+header is still a solid `--color-surface` bar, which in dark mode is slate-700
+(blue) over the neutral grey page. The transparent viz.bible header fixes it.
+**Not done:** throttled-phone font timing. **Next:** decision 1 (logo) from
+Robert unblocks Phase 2 on this same branch.
 
 **Local build environment.** `~/Documents` syncs to iCloud Drive with
 Optimize Mac Storage on, so the file provider throttles the build's ~15k file
