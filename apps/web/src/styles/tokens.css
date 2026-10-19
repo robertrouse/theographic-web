@@ -1,28 +1,43 @@
-/* Design tokens. The 2020 look — Georgia italic display over a quiet, warm
-   page — carried forward; colours are set here once and swapped for dark
-   mode, so components never name a colour directly. */
+/* Design tokens. Viz.Bible's look (D-01): PT Sans body, Georgia italic
+   display, Tailwind's slate neutrals and sky links over a paper texture.
+   Colours are set here once and swapped for dark mode, so components never
+   name a colour directly.
+
+   Contrast (WCAG 2.1) is measured against the worst pixel of the texture,
+   not the flat fill: the light paper's darkest pixel is #e6e9ea, the dark
+   pattern's lightest is #3d3d3d. Ratios in the comments are the lowest of
+   page texture / surface / surface-2. Viz.Bible's own link (sky-500, 2.5:1)
+   and muted (slate-500) steps fail AA; these are the nearest steps that pass. */
 :root {
-  --font-body:
-    'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'PT Sans', Arial, system-ui, sans-serif;
   --font-display: Georgia, 'Times New Roman', Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Type. Body 17px; nothing on the site renders below 15px. */
-  --text-size: 17px;
+  /* Type. Body 18px as on viz.bible; nothing on the site renders below 15px. */
+  --text-size: 18px;
   --text-small: 15px;
-  --text-lead: 19px;
+  --text-lead: 20px;
   --leading: 1.55;
+  /* Tailwind's tracking-wide, which viz.bible sets on every paragraph.
+     Display (Georgia) and the uppercase labels set their own. */
+  --tracking: 0.025em;
 
-  --color-text: #1f2328;
-  --color-muted: #5b6672;
-  --color-bg: #fbfaf7;
+  --color-text: #334155; /* slate-700: 8.4:1 */
+  --color-heading: #0f172a; /* slate-900: 14.5:1 */
+  --color-muted: #475569; /* slate-600: 6.2:1 (slate-500 is 4.3) */
+  --color-bg: #f0f2f3; /* the paper's mean; shows before the texture loads */
+  --page-texture: url('../assets/paper-light.png');
+  --page-texture-size: auto;
   --color-surface: #ffffff;
-  --color-surface-2: #f1efe8;
-  --color-rule: #e2ded4;
-  --color-primary: #3d5ccc;
-  --color-primary-strong: #2b45a8;
-  --color-secondary: #19857b;
+  --color-surface-2: #e2e8f0; /* slate-200 */
+  --color-rule: #cbd5e1; /* slate-300 */
+  --color-primary: #0369a1; /* sky-700: 4.8:1 (viz.bible uses sky-500) */
+  --color-primary-strong: #075985; /* sky-800: 6.1:1 */
+  --color-brand: #90181b; /* the logo's "(viz." red; a mark colour */
   --color-focus: #ff9900;
-  --color-verse-num: #5b6672; /* = muted; 5.9:1 on the page background */
+  --color-mark: rgba(255, 153, 0, 0.35); /* search-hit highlight underlay */
+  --color-verse-num: var(--color-muted);
+  --color-popup-text: #334155; /* MapLibre popups stay light in both schemes */
 
   --max-content: 920px;
   --max-prose: 42em;
@@ -38,21 +53,30 @@
   --inset-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
   --inset-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
   --radius: 8px;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-pop: 0 8px 24px rgba(15, 23, 42, 0.14);
 }
 
+/* Viz.Bible's dark page is not slate-900: its pattern image covers the fill
+   and reads as a neutral #313131–#3d3d3d. Surfaces are slate-700, as its
+   cards are; chips (surface-2) go darker, slate-800, because sky-400 on
+   anything lighter than slate-700 drops under 4.5:1. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-text: #e8e5de;
-    --color-muted: #a3aab2;
-    --color-bg: #15171a;
-    --color-surface: #1d2024;
-    --color-surface-2: #24282d;
-    --color-rule: #30353c;
-    --color-primary: #93a6ff;
-    --color-primary-strong: #b3c0ff;
-    --color-secondary: #4fc3b6;
-    --color-verse-num: #a3aab2;
+    --color-text: #e2e8f0; /* slate-200: 8.4:1 */
+    --color-heading: #f1f5f9; /* slate-100: 9.5:1 */
+    --color-muted: #aeb8c6; /* between slate-300 and -400: 5.2:1 (slate-400 is 4.0) */
+    --color-bg: #343434;
+    --page-texture: url('../assets/paper-dark.png');
+    --page-texture-size: 60px 60px;
+    --color-surface: #334155; /* slate-700 */
+    --color-surface-2: #1e293b; /* slate-800: chips read as inset, not raised */
+    --color-rule: #4b5563;
+    --color-primary: #38bdf8; /* sky-400: 4.8:1 */
+    --color-primary-strong: #7dd3fc; /* sky-300: 6.2:1 */
+    --color-brand: #d01b1f;
+    --color-mark: rgba(255, 153, 0, 0.45);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.45);
   }
 }

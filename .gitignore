@@ -48,3 +48,6 @@ xcuserdata/
 
 # stale agent worktree copies awaiting deletion (rm is slow under the sandbox)
 .orphaned-worktrees/
+
+# design screenshots (scripts/shots.mjs)
+shots/
