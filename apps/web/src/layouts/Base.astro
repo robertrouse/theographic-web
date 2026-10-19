@@ -2,6 +2,9 @@
 import '../styles/global.css';
 import SearchSlot from '../components/SearchSlot.astro';
 import { getManifest } from '../lib/data';
+// The one face every page renders first; preloaded so the swap from the
+// fallback happens before first paint on a warm connection.
+import ptSans400 from '../fonts/pt-sans-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -34,8 +37,10 @@ const current = (s: string) => (section === s ? 'page' : undefined);
     <link rel="icon" href="/brand/og-square-100.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)" />
+    <link rel="preload" href={ptSans400} as="font" type="font/woff2" crossorigin />
+    <!-- = --color-bg in tokens.css (a meta tag cannot read a CSS variable) -->
+    <meta name="theme-color" content="#f0f2f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#343434" media="(prefers-color-scheme: dark)" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />

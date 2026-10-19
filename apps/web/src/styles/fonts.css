@@ -1,0 +1,33 @@
+/* PT Sans, Viz.Bible's body face (D-01). Self-hosted: no font CDN, and the
+   files are imported from src/ so Vite content-hashes them into /_astro/,
+   where they get the immutable cache header and the service-worker precache.
+
+   Made from @fontsource/pt-sans 5.3.0's latin woff2 files with
+     pyftsubset <in>.woff2 --flavor=woff2 --no-hinting --desubroutinize \
+       --layout-features=ccmp,kern,liga --unicodes=<fontsource latin range>
+   Same 215 characters as fontsource's latin subset; dropping the TrueType
+   hinting is what takes each face from ~45 KB to ~10 KB. Hinting only
+   affects Windows at small sizes; macOS, iOS and Android ignore it.
+   Bold italic is synthesised from 700 (rare: KJV italics inside bold UI).
+   Licence: SIL OFL 1.1, ../fonts/OFL.txt. */
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/pt-sans-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/pt-sans-400-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/pt-sans-700-normal.woff2') format('woff2');
+}
