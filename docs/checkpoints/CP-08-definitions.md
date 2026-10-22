@@ -195,8 +195,16 @@ John 1:3, Col 1:16 pattern) — kept as a principle in the prompt. Open: other
 dictionaries beyond Easton's (the batch model has no web access).
 
 Background dictionaries implemented (see Design); not yet run through a batch.
-Before the full run, Robert also wants definitions written back to Airtable,
-linked to the primary People/Places/Events records — design pending.
+Airtable (2026-10-22, Robert): the `definitions` table in "Theographic Bible
+Data" (`app5UK4s70d5PwupX`, table `tblY6WVGPxYxQNrHv`) is the source of truth
+for definitions, edits and review status. Fields: slug; person/place/event
+links; text; citations (links to verses); status draft/reviewed/rejected;
+confidence; model; generatedAt; batchId; sources; checkProblems; reviewNotes;
+reviewedAt. Created by `npm run data:definitions -- airtable-setup`
+(`packages/data/src/airtable/definitions-table.ts`) with a pipeline PAT in
+Keychain (`airtable-theographic-pat`). The Airtable connector in Claude can
+read the schema but not change it. Next: upsert from `collect` (skip
+`reviewed`), export via the metadata ETL, test on the 30, then the full run.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`

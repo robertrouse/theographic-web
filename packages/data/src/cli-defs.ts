@@ -26,6 +26,7 @@ import {
   submit,
   type SelectOptions,
 } from './definitions/run.js';
+import { ensureDefinitionsTable } from './airtable/definitions-table.js';
 import { loadBackground } from './dicts/index.js';
 import { loadNormalized } from './load.js';
 import { NormalizeError } from './normalize.js';
@@ -100,7 +101,18 @@ function selectOptions(a: DefsArgs): SelectOptions {
 async function main(argv: string[]): Promise<number> {
   const a = parseDefsArgs(argv);
   if (a.command === 'help') {
-    console.log('commands: submit | collect <batchId> | check [path] | ground <slug>');
+    console.log(
+      'commands: submit | collect <batchId> | check [path] | ground <slug> | airtable-setup',
+    );
+    return 0;
+  }
+  if (a.command === 'airtable-setup') {
+    const token = process.env['AIRTABLE_TOKEN'];
+    if (!token) throw new Error('airtable-setup: set AIRTABLE_TOKEN');
+    const t = await ensureDefinitionsTable(token);
+    console.log(
+      `definitions table ${t.id}: ${t.created ? 'created' : 'already exists, left unchanged'}`,
+    );
     return 0;
   }
   let n;
