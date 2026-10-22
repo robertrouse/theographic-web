@@ -173,6 +173,14 @@ conclusion (Cherith, Rehoboth, Atad); one named dictionary (Hezron); titles
 without "The" read stiffly ("Reign of Hezekiah was…"). Next: Robert's call,
 then the full run.
 
+Robert's rulings on the third run (2026-10-21): "The" allowed before event
+titles; competing views kept, and the definition says which one this entry
+follows (for places, the view the coordinates match; "the location shown
+here"); sources named by title when used; name meanings left as they are;
+connected passages may explain supplied facts the verses don't (the Creation /
+John 1:3, Col 1:16 pattern) — kept as a principle in the prompt. Open: other
+dictionaries beyond Easton's (the batch model has no web access).
+
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`
 
