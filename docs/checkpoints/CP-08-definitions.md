@@ -28,14 +28,14 @@ reviewable data, never overwriting a reviewed row.
   `additionalProperties: false`. The model's `notes` field was removed on
   2026-10-21 (Robert: a distraction); the row's `notes` is now written only by
   the pipeline, for check failures.
-- System prompt (stable, `cache_control: {type:'ephemeral'}`): role, rules —
-  ≤ 120 words; only claims supported by the supplied verses/relationships;
-  cite osisRefs from the supplied list only; say what is uncertain; no
-  doctrinal interpretation; plain modern English; name the entity as the
-  displayTitle; if the sources are too thin, say so in `notes` and keep the
-  definition to what is known. It is 1,666 chars (~420 tokens), which is
-  below the prompt-cache minimum, so the `cache_control` is harmless but will
-  not engage; padding it to qualify would cost more than it saves.
+- System prompt (stable, `cache_control: {type:'ephemeral'}`; the cache does
+  engage in batches): general-audience role; ≤ 150 words; title first; claims
+  from the supplied verses and facts, with stated inferences allowed from
+  logic, context and connected passages, and modern place identifications as
+  inferences; dates presented as inferred; no "the graph"/"the data"; other
+  sources mentioned only in support, never to dispute; OSIS refs only in
+  `citations`, SBL-style `2 Kgs 5:12` in text; neutral on uncertainty; no
+  doctrinal interpretation. Revised 2026-10-21 from Robert's dry-run review.
 - User content per entity (`ground.ts`): record fields; relationships with
   names; up to 40 verses chosen for spread across books (one per book
   minimum, the rest in proportion, evenly sampled within a book so first and
@@ -50,7 +50,7 @@ status: 'draft'|'reviewed', notes? }`. Regeneration skips `reviewed`
   asked.
 - Checker (`check.ts`): shape re-validated on the way in; every citation must
   be a real verse that mentions the entity (people, places: `detail.verses`)
-  or lie in the event's verse list; ≤ 130 words; non-empty text; at least
+  or lie in the event's verse list; ≤ 165 words (was 130 until 2026-10-21); non-empty text; at least
   one citation; no duplicates. A failing row is **kept** as `draft` with
   `notes: 'citation check failed: …'` — never dropped, never patched.
 - Where the file lives: `THEOGRAPHIC_METADATA_DIR/json/definitions.json` when
@@ -156,8 +156,12 @@ some "others place it…/usually identified" phrasing, a little interpretive
 filler. Usage 27,359 in + 34,628 cache write + 12,592 cache read, 12,115 out.
 After review (2026-10-21): model `notes` removed from schema and prompt;
 model switched to Opus 5.5 at effort `high`. Not re-run on the 30 by Robert's
-call. Open from the second run: length (2 over cap), "others place it…"
-phrasing, some interpretive filler. Next: the full run, or one more 30.
+call. Robert's rulings on the second run's open points (2026-10-21): longer is
+fine (prompt cap 120 → 150 words, check cap 130 → 165); other sources and views
+may be mentioned when they support the conclusion, never to dispute one;
+inferences may come from logic and connected passages elsewhere in the Bible,
+stated as inference (citations still only from CITABLE). Not re-run. Next: the
+full run, or one more 30 on Opus 5.5 first.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`

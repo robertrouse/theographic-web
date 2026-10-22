@@ -19,7 +19,7 @@ import { verseIdOfOsis } from './ground.js';
 import { MAX_WORDS } from './prompt.js';
 
 /** The generous ceiling on the check; the prompt asks for `MAX_WORDS`. */
-export const MAX_WORDS_HARD = 130;
+export const MAX_WORDS_HARD = 165;
 
 /** Machine refs (`2Kgs.5.12`) belong in `citations`; the text uses `2 Kgs 5:12`. */
 const OSIS_IN_TEXT = /\b[1-3]?[A-Z][A-Za-z]+\.\d+\.\d+\b/g;

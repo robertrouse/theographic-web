@@ -222,7 +222,7 @@ describe('prompt', () => {
     const b = buildUserMessage(ground('place', 'eden_1', ctx));
     expect(a).toBe(b);
     expect(SYSTEM_PROMPT).not.toMatch(/\d{4}-\d{2}-\d{2}/);
-    expect(SYSTEM_PROMPT).toContain('At most 120 words');
+    expect(SYSTEM_PROMPT).toContain('At most 150 words');
     expect(SYSTEM_PROMPT).not.toMatch(/the graph records|knowledge graph/);
   });
 
@@ -305,8 +305,8 @@ describe('checkDefinition', () => {
 
   it('rejects empty text and over-long text', () => {
     expect(checkDefinition(row({ text: '  ' }), ctx).problems).toContain('empty text');
-    const long = Array.from({ length: 131 }, () => 'word').join(' ');
-    expect(checkDefinition(row({ text: long }), ctx).problems).toContain('131 words, cap 130');
+    const long = Array.from({ length: 166 }, () => 'word').join(' ');
+    expect(checkDefinition(row({ text: long }), ctx).problems).toContain('166 words, cap 165');
     expect(wordCount('  a  b\nc ')).toBe(3);
   });
 
