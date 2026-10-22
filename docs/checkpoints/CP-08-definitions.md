@@ -93,11 +93,13 @@ submit; `--out path` redirects collect/check to another file.
       with no row, still shows Easton).
 - [x] Tests (mocked SDK, no network): 46 in `packages/data/test/definitions.test.ts`,
       7 in `apps/web/test/definitions.test.ts`.
-- [ ] Dry run 30 → `docs/checkpoints/cp-08-dryrun.json`; Robert reviews.
-      **Blocked: no credential on the machine that built this** (no
-      `ANTHROPIC_API_KEY`, no `ant` CLI, no `~/.config/anthropic`). Nothing has
-      been sent to the API. Robert runs the two commands above and commits
-      the resulting file.
+- [x] Dry run 30 → `docs/checkpoints/cp-08-dryrun.json` (2026-10-21,
+      `msgbatch_01PAuqgWbFxfcZaanyv8jmHn`, `claude-opus-5`). 30/30 succeeded;
+      1 check failure (`reign_of_jehoshaphat_181`, 131 words > 130). Usage:
+      27,374 input + 13,830 cache write + 13,830 cache read, 11,113 output
+      (~370/request) ≈ $0.25 at Opus 5 batch rates → full run ≈ $40 (Opus 5),
+      ≈ $32 (Opus 5.5). The system-prompt cache did engage, contrary to the
+      Design note. Robert reviews; prompt revisions below.
 - [ ] Full run; commit to the metadata repo; bump `data.lock`.
 
 ## Decisions made
@@ -128,22 +130,25 @@ submit; `--out path` redirects collect/check to another file.
 
 ## Where I left off
 
-Pipeline, gate, bundle, site and tests are done and green
-(`npm run typecheck && THEOGRAPHIC_REQUIRE_DATA=1 npm test && npm run build`,
-prettier clean). **The dry run has not been executed** — no API credential was
-available in the environment. Next session, with a credential:
+Dry run done and saved (see Tasks). Findings from a first read, for Robert:
 
-1. `npm run data:definitions -- submit --dry-run 30` (30 requests, ~16k input
-   tokens; the `--preview` output was inspected and the sample is: 10 people
-   led by `abiel_23` (ambiguous), 10 places led by `atad_112` (no
-   coordinates), 10 events).
-2. `npm run data:definitions -- collect <batchId>`; copy the merged file to
-   `docs/checkpoints/cp-08-dryrun.json`; paste the `usage:` line into the
-   Cost bullet above.
-3. If the API rejects the request shape (the one thing a mock cannot prove),
-   the likely culprits are `output_config.format` with an optional `notes`
-   property, or `cache_control` on a system block inside a batch — both are
-   documented as supported, neither has been exercised here.
+- Outside knowledge leaks in despite the rule, mostly from Easton: modern
+  identifications (Abana = Barada, Baal-zephon on the Gulf of Suez, Lahmam
+  "southwest of Jerusalem", Mount Shepher "south of the Dead Sea").
+- Text talks about "the graph" and restates graph dates/durations, which
+  the page already shows.
+- Inline references are inconsistent (raw OSIS `2Kgs.5.12` vs `2 Samuel 3:4`)
+  and duplicate the citation list.
+- One event (`zaccheus_…_440`) never names its title.
+- `notes` are useful data QA: `hezron_568` coordinates in the far north vs a
+  southern boundary verse; `rehoboth_991` coordinates vs Easton; `abiel_23`
+  alias links to Ner/Jehiel; creation event lists Jesus Christ as participant.
+
+Next: Robert's review and decisions; then prompt revisions, switch to Opus 5.5,
+re-run the same 30, compare.
+
+Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
+`ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`
 
 ## Verify
 
