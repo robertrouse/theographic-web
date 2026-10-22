@@ -200,7 +200,7 @@ describe('prompt', () => {
     expect(msg).toContain('Also called: LORD, Lord');
     expect(msg).toContain('[Gen.1.1] Genesis 1:1 — In the beginning God created');
     expect(msg).toContain('CITABLE: Gen.1.1, John.1.1, John.1.2');
-    expect(msg).toContain('legacy reference (1897), may be dated or conflate people');
+    expect(msg).toContain("BACKGROUND (Easton's Bible Dictionary, 1897; for orientation only)");
     expect(msg).toContain('God. The Creator.');
     expect(msg).toMatch(/Write the definition of God as JSON\.$/);
   });
@@ -223,6 +223,7 @@ describe('prompt', () => {
     expect(a).toBe(b);
     expect(SYSTEM_PROMPT).not.toMatch(/\d{4}-\d{2}-\d{2}/);
     expect(SYSTEM_PROMPT).toContain('At most 120 words');
+    expect(SYSTEM_PROMPT).not.toMatch(/the graph records|knowledge graph/);
   });
 
   it('builds a batch request with the cached system prompt and the JSON schema', () => {
@@ -304,6 +305,17 @@ describe('checkDefinition', () => {
     const long = Array.from({ length: 131 }, () => 'word').join(' ');
     expect(checkDefinition(row({ text: long }), ctx).problems).toContain('131 words, cap 130');
     expect(wordCount('  a  b\nc ')).toBe(3);
+  });
+
+  it('rejects machine (OSIS) refs in the text and accepts readable ones', () => {
+    const osis = 'Naaman went away angry (2Kgs.5.12; Gen.1.1).';
+    expect(checkDefinition(row({ text: osis }), ctx).problems).toContain(
+      'OSIS ref in text: 2Kgs.5.12, Gen.1.1',
+    );
+    const readable = 'Naaman went away angry (2 Kgs 5:12; Gen 1:1).';
+    expect(
+      checkDefinition(row({ text: readable }), ctx).problems.filter((p) => p.startsWith('OSIS')),
+    ).toEqual([]);
   });
 
   it('checks a place against its own verses and an event against its passage', () => {

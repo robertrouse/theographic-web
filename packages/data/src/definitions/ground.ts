@@ -32,8 +32,7 @@ export const MAX_PROMPT_TOKENS = 6000;
 /** Easton is a secondary source; never let it crowd out the verses. */
 export const MAX_EASTON_TOKENS = 2000;
 
-export const EASTON_LABEL =
-  "Easton's Bible Dictionary — legacy reference (1897), may be dated or conflate people";
+export const EASTON_LABEL = "BACKGROUND (Easton's Bible Dictionary, 1897; for orientation only)";
 
 export type GroundKind = 'person' | 'place' | 'event';
 

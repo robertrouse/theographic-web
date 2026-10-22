@@ -21,6 +21,9 @@ import { MAX_WORDS } from './prompt.js';
 /** The generous ceiling on the check; the prompt asks for `MAX_WORDS`. */
 export const MAX_WORDS_HARD = 130;
 
+/** Machine refs (`2Kgs.5.12`) belong in `citations`; the text uses `2 Kgs 5:12`. */
+const OSIS_IN_TEXT = /\b[1-3]?[A-Z][A-Za-z]+\.\d+\.\d+\b/g;
+
 export interface ModelOutput {
   definition: string;
   citations: string[];
@@ -108,6 +111,8 @@ export function checkDefinition(
   if (text.length === 0) problems.push('empty text');
   const words = wordCount(text);
   if (words > MAX_WORDS_HARD) problems.push(`${words} words, cap ${MAX_WORDS_HARD}`);
+  const osis = text.match(OSIS_IN_TEXT);
+  if (osis) problems.push(`OSIS ref in text: ${osis.join(', ')}`);
   if (row.citations.length === 0) problems.push('no citations');
   if (row.kind === 'group') {
     problems.push('groups are not defined by this pipeline');
