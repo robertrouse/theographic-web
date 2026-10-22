@@ -82,6 +82,8 @@ export interface SelectOptions {
   dryRun?: number;
   /** Slugs whose existing row is `reviewed` are skipped. */
   existing?: readonly Definition[];
+  /** Slugs locked elsewhere (Airtable `reviewed` / `rejected`) are skipped too. */
+  skip?: ReadonlySet<string>;
 }
 
 /** Every definable slug with its kind, in a stable order: people, places, events. */
@@ -150,7 +152,7 @@ export function selectTargets(
   const reviewed = new Set(
     (opts.existing ?? []).filter((d) => d.status === 'reviewed').map((d) => d.slug),
   );
-  targets = targets.filter((t) => !reviewed.has(t.slug));
+  targets = targets.filter((t) => !reviewed.has(t.slug) && !opts.skip?.has(t.slug));
   if (opts.limit !== undefined) targets = targets.slice(0, opts.limit);
   return targets;
 }
@@ -162,7 +164,8 @@ export interface BatchRecord {
   batchId: string;
   model: string;
   submittedAt: string;
-  targets: { slug: string; kind: GroundKind }[];
+  /** `sources`: background works that were in the prompt (`easton`, `smith`, …). */
+  targets: { slug: string; kind: GroundKind; sources?: string[] }[];
   /** Estimated input tokens across all requests (4 chars/token). */
   estimatedInputTokens: number;
 }
@@ -184,7 +187,8 @@ export async function submit(
   const log = opts.log ?? (() => {});
   const targets = selectTargets(ctx, opts);
   if (targets.length === 0) throw new Error('nothing to submit');
-  const requests = targets.map((t) => buildRequest(ground(t.kind, t.slug, ctx)));
+  const grounds = targets.map((t) => ground(t.kind, t.slug, ctx));
+  const requests = grounds.map((g) => buildRequest(g));
   const estimatedInputTokens = requests.reduce(
     (s, r) =>
       s +
@@ -204,7 +208,10 @@ export async function submit(
     batchId: batch.id,
     model: MODEL,
     submittedAt: new Date().toISOString(),
-    targets,
+    targets: targets.map((t, i) => {
+      const sources = grounds[i]!.background?.map((b) => b.source);
+      return sources?.length ? { ...t, sources } : t;
+    }),
     estimatedInputTokens,
   };
   const dir = opts.recordDir ?? DEFINITIONS_CACHE_DIR;

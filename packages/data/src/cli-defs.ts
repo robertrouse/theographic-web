@@ -27,11 +27,33 @@ import {
   type SelectOptions,
 } from './definitions/run.js';
 import { ensureDefinitionsTable } from './airtable/definitions-table.js';
+import type { PushMeta, PushReport } from './airtable/sync.js';
+import { buildLinkIndex, fetchStatuses, LOCKED, pushDefinitions } from './airtable/sync.js';
 import { loadBackground } from './dicts/index.js';
 import { loadNormalized } from './load.js';
 import { NormalizeError } from './normalize.js';
 
 const log = (s: string): void => console.log(s);
+
+const airtableToken = (): string | undefined => process.env['AIRTABLE_TOKEN'] || undefined;
+
+/** Slugs Robert has decided in Airtable (reviewed / rejected); empty without a token. */
+async function airtableLocked(): Promise<Set<string>> {
+  const token = airtableToken();
+  if (!token) {
+    log('airtable: AIRTABLE_TOKEN not set; not checking Airtable for reviewed rows');
+    return new Set();
+  }
+  const statuses = await fetchStatuses(token);
+  const locked = new Set([...statuses].filter(([, s]) => LOCKED.has(s)).map(([slug]) => slug));
+  log(`airtable: ${statuses.size} rows, ${locked.size} reviewed/rejected (skipped)`);
+  return locked;
+}
+
+function reportPush(r: PushReport): void {
+  log(`airtable: ${r.written} written, ${r.locked.length} left alone (reviewed/rejected)`);
+  for (const p of r.problems) log(`  airtable: ${p}`);
+}
 
 export interface DefsArgs {
   command: string;
@@ -102,7 +124,7 @@ async function main(argv: string[]): Promise<number> {
   const a = parseDefsArgs(argv);
   if (a.command === 'help') {
     console.log(
-      'commands: submit | collect <batchId> | check [path] | ground <slug> | airtable-setup',
+      'commands: submit | collect <batchId> | check [path] | ground <slug> | airtable-setup | airtable-push [path]',
     );
     return 0;
   }
@@ -115,9 +137,9 @@ async function main(argv: string[]): Promise<number> {
     );
     return 0;
   }
-  let n;
+  let n, src;
   try {
-    ({ n } = await loadNormalized(log));
+    ({ n, src } = await loadNormalized(log));
   } catch (e) {
     if (e instanceof NormalizeError) {
       console.error(`normalize: ${e.message}`);
@@ -149,7 +171,7 @@ async function main(argv: string[]): Promise<number> {
     }
     case 'submit': {
       const existing = await readDefinitions(file);
-      const opts = { ...selectOptions(a), existing };
+      const opts = { ...selectOptions(a), existing, skip: await airtableLocked() };
       if (a.preview) {
         const targets = selectTargets(ctx, opts);
         console.log(`--- system (${SYSTEM_PROMPT.length} chars) ---\n${SYSTEM_PROMPT}\n`);
@@ -181,7 +203,26 @@ async function main(argv: string[]): Promise<number> {
       console.log(
         `usage: ${u.input} input (+${u.cacheRead} cache read, ${u.cacheWrite} cache write), ${u.output} output tokens`,
       );
+      const token = airtableToken();
+      if (token) {
+        const meta = new Map(
+          record.targets.map((t): [string, PushMeta] => [
+            t.slug,
+            t.sources
+              ? { batchId: record.batchId, sources: t.sources }
+              : { batchId: record.batchId },
+          ]),
+        );
+        reportPush(await pushDefinitions(token, r.rows, buildLinkIndex(src), meta, log));
+      }
       return r.missing.length > 0 ? 1 : 0;
+    }
+    case 'airtable-push': {
+      const token = airtableToken();
+      if (!token) throw new Error('airtable-push: set AIRTABLE_TOKEN');
+      const rows = await readDefinitions(a.positional[0] ?? file);
+      reportPush(await pushDefinitions(token, rows, buildLinkIndex(src), new Map(), log));
+      return 0;
     }
     case 'check': {
       const path = a.positional[0] ?? file;
