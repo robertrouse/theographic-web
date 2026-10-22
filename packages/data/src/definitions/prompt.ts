@@ -10,7 +10,6 @@
  * not truth, so the second check is not redundant.
  */
 import type { Grounding } from './ground.js';
-import { EASTON_LABEL } from './ground.js';
 
 export const MODEL = 'claude-opus-5-5';
 /** Opus 5.5 always thinks and defaults to `medium` effort; set it explicitly. */
@@ -52,7 +51,7 @@ Rules:
 - The OSIS form belongs only in "citations". If you refer to a verse inside the definition text, write it for readers as [Book abbreviation] [chapter]:[verse], using these abbreviations without periods: Gen, Exod, Lev, Num, Deut, Josh, Judg, Ruth, 1 Sam, 2 Sam, 1 Kgs, 2 Kgs, 1 Chr, 2 Chr, Ezra, Neh, Esth, Job, Ps, Prov, Eccl, Song, Isa, Jer, Lam, Ezek, Dan, Hos, Joel, Amos, Obad, Jonah, Mic, Nah, Hab, Zeph, Hag, Zech, Mal, Matt, Mark, Luke, John, Acts, Rom, 1 Cor, 2 Cor, Gal, Eph, Phil, Col, 1 Thess, 2 Thess, 1 Tim, 2 Tim, Titus, Phlm, Heb, Jas, 1 Pet, 2 Pet, 1 John, 2 John, 3 John, Jude, Rev. For example "2 Kgs 5:12", "Gen 1:1–2", "1 Chr 3:2; 2 Sam 3:4".
 - Where something is genuinely uncertain — a name shared by several people, an unknown location — say so briefly and neutrally.
 - Describe; do not interpret. No theological or doctrinal commentary, no devotional language, no judgements about the entity's character beyond what the text states.
-- The BACKGROUND entry, when present, is for orientation only; the verses and facts come first.
+- BACKGROUND entries, when present, are excerpts from reference works, each labelled with its title and year. Use them for orientation; the verses and facts come first. When you rely on one for a claim or a view, name it.
 
 Report your confidence: "high" when the definition rests on several clear verses, "medium" when it rests on a few or on relationships alone, "low" when the sources barely support anything beyond the name.`;
 
@@ -81,8 +80,8 @@ export function buildUserMessage(g: Grounding): string {
     verses(g),
     `CITABLE: ${g.citable.join(', ')}`,
   ];
-  if (g.easton !== undefined) {
-    parts.push(`${EASTON_LABEL}${g.eastonTruncated ? ' (truncated)' : ''}:\n${g.easton}`);
+  for (const b of g.background ?? []) {
+    parts.push(`${b.label}${b.truncated ? ' (truncated)' : ''}:\n${b.text}`);
   }
   parts.push(`Write the definition of ${g.title} as JSON.`);
   return parts.join('\n\n');

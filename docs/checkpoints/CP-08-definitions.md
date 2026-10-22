@@ -67,6 +67,19 @@ status: 'draft'|'reviewed', notes? }`. Regeneration skips `reviewed`
   **≈ $50 expected, ≈ $130 worst case.** Verify with the dry run's `usage`
   before the full run.
 
+- Background sources (added 2026-10-21, Robert: "name the dictionary and don't
+  limit to Easton's"): `packages/data/src/dicts/`. Smith's (1863), ISBE (1915)
+  and Hitchcock's (1869) from CrossWire SWORD modules (public domain), and
+  STEPBible TIPNR (CC BY 4.0) at a pinned commit; every file pinned by sha256.
+  Matched automatically: a name match plus shared verses (TIPNR's exhaustive
+  reference lists; ISBE `osisRef` and Smith `passage` attributes per sense);
+  ties and senses whose verses are < 40% one candidate's are skipped, aliases
+  never match without shared verses, Hitchcock attaches by primary name. Each
+  source has a token cap; over the 8,000-token prompt cap, ISBE → Smith →
+  Easton are cut first. Coverage: 4,237 of 4,365 people and places get at
+  least one source (Smith 3,296, ISBE 3,166, TIPNR 3,845, Hitchcock 3,373).
+  Full-run input rises ≈ 1.65M → 2.75M tokens (≈ +$2). Credited on /about/.
+
 ## Running it
 
 ```bash
@@ -180,6 +193,10 @@ here"); sources named by title when used; name meanings left as they are;
 connected passages may explain supplied facts the verses don't (the Creation /
 John 1:3, Col 1:16 pattern) — kept as a principle in the prompt. Open: other
 dictionaries beyond Easton's (the batch model has no web access).
+
+Background dictionaries implemented (see Design); not yet run through a batch.
+Before the full run, Robert also wants definitions written back to Airtable,
+linked to the primary People/Places/Events records — design pending.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`

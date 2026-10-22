@@ -70,7 +70,7 @@ describe('ground', () => {
     expect(g.verses[0]!.label).toBe('Genesis 2:1');
     expect(g.citable).toEqual(['Gen.2.1']);
     expect(g.totalVerses).toBe(1);
-    expect(g.easton).toBeUndefined(); // Adam has no Easton entry in the fixture
+    expect(g.background).toBeUndefined(); // Adam has no Easton entry in the fixture
   });
 
   it('carries the ambiguity flag and the Easton entry', () => {
@@ -78,8 +78,13 @@ describe('ground', () => {
     expect(eve.title).toBe('Eve (wife of Adam)');
     expect(Object.fromEntries(eve.facts)['Note']).toMatch(/shared by several people/);
     const god = ground('person', 'god_1', ctx);
-    expect(god.easton).toBe('God. The Creator.');
-    expect(god.eastonTruncated).toBeUndefined();
+    expect(god.background).toEqual([
+      {
+        source: 'easton',
+        label: "BACKGROUND (Easton's Bible Dictionary, 1897)",
+        text: 'God. The Creator.',
+      },
+    ]);
     expect(god.citable).toEqual(['Gen.1.1', 'John.1.1', 'John.1.2']);
   });
 
@@ -95,7 +100,7 @@ describe('ground', () => {
       Location: '33, 44 (Rough)',
       'People born here': 'Adam',
     });
-    expect(eden.easton).toBe('Eden. Delight.');
+    expect(eden.background?.[0]?.text).toBe('Eden. Delight.');
   });
 
   it('assembles an event from its passage', () => {
@@ -109,7 +114,7 @@ describe('ground', () => {
       Locations: 'Antioch (Syria)',
     });
     expect(g.citable).toEqual(['Gen.1.1', 'Gen.1.2']);
-    expect(g.easton).toBeUndefined();
+    expect(g.background).toBeUndefined();
   });
 
   it('knows every slug it can define, and no other', () => {
@@ -185,7 +190,7 @@ describe('token budget', () => {
       Array.from({ length: 60 }, (_, i) => `Paragraph ${i} ${'x'.repeat(600)}`).join('\n\n'),
     ];
     const g = ground('person', 'god_1', buildGroundContext(normalize(src)));
-    expect(g.eastonTruncated).toBe(true);
+    expect(g.background?.[0]?.truncated).toBe(true);
     expect(g.verses).toHaveLength(3); // verses were not touched
     expect(Math.ceil(buildUserMessage(g).length / 4)).toBeLessThanOrEqual(MAX_PROMPT_TOKENS + 100);
   });
@@ -200,7 +205,7 @@ describe('prompt', () => {
     expect(msg).toContain('Also called: LORD, Lord');
     expect(msg).toContain('[Gen.1.1] Genesis 1:1 — In the beginning God created');
     expect(msg).toContain('CITABLE: Gen.1.1, John.1.1, John.1.2');
-    expect(msg).toContain("BACKGROUND (Easton's Bible Dictionary, 1897; for orientation only)");
+    expect(msg).toContain("BACKGROUND (Easton's Bible Dictionary, 1897):");
     expect(msg).toContain('God. The Creator.');
     expect(msg).toMatch(/Write the definition of God as JSON\.$/);
   });

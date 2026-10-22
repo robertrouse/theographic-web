@@ -26,6 +26,7 @@ import {
   submit,
   type SelectOptions,
 } from './definitions/run.js';
+import { loadBackground } from './dicts/index.js';
 import { loadNormalized } from './load.js';
 import { NormalizeError } from './normalize.js';
 
@@ -114,6 +115,16 @@ async function main(argv: string[]): Promise<number> {
   }
   const ctx = buildGroundContext(n);
   const file = a.out ?? definitionsPath();
+  if (a.command === 'ground' || a.command === 'submit') {
+    const { background, stats } = await loadBackground(n, log);
+    ctx.background = background;
+    for (const st of stats) {
+      log(
+        `background ${st.source}: ${st.entities} entities from ${st.entries} entries` +
+          ` (${st.unmatched} unmatched, ${st.ambiguous} ambiguous senses skipped)`,
+      );
+    }
+  }
 
   switch (a.command) {
     case 'ground': {

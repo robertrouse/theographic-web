@@ -9,10 +9,15 @@
  * person who appears in Genesis and Hebrews should be seen from both. Within a
  * book, verses are sampled evenly so the first and last mention survive.
  *
+ * Background: Easton's (linked in the metadata) and the automatically matched
+ * reference works in `../dicts` (Smith's, ISBE, STEPBible TIPNR, Hitchcock's),
+ * each labelled with its title so the model can name what it uses.
+ *
  * Token budget: the whole user message is kept under `MAX_PROMPT_TOKENS`
- * (estimated at 4 characters per token). Easton's text is the one input that
- * can be very long (Moses runs to 3,000 words) and is the first thing cut,
- * at a paragraph boundary; verses are trimmed only if that is not enough.
+ * (estimated at 4 characters per token). Each background source has its own
+ * cap; over the total, the long encyclopedic ones are cut first (ISBE, Smith,
+ * Easton) at a paragraph boundary, and verses are trimmed only if that is not
+ * enough.
  */
 import type {
   Book,
@@ -25,14 +30,28 @@ import type {
   VerseRow,
 } from '@theographic/core';
 import { formatYear, verseIdParts } from '@theographic/core';
+import type { Background } from '../dicts/index.js';
+import { DICT_SOURCES, dictLabel } from '../dicts/index.js';
 import type { Normalized } from '../normalize.js';
 
 export const MAX_VERSES = 40;
-export const MAX_PROMPT_TOKENS = 6000;
+export const MAX_PROMPT_TOKENS = 8000;
 /** Easton is a secondary source; never let it crowd out the verses. */
 export const MAX_EASTON_TOKENS = 2000;
 
-export const EASTON_LABEL = "BACKGROUND (Easton's Bible Dictionary, 1897; for orientation only)";
+export const EASTON_LABEL = "BACKGROUND (Easton's Bible Dictionary, 1897)";
+
+/** One labelled reference-work excerpt in the prompt. */
+export interface BackgroundBlock {
+  /** `easton` or a `DictId`. */
+  source: string;
+  label: string;
+  text: string;
+  truncated?: boolean;
+}
+
+/** Cut first when the prompt is over budget: long, old, encyclopedic sources. */
+const TRIM_ORDER = ['isbe', 'smith', 'easton', 'tipnr', 'hitchcock'];
 
 export type GroundKind = 'person' | 'place' | 'event';
 
@@ -54,9 +73,8 @@ export interface Grounding {
   verses: GroundedVerse[];
   /** How many verses exist in total, so the model knows when it sees a sample. */
   totalVerses: number;
-  /** Easton text after budget trimming; `eastonTruncated` says if it was cut. */
-  easton?: string;
-  eastonTruncated?: boolean;
+  /** Reference-work excerpts after budget trimming; absent when there are none. */
+  background?: BackgroundBlock[];
   /** The only osisRefs a citation may use: exactly `verses[].osisRef`. */
   citable: string[];
 }
@@ -71,6 +89,8 @@ export interface GroundContext {
   groupBySlug: Map<Slug, GroupEntity>;
   eventById: Map<number, EventEntity>;
   eventBySlug: Map<Slug, EventEntity>;
+  /** Matched reference works (`loadBackground`); without it only Easton's is used. */
+  background?: Background;
   n: Normalized;
 }
 
@@ -377,30 +397,34 @@ function finish(
     totalVerses,
     citable: verses.map((v) => v.osisRef),
   };
-  if (easton) {
-    const t = trimEaston(easton);
-    g.easton = t.text;
-    if (t.truncated) g.eastonTruncated = true;
+  let blocks: BackgroundBlock[] = [];
+  const addBlock = (source: string, label: string, text: string, max: number): void => {
+    const t = trimEaston(text, max);
+    blocks.push({ source, label, text: t.text, ...(t.truncated ? { truncated: true } : {}) });
+  };
+  if (easton) addBlock('easton', EASTON_LABEL, easton, MAX_EASTON_TOKENS);
+  for (const s of DICT_SOURCES) {
+    const texts = (ctx.background?.get(base.slug) ?? [])
+      .filter((e) => e.source === s.id)
+      .map((e) => e.text);
+    if (texts.length) addBlock(s.id, dictLabel(s), texts.join('\n\n'), s.maxTokens);
   }
-  // Fit the token budget: shrink Easton first, then the verse sample.
+  // Fit the token budget: shrink background (longest sources first), then verses.
   const fixed = estimateTokens(JSON.stringify(base.facts)) + 200;
   const versesTokens = (): number => verses.reduce((s, v) => s + estimateTokens(v.text) + 8, 0);
-  if (g.easton !== undefined) {
-    const room = MAX_PROMPT_TOKENS - fixed - versesTokens();
-    if (estimateTokens(g.easton) > room) {
-      const t = trimEaston(g.easton, Math.max(0, room));
-      g.easton = t.text;
-      g.eastonTruncated = true;
-      if (g.easton === '') {
-        delete g.easton;
-        delete g.eastonTruncated;
-      }
-    }
+  const bgTokens = (): number => blocks.reduce((s, b) => s + estimateTokens(b.text) + 20, 0);
+  for (const source of TRIM_ORDER) {
+    const over = fixed + versesTokens() + bgTokens() - MAX_PROMPT_TOKENS;
+    if (over <= 0) break;
+    const b = blocks.find((x) => x.source === source);
+    if (!b) continue;
+    const t = trimEaston(b.text, Math.max(0, estimateTokens(b.text) - over));
+    b.text = t.text;
+    b.truncated = true;
   }
-  while (
-    verses.length > 4 &&
-    fixed + versesTokens() + estimateTokens(g.easton ?? '') > MAX_PROMPT_TOKENS
-  ) {
+  blocks = blocks.filter((b) => b.text !== '');
+  if (blocks.length) g.background = blocks;
+  while (verses.length > 4 && fixed + versesTokens() + bgTokens() > MAX_PROMPT_TOKENS) {
     const keep = evenIndices(verses.length, verses.length - 4);
     verses = keep.map((i) => verses[i]!);
   }
