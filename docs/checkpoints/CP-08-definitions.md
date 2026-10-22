@@ -160,8 +160,18 @@ call. Robert's rulings on the second run's open points (2026-10-21): longer is
 fine (prompt cap 120 → 150 words, check cap 130 → 165); other sources and views
 may be mentioned when they support the conclusion, never to dispute one;
 inferences may come from logic and connected passages elsewhere in the Bible,
-stated as inference (citations still only from CITABLE). Not re-run. Next: the
-full run, or one more 30 on Opus 5.5 first.
+stated as inference (citations still only from CITABLE).
+
+Third run (2026-10-21, `msgbatch_011YRdihXfWFfz1SMPh2qmvh`, Opus 5.5, effort
+high): `cp-08-dryrun-v3.json`, compared in `cp-08-dryrun-compare-v3.md`. 30/30,
+0 check failures, 92–153 words (avg 131). Usage 27,419 in + 31,626 cache write
++ 13,554 cache read, 12,716 out ≈ $0.26 → full run ≈ $30–40. Uses connected
+passages well (Hezron ↔ Num 34:4; Arphaxad ↔ Gen 11:10; Tabor ↔ Judg 4).
+Open for Robert: etymologies stated as fact (Atad, Haggith, Shapher); some
+"some identify… others place…" alternatives rather than one supported
+conclusion (Cherith, Rehoboth, Atad); one named dictionary (Hezron); titles
+without "The" read stiffly ("Reign of Hezekiah was…"). Next: Robert's call,
+then the full run.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`
