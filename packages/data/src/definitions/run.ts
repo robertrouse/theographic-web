@@ -56,6 +56,77 @@ export function sdkBatchClient(client: Anthropic = new Anthropic()): BatchClient
   };
 }
 
+/**
+ * The same requests through the plain Messages API, for small test runs when
+ * the batch queue is slow: twice the price, results in minutes. It presents
+ * the batch interface, so `collect` checks, merges and syncs exactly as for a
+ * real batch. Results live in memory; collect in the same process.
+ */
+export function directClient(
+  client: Anthropic = new Anthropic(),
+  opts: { concurrency?: number; log?: (s: string) => void } = {},
+): BatchClient {
+  const runs = new Map<string, IndividualResponse[]>();
+  const ended = (id: string, results: IndividualResponse[]): MessageBatch => {
+    const ok = results.filter((r) => r.result.type === 'succeeded').length;
+    return {
+      id,
+      type: 'message_batch',
+      processing_status: 'ended',
+      request_counts: {
+        processing: 0,
+        succeeded: ok,
+        errored: results.length - ok,
+        canceled: 0,
+        expired: 0,
+      },
+    } as unknown as MessageBatch;
+  };
+  return {
+    async create(requests) {
+      const id = `direct_${Date.now()}`;
+      const results: IndividualResponse[] = [];
+      let next = 0;
+      const worker = async (): Promise<void> => {
+        while (next < requests.length) {
+          const req = requests[next++]!;
+          try {
+            const message = await client.messages.create(
+              req.params as Anthropic.MessageCreateParamsNonStreaming,
+            );
+            results.push({
+              custom_id: req.custom_id,
+              result: { type: 'succeeded', message },
+            } as IndividualResponse);
+          } catch (e) {
+            opts.log?.(`  ${req.custom_id}: ${(e as Error).message}`);
+            results.push({
+              custom_id: req.custom_id,
+              result: {
+                type: 'errored',
+                error: { type: 'error', error: { type: 'api_error', message: String(e) } },
+              },
+            } as unknown as IndividualResponse);
+          }
+          opts.log?.(`direct: ${results.length}/${requests.length}`);
+        }
+      };
+      await Promise.all(Array.from({ length: opts.concurrency ?? 4 }, worker));
+      runs.set(id, results);
+      return ended(id, results);
+    },
+    async retrieve(id) {
+      return ended(id, runs.get(id) ?? []);
+    },
+    async results(id) {
+      const results = runs.get(id) ?? [];
+      return (async function* () {
+        yield* results;
+      })();
+    },
+  };
+}
+
 // ---------------------------------------------------------------- requests
 
 const CUSTOM_ID = /^[a-zA-Z0-9_-]{1,64}$/;

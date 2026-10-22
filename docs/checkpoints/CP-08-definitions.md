@@ -203,8 +203,24 @@ confidence; model; generatedAt; batchId; sources; checkProblems; reviewNotes;
 reviewedAt. Created by `npm run data:definitions -- airtable-setup`
 (`packages/data/src/airtable/definitions-table.ts`) with a pipeline PAT in
 Keychain (`airtable-theographic-pat`). The Airtable connector in Claude can
-read the schema but not change it. Next: upsert from `collect` (skip
-`reviewed`), export via the metadata ETL, test on the 30, then the full run.
+read the schema but not change it.
+
+Round trip built (2026-10-22): `submit` skips slugs that are reviewed/rejected
+in Airtable; `collect` upserts by slug with person/place/event and verse links,
+batchId and background sources; `airtable-push` pushes a file; `load` reads the
+exported Airtable records (rejected rows dropped). `--direct` sends a small run
+through the Messages API (twice the price, minutes not hours) when the batch
+queue is slow — used for the fourth dry run after a batch sat 23 minutes at
+0/30.
+
+Fourth run (Opus 5.5, high effort, dictionaries, `direct_1792647364693`):
+`cp-08-dryrun-v4.json`; all 30 upserted to Airtable as drafts, every row linked
+to its entity and verses; 0 check failures; 116–160 words (avg 138). Names its
+sources and says which view the map follows ("The location shown here follows
+the Barada identification"; Hezron: "does not follow either of these southern
+identifications"). Next: Robert reviews in Airtable; export with
+`etl/export_airtable.py` (branch `etl/definitions-table` in the metadata repo)
+and confirm the site reads it; then the full run.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`

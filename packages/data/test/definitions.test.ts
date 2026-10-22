@@ -745,6 +745,7 @@ describe('parseDefsArgs', () => {
         limit: 5,
         dryRun: 30,
         preview: false,
+        direct: false,
       },
     );
     expect(parseDefsArgs(['submit', '--slugs', 'a, b,,c', '--preview'])).toMatchObject({
@@ -757,6 +758,10 @@ describe('parseDefsArgs', () => {
       pollMs: 10,
       out: 'x.json',
       preview: false,
+      direct: false,
+    });
+    expect(parseDefsArgs(['submit', '--dry-run', '30', '--direct'])).toMatchObject({
+      direct: true,
     });
     expect(parseDefsArgs([])).toMatchObject({ command: 'help' });
   });
