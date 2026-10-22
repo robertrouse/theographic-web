@@ -229,13 +229,14 @@ describe('prompt', () => {
   it('builds a batch request with the cached system prompt and the JSON schema', () => {
     const r = buildRequest(ground('person', 'adam_2', ctx));
     expect(r.custom_id).toBe('adam_2');
-    expect(r.params.model).toBe('claude-opus-5');
-    expect(r.params.max_tokens).toBe(2000);
+    expect(r.params.model).toBe('claude-opus-5-5');
+    expect(r.params.max_tokens).toBe(8000);
     expect(r.params).not.toHaveProperty('thinking'); // adaptive is the default; no budget_tokens
     const system = r.params.system as Anthropic.Messages.TextBlockParam[];
     expect(system[0]!.cache_control).toEqual({ type: 'ephemeral' });
     expect(system[0]!.text).toBe(SYSTEM_PROMPT);
     expect(r.params.output_config).toEqual({
+      effort: 'high',
       format: { type: 'json_schema', schema: OUTPUT_SCHEMA },
     });
     expect(OUTPUT_SCHEMA.required).toEqual(['definition', 'citations', 'confidence']);
@@ -246,10 +247,12 @@ describe('prompt', () => {
 // ------------------------------------------------------------------- check
 
 describe('parseOutput', () => {
-  it('accepts the schema shape, trimming empty notes', () => {
-    expect(
-      parseOutput('{"definition":"x","citations":["Gen.1.1"],"confidence":"high","notes":" "}'),
-    ).toEqual({ definition: 'x', citations: ['Gen.1.1'], confidence: 'high' });
+  it('accepts the schema shape', () => {
+    expect(parseOutput('{"definition":"x","citations":["Gen.1.1"],"confidence":"high"}')).toEqual({
+      definition: 'x',
+      citations: ['Gen.1.1'],
+      confidence: 'high',
+    });
   });
 
   it.each([
@@ -259,7 +262,7 @@ describe('parseOutput', () => {
     ['{"definition":"x","citations":"Gen.1.1","confidence":"high"}', 'citations must be'],
     ['{"definition":"x","citations":[1],"confidence":"high"}', 'citations must be'],
     ['{"definition":"x","citations":[],"confidence":"sure"}', 'confidence must be'],
-    ['{"definition":"x","citations":[],"confidence":"high","notes":3}', 'notes must be'],
+    ['{"definition":"x","citations":[],"confidence":"high","notes":"x"}', 'unexpected key'],
     ['{"definition":"x","citations":[],"confidence":"high","extra":1}', 'unexpected key'],
   ])('rejects %s', (text, message) => {
     expect(() => parseOutput(text)).toThrow(OutputShapeError);
@@ -476,8 +479,8 @@ function fakeClient(replies: Record<string, string | { error: string }>): BatchC
   };
 }
 
-const out = (definition: string, citations: string[], notes?: string): string =>
-  JSON.stringify({ definition, citations, confidence: 'medium', ...(notes ? { notes } : {}) });
+const out = (definition: string, citations: string[]): string =>
+  JSON.stringify({ definition, citations, confidence: 'medium' });
 
 describe('selectTargets', () => {
   it('lists people, places then events, and can be narrowed', () => {
@@ -562,7 +565,7 @@ describe('submit + collect (mocked SDK)', () => {
     const client = fakeClient({
       god_1: out('God is the creator of heaven and earth.', ['Gen.1.1', 'John.1.1']),
       adam_2: out('Adam was in Eden with Eve.', ['Gen.1.1']), // Gen.1.1 does not mention Adam
-      eve_3: out('Eve was the wife of Adam.', ['Gen.2.1'], 'only one verse'),
+      eve_3: out('Eve was the wife of Adam.', ['Gen.2.1']),
       antioch_2: { error: 'api_error' },
     });
     const { record } = await submit(client, ctx, {
@@ -600,7 +603,6 @@ describe('submit + collect (mocked SDK)', () => {
       model: 'claude-opus-5',
       generatedAt: '2026-09-16',
       status: 'draft',
-      notes: 'only one verse',
     });
     expect(r.usage).toEqual({ input: 300, output: 60, cacheRead: 15, cacheWrite: 30 });
     expect(r.merge).toMatchObject({ added: ['adam_2', 'eve_3', 'god_1'], keptReviewed: [] });

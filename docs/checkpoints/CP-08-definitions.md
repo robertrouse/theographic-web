@@ -20,10 +20,14 @@ reviewable data, never overwriting a reviewed row.
 - `@anthropic-ai/sdk` 0.126, **Message Batches** (`client.messages.batches.create`,
   poll `processing_status`, stream results keyed by `custom_id` = slug; results
   arrive in any order and the collector never assumes otherwise).
-- Model `claude-opus-5`, adaptive thinking (the default — no `thinking` param,
-  no `budget_tokens`), `max_tokens` 2000, `output_config.format` JSON schema:
-  `{ definition: string, citations: string[] /* osisRef */, confidence: 'high'|'medium'|'low', notes?: string }`,
-  `additionalProperties: false`.
+- Model `claude-opus-5-5` (switched from `claude-opus-5` on 2026-10-21),
+  adaptive thinking (always on — no `thinking` param, no `budget_tokens`),
+  `output_config.effort: 'high'` (Opus 5.5 defaults to `medium`), `max_tokens`
+  8000 (room for thinking; billed on use), `output_config.format` JSON schema:
+  `{ definition: string, citations: string[] /* osisRef */, confidence: 'high'|'medium'|'low' }`,
+  `additionalProperties: false`. The model's `notes` field was removed on
+  2026-10-21 (Robert: a distraction); the row's `notes` is now written only by
+  the pipeline, for check failures.
 - System prompt (stable, `cache_control: {type:'ephemeral'}`): role, rules —
   ≤ 120 words; only claims supported by the supplied verses/relationships;
   cite osisRefs from the supplied list only; say what is uncertain; no
@@ -150,7 +154,10 @@ prompt from Robert's review): `cp-08-dryrun-v2.json`; side by side in
 titles named. Remaining: longer (avg 88 → 104 words; 2 over the 130 cap),
 some "others place it…/usually identified" phrasing, a little interpretive
 filler. Usage 27,359 in + 34,628 cache write + 12,592 cache read, 12,115 out.
-Next: Robert's call on those; Opus 5.5 decision; then the full run.
+After review (2026-10-21): model `notes` removed from schema and prompt;
+model switched to Opus 5.5 at effort `high`. Not re-run on the 30 by Robert's
+call. Open from the second run: length (2 over cap), "others place it…"
+phrasing, some interpretive filler. Next: the full run, or one more 30.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`

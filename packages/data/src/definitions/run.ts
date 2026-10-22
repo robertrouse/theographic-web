@@ -28,7 +28,14 @@ import {
   writeDefinitions,
   type MergeReport,
 } from './merge.js';
-import { buildUserMessage, MAX_TOKENS, MODEL, OUTPUT_SCHEMA, SYSTEM_PROMPT } from './prompt.js';
+import {
+  buildUserMessage,
+  EFFORT,
+  MAX_TOKENS,
+  MODEL,
+  OUTPUT_SCHEMA,
+  SYSTEM_PROMPT,
+} from './prompt.js';
 
 type Request = Anthropic.Messages.BatchCreateParams.Request;
 type MessageBatch = Anthropic.Messages.MessageBatch;
@@ -62,7 +69,7 @@ export function buildRequest(g: Grounding): Request {
       max_tokens: MAX_TOKENS,
       system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: buildUserMessage(g) }],
-      output_config: { format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
+      output_config: { effort: EFFORT, format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
     },
   };
 }
@@ -273,7 +280,6 @@ export function rowFromResult(
     generatedAt: meta.generatedAt,
     status: 'draft',
   };
-  if (out.notes) row.notes = out.notes;
   if (message.stop_reason === 'max_tokens') {
     row.notes = failureNotes(row.notes, ['output truncated at max_tokens']);
   }

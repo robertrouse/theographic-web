@@ -28,7 +28,6 @@ export interface ModelOutput {
   definition: string;
   citations: string[];
   confidence: 'high' | 'medium' | 'low';
-  notes?: string;
 }
 
 export class OutputShapeError extends Error {}
@@ -47,7 +46,7 @@ export function parseOutput(text: string): ModelOutput {
     throw new OutputShapeError('not an object');
   }
   const o = raw as Record<string, unknown>;
-  const allowed = new Set(['definition', 'citations', 'confidence', 'notes']);
+  const allowed = new Set(['definition', 'citations', 'confidence']);
   for (const k of Object.keys(o)) {
     if (!allowed.has(k)) throw new OutputShapeError(`unexpected key ${JSON.stringify(k)}`);
   }
@@ -59,17 +58,11 @@ export function parseOutput(text: string): ModelOutput {
   if (typeof o['confidence'] !== 'string' || !CONFIDENCE.has(o['confidence'])) {
     throw new OutputShapeError('confidence must be high | medium | low');
   }
-  if (o['notes'] !== undefined && typeof o['notes'] !== 'string') {
-    throw new OutputShapeError('notes must be a string when present');
-  }
-  const out: ModelOutput = {
+  return {
     definition: o['definition'],
     citations: o['citations'] as string[],
     confidence: o['confidence'] as ModelOutput['confidence'],
   };
-  const notes = (o['notes'] as string | undefined)?.trim();
-  if (notes) out.notes = notes;
-  return out;
 }
 
 export function wordCount(s: string): number {
