@@ -144,8 +144,13 @@ Dry run done and saved (see Tasks). Findings from a first read, for Robert:
   southern boundary verse; `rehoboth_991` coordinates vs Easton; `abiel_23`
   alias links to Ner/Jehiel; creation event lists Jesus Christ as participant.
 
-Next: Robert's review and decisions; then prompt revisions, switch to Opus 5.5,
-re-run the same 30, compare.
+Second run (2026-10-21, `msgbatch_01BJfExoUr5MoFPqGxAFUcHk`, Opus 5, revised
+prompt from Robert's review): `cp-08-dryrun-v2.json`; side by side in
+`cp-08-dryrun-compare.md`. No "the graph", no OSIS in text, no source-arguing,
+titles named. Remaining: longer (avg 88 → 104 words; 2 over the 130 cap),
+some "others place it…/usually identified" phrasing, a little interpretive
+filler. Usage 27,359 in + 34,628 cache write + 12,592 cache read, 12,115 out.
+Next: Robert's call on those; Opus 5.5 decision; then the full run.
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`
