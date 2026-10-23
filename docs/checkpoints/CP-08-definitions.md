@@ -218,9 +218,17 @@ Fourth run (Opus 5.5, high effort, dictionaries, `direct_1792647364693`):
 to its entity and verses; 0 check failures; 116–160 words (avg 138). Names its
 sources and says which view the map follows ("The location shown here follows
 the Barada identification"; Hezron: "does not follow either of these southern
-identifications"). Next: Robert reviews in Airtable; export with
-`etl/export_airtable.py` (branch `etl/definitions-table` in the metadata repo)
-and confirm the site reads it; then the full run.
+identifications"). Export verified (2026-10-22): a full `etl/export_airtable.py` run (with the
+timeout retries in theographic-bible-metadata PR #57) wrote `definitions.json`
+(30 rows) and `Definitions.csv`; `load` read it back with 0 link problems and
+0 check failures.
+
+**Full run submitted 2026-10-22: `msgbatch_013kqCrVdfspKcQQtBnWUCjc`, 4,815
+requests (~7.3M estimated input tokens incl. the cached system prompt), Opus
+5.5, effort high.** If the collect tab dies (app restart), rerun:
+`ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) AIRTABLE_TOKEN=$(security find-generic-password -a "$USER" -s airtable-theographic-pat -w) npm run data:definitions -- collect msgbatch_013kqCrVdfspKcQQtBnWUCjc`
+— collect is safe to repeat (merge by slug, Airtable upsert by slug, reviewed
+rows untouched).
 
 Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
 `ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`
