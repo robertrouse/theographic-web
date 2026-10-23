@@ -117,7 +117,18 @@ submit; `--out path` redirects collect/check to another file.
       (~370/request) ≈ $0.25 at Opus 5 batch rates → full run ≈ $40 (Opus 5),
       ≈ $32 (Opus 5.5). The system-prompt cache did engage, contrary to the
       Design note. Robert reviews; prompt revisions below.
-- [ ] Full run; commit to the metadata repo; bump `data.lock`.
+- [x] Full run (2026-10-23, `msgbatch_013kqCrVdfspKcQQtBnWUCjc`, Opus 5.5,
+      effort high, five background sources): 4,815 succeeded, 0 errored or
+      expired; sat at 0/4,815 for ~2 h, then finished within the next hour.
+      Upserted to Airtable: 4,815 written, 0 link problems. 23 check failures,
+      kept as flagged drafts: 13 over the 165-word cap (166–176), 10 with no
+      citations because the entity has no verses (places `ham_515`, `jaar_608`,
+      `aram-naharaim_84`, `aram-zobah_85`, `benjamins_gate_437`, and possessive
+      duplicates `samarias_1023`, `jerusalems_637`, `egypts_363`, `zions_1264`,
+      `ashdods_102`). Usage: 4,922,727 input + 7,199,870 cache read + 1,202,305
+      cache write, 2,418,139 output ≈ $37.8 at Opus 5.5 batch rates.
+- [ ] Robert reviews in Airtable; export (`etl/export_airtable.py`, PR #57 in
+      the metadata repo), commit `json/definitions.json` there, bump `data.lock`.
 
 ## Decisions made
 
