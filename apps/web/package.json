@@ -16,7 +16,7 @@
     "@capacitor/core": "^8.5.2",
     "@capacitor/status-bar": "^8.0.3",
     "@theographic/core": "*",
-    "astro": "^7.3.2",
+    "astro": "^7.3.3",
     "maplibre-gl": "^6.10.0",
     "preact": "^10.29.8"
   },
