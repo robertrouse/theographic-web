@@ -20,10 +20,10 @@ merge. `v2` merges to `master` at CP-11.
 | 05  | [Unified search + suggest](checkpoints/CP-05-unified-search.md) | done        | [#89](https://github.com/robertrouse/theographic-web/pull/89) | 10 goldens pending Robert (CP-03/04/05 files) |
 | 06  | [Web pages](checkpoints/CP-06-web-pages.md)                     | done        | [#85](https://github.com/robertrouse/theographic-web/pull/85) | follow-up in CP-03: browse index shows sublabels for duplicate names |
 | 07  | [Search UI island](checkpoints/CP-07-search-ui.md)              | done        | [#90](https://github.com/robertrouse/theographic-web/pull/90) | Preact swapped ([#94](https://github.com/robertrouse/theographic-web/pull/94), ADR-0002): main-thread JS 75.2 → 14.8 KB |
-| 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | blocked     | [#88](https://github.com/robertrouse/theographic-web/pull/88) | pipeline merged; needs Robert: run the 30-entity dry run with an API key, review, then full run |
+| 08  | [Generated definitions](checkpoints/CP-08-definitions.md)       | in-progress | branch `cp-08-dryrun` (no PR yet) | full run done 2026-10-23: 4,815 drafts in Airtable `definitions` (23 flagged); needs Robert: review in Airtable, merge metadata PR #57, export + pin |
 | 09  | [PWA + offline](checkpoints/CP-09-pwa.md)                       | done        | [#92](https://github.com/robertrouse/theographic-web/pull/92) | map tiles cached offline ([#95](https://github.com/robertrouse/theographic-web/pull/95)): viewed tiles only, 40 MB LRU cap |
-| 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | blocked     | [#91](https://github.com/robertrouse/theographic-web/pull/91) | shells merged, type-checked, unlaunched; needs Robert: iOS simulator runtime + Team ID (see apps/mobile/README.md) |
-| 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | blocked     | —             | #93–#96 merged 2026-10-04, smoke all clear on v2; Robert's go/no-go → merge v2 → master |
+| 10  | [Capacitor shells](checkpoints/CP-10-capacitor.md)              | blocked     | [#91](https://github.com/robertrouse/theographic-web/pull/91), [#98](https://github.com/robertrouse/theographic-web/pull/98) | paused by Robert; iOS runs on the iOS 27 simulator (router fix #98); needs bundle id, Team ID, real-device test, Android |
+| 11  | [Cutover](checkpoints/CP-11-cutover.md)                         | done        | [#97](https://github.com/robertrouse/theographic-web/pull/97) | v2 merged to master 2026-10-17 as a working replacement; design iteration continues (DESIGN-WORKFLOW.md) |
 
 ## Design track
 
@@ -49,6 +49,8 @@ CP-06 (pages) can proceed in parallel with CP-02..05 (search core) once CP-01
 lands; they touch different packages.
 
 ## Outside this repo (Robert)
+
+- [ ] Data-quality ledger: theographic-bible-metadata PR #59 (`data-quality/issues.yaml`); DQ-0010..0023 added from this project (issue #49 items + CP-08 findings). Fixes happen in Airtable.
 
 - [ ] Rotate the Airtable PAT that was hard-coded in `theographic-bible-metadata/scripts/airtable_etl.ipynb` (never committed: `scripts/` is gitignored). Since 2026-10-13 the notebook is deprecated in favour of `etl/export_airtable.py` and reads `AIRTABLE_TOKEN` from the environment; after rotating, update the metadata repo's `AIRTABLE_TOKEN` Actions secret and revoke the old token.
 - [x] `theographic-bible-metadata`: pulled, local commits and the `geo/` work pushed as [metadata#55](https://github.com/robertrouse/theographic-bible-metadata/pull/55) (2026-10-13); `data.lock` pins its `d811458`. Merge #55 before this repo's data PR.
