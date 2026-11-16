@@ -1,0 +1,409 @@
+{
+  "definitions": [
+    {
+      "slug": "aaron_1",
+      "kind": "person",
+      "text": "Aaron was the elder brother of Moses and Miriam, a Levite born in Egypt to Amram and Jochebed. A capable speaker, he was appointed to speak for Moses before Pharaoh (Exod 4:14; 7:1), and the two led Israel out of Egypt. While Moses was on Mount Sinai, Aaron made the golden calf at the people's demand, and Moses interceded for him (Exod 32:21; Deut 9:20). He and his sons were consecrated as Israel's priests, and he served as chief priest, offering sacrifices at the tabernacle. His budding rod was kept as a sign of his appointment (Num 17:10). He married Elisheba and had four sons, Nadab, Abihu, Eleazar and Ithamar. He died on Mount Hor aged 123, and Eleazar succeeded him (Num 20:25; 33:39), about 1452 BC by inference from context. His descendants formed Israel's priesthood for generations.",
+      "citations": [
+        "Exod.4.14",
+        "Exod.7.1",
+        "Exod.32.21",
+        "Deut.9.20",
+        "Lev.8.13",
+        "Lev.9.8",
+        "Num.17.10",
+        "1Chr.6.3",
+        "Num.20.25",
+        "Num.33.39",
+        "Ezra.7.5",
+        "Luke.1.5"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "abana_1",
+      "kind": "place",
+      "text": "Abana was one of the two rivers of Damascus named by Naaman, the Syrian army commander, when he was told to wash seven times in the Jordan to be healed of leprosy. Angry at the instruction, he asked whether Abana and Pharpar were not better than all the waters of Israel, and he went away in a rage (2 Kgs 5:12). By inference from the passage, it was a well-known river close to Damascus that Naaman knew well and held in high regard. It is commonly identified with the modern Barada River, which rises in the Anti-Lebanon mountains northwest of Damascus and flows through the city, watering the surrounding oasis. This is the only biblical mention of the river.",
+      "citations": ["2Kgs.5.12"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "abiel_23",
+      "kind": "person",
+      "text": "Abiel was a Benjamite, the son of Zeror, and an ancestor of King Saul. 1 Sam 9:1 calls him the father of Kish, Saul's father, and traces his own line back through Zeror, Bechorath and Aphiah. 1 Sam 14:51 names him as the father of Ner, the father of Abner, Saul's commander. The genealogies in Chronicles say that Ner was the father of Kish (1 Chr 8:33; 9:39). Taken together, these passages suggest that Abiel was either Saul's grandfather, with \"son\" in 1 Sam 9:1 meaning descendant, or that two men named Ner and Kish appear in the family line. He is probably the same man as Jehiel, the \"father of Gibeon\" who lived at Gibeon with his wife Maachah (1 Chr 9:35). That list names his sons, including Abdon, Zur, Kish, Baal, Ner, Nadab, Gedor, Ahio, Zacher and Mikloth. The name is also borne by others in the Bible.",
+      "citations": ["1Sam.9.1", "1Sam.14.51", "1Chr.8.33", "1Chr.9.35", "1Chr.9.39"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "ashur_342",
+      "kind": "person",
+      "text": "Ashur was a man of the tribe of Judah, a son of Hezron by his wife Abiah, born after Hezron had died in Caleb-ephratah (1 Chr 2:24). His brothers included Jerahmeel, Ram and Caleb, and he had a half-brother, Segub. He is called \"the father of Tekoa,\" which probably means he was the founder or leading figure of the town of Tekoa in Judah rather than the father of a person by that name. Ashur had two wives, Helah and Naarah (1 Chr 4:5). The genealogy that follows in 1 Chronicles 4 names his sons: Ahuzam, Hepher, Temeni and Haahashtari by Naarah, and Zereth, Jezoar and Ethnan by Helah. Coz is also counted among his descendants there. Nothing further is recorded about his life.",
+      "citations": ["1Chr.2.24", "1Chr.4.5"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "atad_112",
+      "kind": "place",
+      "text": "Atad was the site of a threshing floor \"beyond Jordan\" where Joseph, his brothers and the Egyptians accompanying them stopped while carrying Jacob's body from Egypt to Canaan for burial. There they held a great mourning for Jacob lasting seven days (Gen 50:10). The local Canaanites, seeing this, called it \"a grievous mourning to the Egyptians,\" and the place was therefore named Abel-mizraim, usually understood as \"mourning of Egypt\" (Gen 50:11). The name Atad itself means \"buckthorn\" or \"bramble.\" Its exact location is unknown. \"Beyond Jordan\" may mean east of the river or, depending on the writer's standpoint, west of it. Some have placed it near Hebron, where Jacob was buried.",
+      "citations": ["Gen.50.10", "Gen.50.11"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "baal-zephon_149",
+      "kind": "place",
+      "text": "Baal-zephon was a place in Egypt near the sea, opposite which the Israelites camped shortly before crossing the Red Sea during the Exodus. God told Moses to have the people turn back and camp before Pi-hahiroth, between Migdol and the sea, facing Baal-zephon (Exod 14:2). There Pharaoh's chariots, horsemen and army caught up with them (Exod 14:9). The list of Israel's stopping places records the same camp after they left Etham (Num 33:7). The name probably means \"lord of the north,\" which suggests a site linked to the worship of a Baal deity. Its exact location is uncertain. It is commonly placed near the northern end of the Gulf of Suez, and one older identification puts it on the western shore of the gulf. These events are dated to about 1491 BC, by inference from context.",
+      "citations": ["Exod.14.2", "Exod.14.9", "Num.33.7"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "birth_of_simeon_92",
+      "kind": "event",
+      "text": "Birth of Simeon is the event in which Leah, Jacob's first wife, bore her second son. After the birth she said the LORD had heard that she was unloved and had given her this son too, and she named him Simeon. The name is usually connected with the Hebrew verb for \"hear,\" which matches her explanation (Gen 29:33). The birth followed that of her first son, Reuben, and took place in Haran while Jacob was working for Leah's father Laban. That setting is inferred from the surrounding chapter. Simeon went on to become the ancestor of one of the tribes of Israel. The event is dated to about 1757 BC, an estimate inferred from context rather than stated in the text.",
+      "citations": ["Gen.29.33"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "cherith_286",
+      "kind": "place",
+      "text": "Cherith was a brook, a seasonal stream in a ravine, where the prophet Elijah hid at the LORD's command after announcing a drought to King Ahab. He was told to turn eastward and hide by the brook Cherith, \"that is before Jordan,\" and he went and lived there (1 Kgs 17:3, 5). The surrounding passage adds that he drank from the brook and was fed by ravens until it dried up for lack of rain, and he then moved on to Zarephath. \"Before Jordan\" probably means the stream faced or flowed into the Jordan River, but it does not say on which side. The exact location is uncertain. Some identify it with the Wadi el-Kelt near Jericho. Others place it in a ravine of Gilead east of the Jordan, the region of Elijah's home, which fits the instruction to go east.",
+      "citations": ["1Kgs.17.3", "1Kgs.17.5"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "creation_of_all_things_1",
+      "kind": "event",
+      "text": "Creation of all things is the opening event of the Bible, in which God made the heavens and the earth over six days and rested on the seventh (Gen 1:1–2:3). The earth began formless and dark, with the Spirit of God moving over the waters. On successive days God made light, separating it from darkness; the sky; dry land, seas and plants; the sun, moon and stars; sea creatures and birds; and land animals, followed by humankind, male and female, made in God's image and given dominion over the other creatures. God called each stage good and the whole very good. He then blessed and set apart the seventh day because he rested on it. Later passages such as John 1:3 and Col 1:16 present Christ as the agent of creation. A traditional chronology dates the event to about 4004 BC, an inference from biblical genealogies.",
+      "citations": [
+        "Gen.1.1",
+        "Gen.1.2",
+        "Gen.1.3",
+        "Gen.1.6",
+        "Gen.1.9",
+        "Gen.1.11",
+        "Gen.1.16",
+        "Gen.1.21",
+        "Gen.1.25",
+        "Gen.1.27",
+        "Gen.1.28",
+        "Gen.1.31",
+        "Gen.2.2",
+        "Gen.2.3"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "delilah_1005",
+      "kind": "person",
+      "text": "Delilah was a woman from the valley of Sorek whom Samson loved (Judg 16:4). The lords of the Philistines paid her to learn the secret of Samson's great strength and how he could be bound and overpowered. The money is mentioned when they arrive (Judg 16:18), and the surrounding passage describes the offer. She asked him repeatedly. Each time he gave a false answer, and each time she tested it, once binding him with new ropes while men waited in hiding, and once weaving his seven locks of hair into a loom. Each time he broke free, and she complained that he had mocked her and told her lies. When he finally told her the truth, she summoned the Philistine lords. The following verses relate that his hair was cut while he slept and he was captured. The text does not state her nationality, though she is often taken to be a Philistine.",
+      "citations": [
+        "Judg.16.4",
+        "Judg.16.6",
+        "Judg.16.10",
+        "Judg.16.12",
+        "Judg.16.13",
+        "Judg.16.18"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "deliverance_by_ehud_137",
+      "kind": "event",
+      "text": "Deliverance by Ehud was the overthrow of Moabite rule over Israel, dated by inference from context to about 1360 BC. After Israel cried to the LORD, Ehud son of Gera, a left-handed Benjamite, was raised up as a deliverer. Sent to bring a present to Eglon king of Moab, he hid a two-edged dagger about a cubit long on his right thigh. After delivering the gift, he came back from the quarries near Gilgal and said he had a secret message. In the king's private summer room he stabbed the very fat Eglon. He locked the doors and escaped to Seirath while the servants waited, thinking the king was relieving himself. Ehud then blew a trumpet in the hill country of Ephraim. He led the Israelites to seize the fords of the Jordan, and they killed about ten thousand Moabites. Moab was subdued, and the land had rest eighty years.",
+      "citations": [
+        "Judg.3.15",
+        "Judg.3.16",
+        "Judg.3.17",
+        "Judg.3.19",
+        "Judg.3.20",
+        "Judg.3.21",
+        "Judg.3.23",
+        "Judg.3.24",
+        "Judg.3.26",
+        "Judg.3.27",
+        "Judg.3.28",
+        "Judg.3.29",
+        "Judg.3.30"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "fair_havens_424",
+      "kind": "place",
+      "text": "Fair Havens was a harbor on the southern coast of Crete where the ship carrying Paul to Rome put in after struggling against contrary winds. Acts 27:8 says the ship reached it with difficulty after sailing past Cape Salmone (named in the preceding verse), and that the city of Lasea lay nearby. The wider narrative says the ship stayed there for some time. Paul advised against sailing on, but the harbor was judged unsuitable for wintering, so the crew set out for Phoenix. The ship was caught in a storm and later wrecked on Malta. The voyage is dated to about AD 56, by inference from context. The site is commonly identified with a bay still called Kaloi Limenes (\"Fair Havens\") on Crete's south coast, east of Cape Matala.",
+      "citations": ["Acts.27.8"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "haggith_1353",
+      "kind": "person",
+      "text": "Haggith was one of the wives of King David and the mother of his fourth son, Adonijah, who was born at Hebron. The lists of David's sons in 2 Sam 3:4 and 1 Chr 3:2 name her only as Adonijah's mother, and nothing else is told about her. Hebron as the birthplace comes from the context of the list in 2 Samuel, which covers sons born during David's reign there. Her name appears mainly in the phrase \"Adonijah the son of Haggith,\" used in the account of Adonijah's attempt to make himself king near the end of David's life. The prophet Nathan reported this attempt to Bathsheba, the mother of Solomon. The phrase appears again when Adonijah later came to Bathsheba after Solomon had become king. The name is often understood to mean \"festive.\"",
+      "citations": ["2Sam.3.4", "1Chr.3.2", "1Kgs.1.5", "1Kgs.1.11", "1Kgs.2.13"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "hezron_568",
+      "kind": "place",
+      "text": "Hezron was a landmark on the southern border of the tribe of Judah, named in Josh 15:3. The boundary ran from Maaleh-acrabbim through the wilderness of Zin, up south of Kadesh-barnea, then past Hezron before rising to Adar and turning toward Karkaa. By inference from this sequence, Hezron lay in the dry country west or northwest of Kadesh-barnea, in the far south of Canaan. Easton's Bible Dictionary describes it as a plain there. The parallel description of Israel's southern border in Num 34:4 names a single place, Hazar-addar, where Joshua lists Hezron and Adar, so the two names probably refer to the same area or to neighboring points. Its exact site is not known.",
+      "citations": ["Josh.15.3"],
+      "confidence": "low",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "jahath_690",
+      "kind": "person",
+      "text": "Jahath was a man of the tribe of Judah, named in the genealogy of Judah's descendants in 1 Chr 4:2. He was the son of Reaiah, who was the son of Shobal, and he was the father of Ahumai and Lahad. The verse ends by calling these the families of the Zorathites, which suggests that Jahath's line was linked with the town of Zorah in the lowlands of Judah. This is an inference from the name. Nothing else is recorded about him. Several other men in the Bible are also called Jahath, most of them Levites, and this Jahath should not be confused with them.",
+      "citations": ["1Chr.4.2"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "jesus_in_capernaum_281",
+      "kind": "event",
+      "text": "Jesus in Capernaum is the event in which Jesus left Nazareth and settled in Capernaum, a town on the shore of the Sea of Galilee within the old tribal territories of Zebulun and Naphtali. Matthew presents the move as fulfilling Isaiah's words about Galilee of the Gentiles, where people sitting in darkness would see a great light. From that time, Matthew says, Jesus began preaching, \"Repent: for the kingdom of heaven is at hand.\" Luke's account says he went down to Capernaum and taught the people on the sabbath days. Both Gospels place the move after Jesus was rejected at Nazareth. It probably took place about AD 27, a date inferred from context. Capernaum is generally identified with the ruins at Tell Hum on the northwest shore of the lake.",
+      "citations": ["Matt.4.13", "Matt.4.14", "Matt.4.15", "Matt.4.16", "Matt.4.17", "Luke.4.31"],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "joseph_1718",
+      "kind": "person",
+      "text": "Joseph (son of Judah) is a man named only in Luke's genealogy of Jesus, which traces the line back from Joseph, the husband of Mary. In Luke 3:26 he appears as the son of Juda and the father of Semei, and his descendants in this line include Mattathias and Maath. Nothing else is recorded about him. He belongs to the stretch of the genealogy covering the generations after the return from exile in Babylon, by inference from his position after Zerubbabel and Rhesa in the list. He should not be confused with the other men named Joseph in the same genealogy, including the one in Luke 3:24 and the one in Luke 3:30.",
+      "citations": ["Luke.3.26"],
+      "confidence": "low",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "lahmam_712",
+      "kind": "place",
+      "text": "Lahmam was a town in the territory of the tribe of Judah. It appears only once, in the list of Judah's towns in Josh 15:40, where it is named between Cabbon and Kithlish. The surrounding passage places it in the lowland district (the Shephelah) of Judah, in a group of towns that includes Lachish and Eglon. The Bible records nothing else about the town. Its exact location is uncertain. It is often identified with Khirbet el-Lahm, a ruin near Beit Guvrin in the western foothills of modern Israel, which fits its position among the nearby lowland towns.",
+      "citations": ["Josh.15.40"],
+      "confidence": "low",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "lifetime_of_arphaxad_46",
+      "kind": "event",
+      "text": "Lifetime of Arphaxad is the span of years recorded for Arphaxad, a son of Shem, in the genealogy from Shem to Abram in Genesis 11. The text says he lived thirty-five years and then became the father of Salah (Gen 11:12). He lived another four hundred and three years after Salah's birth and had other sons and daughters (Gen 11:13). Adding the two figures gives a total lifespan of 438 years, though the passage does not state the total or record his death in so many words. His birth is placed at about 2346 BC, an estimate inferred from the genealogical figures rather than a date given in the text. The earlier verse Gen 11:10 places that birth two years after the flood, by inference from the connected passage.",
+      "citations": ["Gen.11.12", "Gen.11.13"],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "michael_2061",
+      "kind": "person",
+      "text": "Michael is a Levite named only in the family line of Asaph, the temple singer appointed in David's time. He was the son of Baaseiah and the father of Shimea (1 Chr 6:40). By inference from the surrounding passage, he was a Gershonite, since the same line traces back to Gershon, son of Levi (1 Chr 6:39–43). He would also have been an ancestor of Asaph, several generations earlier. Nothing else is recorded about him. Several other people in the Bible share the name Michael and should not be confused with him.",
+      "citations": ["1Chr.6.40"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "mission_to_iconium_341",
+      "kind": "event",
+      "text": "Mission to Iconium was the stay of Paul and Barnabas in the city of Iconium during their first missionary journey, after their work in Antioch in Pisidia. They spoke together in the Jewish synagogue, and a large number of both Jews and Greeks believed. Jews who did not believe stirred up the Gentiles against the new believers. Even so, the two stayed a long time, speaking boldly, and signs and wonders were done through them. The city's population split, some siding with the Jews and some with the apostles. When Gentiles and Jews, together with their rulers, moved to mistreat and stone them, the mission came to an end. The following verse (Acts 14:6) says they fled to Lystra and Derbe. By inference from context, the stay took place about AD 46 and lasted roughly five months. Iconium is generally identified with modern Konya in Turkey.",
+      "citations": ["Acts.14.1", "Acts.14.2", "Acts.14.3", "Acts.14.4", "Acts.14.5"],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "mount_shapher_854",
+      "kind": "place",
+      "text": "Mount Shapher (spelled Shepher in some modern translations) was a mountain where the Israelites camped during their wilderness journey after leaving Egypt. It appears only in the list of camping stations in Numbers 33. The Israelites came to it from Kehelathah (Num 33:23) and moved on from it to Haradah (Num 33:24). Nothing else is recorded about the place, and its location is unknown. It is placed only roughly in the wilderness south of the Dead Sea, in what is now southern Jordan or the nearby Arabah region, by inference from its position in the sequence of stations. The name is often taken to mean \"brightness\" or \"beauty.\"",
+      "citations": ["Num.33.23", "Num.33.24"],
+      "confidence": "low",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "peter_s_confession_upon_this_rock_404",
+      "kind": "event",
+      "text": "Peter's Confession \"Upon this Rock\" is the moment when Simon Peter declared that Jesus was the Christ. It is recorded in Matthew, Mark and Luke, and set near Caesarea Philippi in Matthew and Mark. Jesus asked his disciples who people said he was, and they answered John the Baptist, Elijah, Jeremiah or one of the prophets. When he asked who they themselves said he was, Peter replied, \"Thou art the Christ, the Son of the living God\" (Matt 16:16). Mark has the shorter \"Thou art the Christ\", and Luke has \"The Christ of God\". Only Matthew adds Jesus' reply: he called Peter blessed, said this had been revealed by his Father, declared \"upon this rock I will build my church\", and promised him the keys of the kingdom of heaven. All three accounts end with Jesus ordering the disciples to tell no one. By inference from context, it took place about AD 29.",
+      "citations": [
+        "Matt.16.13",
+        "Matt.16.14",
+        "Matt.16.16",
+        "Matt.16.17",
+        "Matt.16.18",
+        "Matt.16.19",
+        "Matt.16.20",
+        "Mark.8.27",
+        "Mark.8.29",
+        "Mark.8.30",
+        "Luke.9.18",
+        "Luke.9.20",
+        "Luke.9.21"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "reaiah_2399",
+      "kind": "person",
+      "text": "Reaiah was the ancestor of a family whose descendants returned from exile in Babylon to Jerusalem and Judah. The family appears in the list of returnees in Ezra 2:47 and again in the parallel list in Neh 7:50. Both lists place it among the temple servants (the Nethinim), who assisted in the work of the sanctuary, so this Reaiah was probably the founder or head of a clan of temple servants. Nothing else is recorded about him. When he lived is not stated, and the name refers to the family line as much as to a single man. The name is shared by other people in the Bible, including a man of the tribe of Judah and a member of the tribe of Reuben, who appear to be different individuals.",
+      "citations": ["Ezra.2.47", "Neh.7.50"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "rehoboth_991",
+      "kind": "place",
+      "text": "Rehoboth was a city called \"Rehoboth by the river,\" the hometown of Saul (spelled Shaul in Chronicles), who became king of Edom after the death of Samlah. It appears only in the list of kings who ruled Edom before any king reigned over Israel (Gen 36:37; 1 Chr 1:48). The text does not name the river. In the Bible \"the river\" often means the Euphrates, and the city has been identified as lying on it. Because Saul ruled Edom, the city may also have been in or near Edomite territory, perhaps by one of the streams of present-day southern Jordan. Its exact location is uncertain. It should be kept apart from other places of the same name, such as the well Isaac dug and named Rehoboth, and the Assyrian city Rehoboth-Ir.",
+      "citations": ["Gen.36.37", "1Chr.1.48"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "reign_of_hezekiah_226",
+      "kind": "event",
+      "text": "Reign of Hezekiah was the rule of Hezekiah son of Ahaz over Judah from Jerusalem. It began in the third year of Hoshea king of Israel, about 726 BC by inference from context, and lasted about 29 years. The text says he did right in the LORD's sight as David had, kept the commandments given through Moses, and struck the Philistines as far as Gaza. During his reign Assyria carried the northern kingdom of Israel into exile. In his fourteenth year Sennacherib of Assyria took Judah's fortified cities. Hezekiah paid him silver from the temple and palace, but the Assyrian official Rabshakeh still demanded Jerusalem's surrender. Hezekiah prayed, Isaiah promised that the city would be defended, and Sennacherib went home to Nineveh. Later Hezekiah fell ill and recovered, with the sign of the shadow going back on the dial of Ahaz. He received envoys from Babylon and was succeeded by his son Manasseh.",
+      "citations": [
+        "2Kgs.18.1",
+        "2Kgs.18.3",
+        "2Kgs.18.6",
+        "2Kgs.18.8",
+        "2Kgs.18.11",
+        "2Kgs.18.13",
+        "2Kgs.18.15",
+        "2Kgs.18.28",
+        "2Kgs.19.15",
+        "2Kgs.19.34",
+        "2Kgs.19.36",
+        "2Kgs.20.7",
+        "2Kgs.20.11",
+        "2Kgs.20.14",
+        "2Kgs.20.21"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "reign_of_jehoshaphat_181",
+      "kind": "event",
+      "text": "Reign of Jehoshaphat is the twenty-five-year rule of Jehoshaphat son of Asa over Judah from Jerusalem, beginning in the fourth year of Ahab king of Israel, about 914 BC by inference from context. He became king at thirty-five, and his mother was Azubah daughter of Shilhi. He followed his father's ways and did what was right in the eyes of the LORD, though the high places were not removed and the people still burned incense there. He made peace with the king of Israel and expelled the remaining male cult prostitutes left from Asa's time. Edom then had no king, only a deputy. Jehoshaphat built ships of Tarshish to sail to Ophir for gold, but they were wrecked at Ezion-geber, and he refused Ahaziah son of Ahab's offer to send his servants with them. He was buried in the city of David, and his son Jehoram succeeded him.",
+      "citations": [
+        "1Kgs.22.41",
+        "1Kgs.22.42",
+        "1Kgs.22.43",
+        "1Kgs.22.44",
+        "1Kgs.22.46",
+        "1Kgs.22.47",
+        "1Kgs.22.48",
+        "1Kgs.22.49",
+        "1Kgs.22.50"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "simeon_2742",
+      "kind": "person",
+      "text": "Simeon was a man living in Jerusalem when Jesus was born, described in Luke 2:25 as just and devout, waiting for \"the consolation of Israel,\" with the Holy Spirit upon him. When Mary and Joseph brought the infant Jesus to the temple, Simeon blessed them. He told Mary that the child was destined for the fall and rising again of many in Israel and would be a sign that people would speak against (Luke 2:34). The surrounding passage adds that it had been revealed to him that he would not die before seeing the Lord's Christ, and that he took the child in his arms and praised God. Nothing further is recorded about his family, age or later life, though he is often assumed to have been elderly. He should not be confused with the other men named Simeon in the Bible, including the son of Jacob.",
+      "citations": ["Luke.2.25", "Luke.2.34"],
+      "confidence": "medium",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "tabor_1128",
+      "kind": "place",
+      "text": "Tabor (Mountain) is a prominent, isolated mountain in northern Israel, almost certainly the modern Mount Tabor (Jebel et-Tur) in Lower Galilee, southwest of the Sea of Galilee. It marked a point on the border of the tribe of Issachar (Josh 19:22). Gideon questioned the Midianite kings Zebah and Zalmunna about the men they had killed at Tabor, who turned out to be his brothers (Judg 8:18). Barak also gathered his forces there before fighting Sisera (Judg 4). Poets and prophets used the mountain as an image. A psalm pairs it with Hermon as mountains that rejoice in God's name (Ps 89:12). Jeremiah compares the certainty of a conqueror's coming to Tabor standing out among the mountains (Jer 46:18). Hosea rebukes Israel's priests and royal house as a net spread on Tabor, probably alluding to a place of worship or political activity there (Hos 5:1).",
+      "citations": ["Josh.19.22", "Judg.8.18", "Ps.89.12", "Jer.46.18", "Hos.5.1"],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    },
+    {
+      "slug": "zaccheus_converted_and_parable_of_the_pounds_440",
+      "kind": "event",
+      "text": "Zaccheus Converted and Parable of the Pounds is the episode in Luke 19:1–28 set at Jericho, about AD 30 by inference from context, following the healing of blind Bartimaeus. Zacchaeus, a rich chief tax collector, was too short to see Jesus over the crowd, so he climbed a sycamore tree. Jesus called him down and stayed at his house, and the crowd grumbled that he was the guest of a sinner. Zacchaeus pledged half his goods to the poor and fourfold repayment to anyone he had cheated. Jesus declared that salvation had come to the house. Because his hearers expected God's kingdom to appear at once, Jesus then told a parable. A nobleman left to receive a kingdom, gave ten servants a pound each, and on his return rewarded those who had gained more and took the pound from one who had hidden it. Jesus then went on up to Jerusalem.",
+      "citations": [
+        "Luke.19.1",
+        "Luke.19.2",
+        "Luke.19.3",
+        "Luke.19.4",
+        "Luke.19.5",
+        "Luke.19.7",
+        "Luke.19.8",
+        "Luke.19.9",
+        "Luke.19.11",
+        "Luke.19.12",
+        "Luke.19.13",
+        "Luke.19.17",
+        "Luke.19.20",
+        "Luke.19.24",
+        "Luke.19.28"
+      ],
+      "confidence": "high",
+      "model": "claude-opus-5-5",
+      "generatedAt": "2026-10-22",
+      "status": "draft"
+    }
+  ]
+}

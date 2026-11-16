@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.126.0",
-    "@theographic/core": "*"
+    "@theographic/core": "*",
+    "fflate": "^0.8.3"
   },
   "devDependencies": {
     "tsx": "^4.20.0"

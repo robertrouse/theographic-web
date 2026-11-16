@@ -5,6 +5,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { fromAirtable, isAirtableExport } from './airtable/sync.js';
 import { parseDefinitionsFile } from './definitions/merge.js';
 import { fetchOptionalDefinitions, fetchSources, readSource, SOURCE_FILES } from './fetch.js';
 import { normalize, type Normalized, type Overrides } from './normalize.js';
@@ -19,7 +20,16 @@ export async function loadAll(
   ) as unknown as Sources;
   const defsPath = await fetchOptionalDefinitions(lock, { log });
   if (defsPath) {
-    src.definitions = parseDefinitionsFile(await readFile(defsPath, 'utf8'));
+    const text = await readFile(defsPath, 'utf8');
+    const raw = JSON.parse(text) as unknown;
+    if (isAirtableExport(raw)) {
+      // The metadata export of the Airtable `definitions` table (the source of truth).
+      const { rows, problems } = fromAirtable(raw, src);
+      for (const p of problems) log(`definitions: ${p}`);
+      src.definitions = rows;
+    } else {
+      src.definitions = parseDefinitionsFile(text);
+    }
     log(`definitions: ${src.definitions.length} rows from ${defsPath}`);
   }
   return { src, sha: lock.sha, repo: lock.repo };

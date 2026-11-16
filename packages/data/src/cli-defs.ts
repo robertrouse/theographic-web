@@ -21,15 +21,43 @@ import { buildUserMessage, SYSTEM_PROMPT } from './definitions/prompt.js';
 import {
   collect,
   readRecord,
+  directClient,
   sdkBatchClient,
+  type BatchClient,
+  type BatchRecord,
   selectTargets,
   submit,
   type SelectOptions,
 } from './definitions/run.js';
+import { ensureDefinitionsTable } from './airtable/definitions-table.js';
+import type { PushMeta, PushReport } from './airtable/sync.js';
+import { buildLinkIndex, fetchStatuses, LOCKED, pushDefinitions } from './airtable/sync.js';
+import { loadBackground } from './dicts/index.js';
 import { loadNormalized } from './load.js';
-import { NormalizeError } from './normalize.js';
+import { NormalizeError, type Normalized } from './normalize.js';
+import type { Sources } from './source.js';
 
 const log = (s: string): void => console.log(s);
+
+const airtableToken = (): string | undefined => process.env['AIRTABLE_TOKEN'] || undefined;
+
+/** Slugs Robert has decided in Airtable (reviewed / rejected); empty without a token. */
+async function airtableLocked(): Promise<Set<string>> {
+  const token = airtableToken();
+  if (!token) {
+    log('airtable: AIRTABLE_TOKEN not set; not checking Airtable for reviewed rows');
+    return new Set();
+  }
+  const statuses = await fetchStatuses(token);
+  const locked = new Set([...statuses].filter(([, s]) => LOCKED.has(s)).map(([slug]) => slug));
+  log(`airtable: ${statuses.size} rows, ${locked.size} reviewed/rejected (skipped)`);
+  return locked;
+}
+
+function reportPush(r: PushReport): void {
+  log(`airtable: ${r.written} written, ${r.locked.length} left alone (reviewed/rejected)`);
+  for (const p of r.problems) log(`  airtable: ${p}`);
+}
 
 export interface DefsArgs {
   command: string;
@@ -39,6 +67,8 @@ export interface DefsArgs {
   slugs?: string[];
   dryRun?: number;
   preview: boolean;
+  /** Send through the Messages API instead of a batch (small test runs). */
+  direct: boolean;
   pollMs?: number;
   out?: string;
 }
@@ -55,6 +85,7 @@ export function parseDefsArgs(argv: string[]): DefsArgs {
       slugs: { type: 'string' },
       'dry-run': { type: 'string' },
       preview: { type: 'boolean', default: false },
+      direct: { type: 'boolean', default: false },
       'poll-ms': { type: 'string' },
       out: { type: 'string' },
     },
@@ -69,7 +100,7 @@ export function parseDefsArgs(argv: string[]): DefsArgs {
   if (values.kind !== undefined && !KINDS.has(values.kind)) {
     throw new Error(`--kind must be person, place or event`);
   }
-  const out: DefsArgs = { command, positional, preview: values.preview };
+  const out: DefsArgs = { command, positional, preview: values.preview, direct: values.direct };
   if (values.kind !== undefined) out.kind = values.kind as GroundKind;
   const limit = int('limit', values.limit);
   if (limit !== undefined) out.limit = limit;
@@ -99,12 +130,24 @@ function selectOptions(a: DefsArgs): SelectOptions {
 async function main(argv: string[]): Promise<number> {
   const a = parseDefsArgs(argv);
   if (a.command === 'help') {
-    console.log('commands: submit | collect <batchId> | check [path] | ground <slug>');
+    console.log(
+      'commands: submit | collect <batchId> | check [path] | ground <slug> | airtable-setup | airtable-push [path]',
+    );
     return 0;
   }
-  let n;
+  if (a.command === 'airtable-setup') {
+    const token = process.env['AIRTABLE_TOKEN'];
+    if (!token) throw new Error('airtable-setup: set AIRTABLE_TOKEN');
+    const t = await ensureDefinitionsTable(token);
+    console.log(
+      `definitions table ${t.id}: ${t.created ? 'created' : 'already exists, left unchanged'}`,
+    );
+    return 0;
+  }
+  let n: Normalized;
+  let src: Sources;
   try {
-    ({ n } = await loadNormalized(log));
+    ({ n, src } = await loadNormalized(log));
   } catch (e) {
     if (e instanceof NormalizeError) {
       console.error(`normalize: ${e.message}`);
@@ -114,6 +157,42 @@ async function main(argv: string[]): Promise<number> {
   }
   const ctx = buildGroundContext(n);
   const file = a.out ?? definitionsPath();
+  if (a.command === 'ground' || a.command === 'submit') {
+    const { background, stats } = await loadBackground(n, log);
+    ctx.background = background;
+    for (const st of stats) {
+      log(
+        `background ${st.source}: ${st.entities} entities from ${st.entries} entries` +
+          ` (${st.unmatched} unmatched, ${st.ambiguous} ambiguous senses skipped)`,
+      );
+    }
+  }
+
+  async function finishCollect(client: BatchClient, record: BatchRecord): Promise<number> {
+    const opts: Parameters<typeof collect>[3] = { log, mergeInto: file };
+    if (a.pollMs !== undefined) opts.pollMs = a.pollMs;
+    const r = await collect(client, ctx, record, opts);
+    console.log(
+      `${r.rows.length} rows; ${r.failed.length} failed checks; ${r.missing.length} missing`,
+    );
+    for (const f of r.failed) console.log(`  FAIL ${f.slug}: ${f.problems.join('; ')}`);
+    for (const m of r.missing) console.log(`  MISSING ${m.slug}: ${m.reason}`);
+    const u = r.usage;
+    console.log(
+      `usage: ${u.input} input (+${u.cacheRead} cache read, ${u.cacheWrite} cache write), ${u.output} output tokens`,
+    );
+    const token = airtableToken();
+    if (token) {
+      const meta = new Map(
+        record.targets.map((t): [string, PushMeta] => [
+          t.slug,
+          t.sources ? { batchId: record.batchId, sources: t.sources } : { batchId: record.batchId },
+        ]),
+      );
+      reportPush(await pushDefinitions(token, r.rows, buildLinkIndex(src), meta, log));
+    }
+    return r.missing.length > 0 ? 1 : 0;
+  }
 
   switch (a.command) {
     case 'ground': {
@@ -126,7 +205,7 @@ async function main(argv: string[]): Promise<number> {
     }
     case 'submit': {
       const existing = await readDefinitions(file);
-      const opts = { ...selectOptions(a), existing };
+      const opts = { ...selectOptions(a), existing, skip: await airtableLocked() };
       if (a.preview) {
         const targets = selectTargets(ctx, opts);
         console.log(`--- system (${SYSTEM_PROMPT.length} chars) ---\n${SYSTEM_PROMPT}\n`);
@@ -138,6 +217,11 @@ async function main(argv: string[]): Promise<number> {
         console.log(`${targets.length} request(s); none submitted (--preview)`);
         return 0;
       }
+      if (a.direct) {
+        const client = directClient(undefined, { log });
+        const { record } = await submit(client, ctx, { ...opts, log });
+        return finishCollect(client, record);
+      }
       const { record } = await submit(sdkBatchClient(), ctx, { ...opts, log });
       console.log(`next: npm run data:definitions -- collect ${record.batchId}`);
       return 0;
@@ -145,20 +229,14 @@ async function main(argv: string[]): Promise<number> {
     case 'collect': {
       const batchId = a.positional[0];
       if (!batchId) throw new Error('collect <batchId>');
-      const record = await readRecord(batchId);
-      const opts: Parameters<typeof collect>[3] = { log, mergeInto: file };
-      if (a.pollMs !== undefined) opts.pollMs = a.pollMs;
-      const r = await collect(sdkBatchClient(), ctx, record, opts);
-      console.log(
-        `${r.rows.length} rows; ${r.failed.length} failed checks; ${r.missing.length} missing`,
-      );
-      for (const f of r.failed) console.log(`  FAIL ${f.slug}: ${f.problems.join('; ')}`);
-      for (const m of r.missing) console.log(`  MISSING ${m.slug}: ${m.reason}`);
-      const u = r.usage;
-      console.log(
-        `usage: ${u.input} input (+${u.cacheRead} cache read, ${u.cacheWrite} cache write), ${u.output} output tokens`,
-      );
-      return r.missing.length > 0 ? 1 : 0;
+      return finishCollect(sdkBatchClient(), await readRecord(batchId));
+    }
+    case 'airtable-push': {
+      const token = airtableToken();
+      if (!token) throw new Error('airtable-push: set AIRTABLE_TOKEN');
+      const rows = await readDefinitions(a.positional[0] ?? file);
+      reportPush(await pushDefinitions(token, rows, buildLinkIndex(src), new Map(), log));
+      return 0;
     }
     case 'check': {
       const path = a.positional[0] ?? file;

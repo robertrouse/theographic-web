@@ -28,7 +28,14 @@ import {
   writeDefinitions,
   type MergeReport,
 } from './merge.js';
-import { buildUserMessage, MAX_TOKENS, MODEL, OUTPUT_SCHEMA, SYSTEM_PROMPT } from './prompt.js';
+import {
+  buildUserMessage,
+  EFFORT,
+  MAX_TOKENS,
+  MODEL,
+  OUTPUT_SCHEMA,
+  SYSTEM_PROMPT,
+} from './prompt.js';
 
 type Request = Anthropic.Messages.BatchCreateParams.Request;
 type MessageBatch = Anthropic.Messages.MessageBatch;
@@ -49,6 +56,77 @@ export function sdkBatchClient(client: Anthropic = new Anthropic()): BatchClient
   };
 }
 
+/**
+ * The same requests through the plain Messages API, for small test runs when
+ * the batch queue is slow: twice the price, results in minutes. It presents
+ * the batch interface, so `collect` checks, merges and syncs exactly as for a
+ * real batch. Results live in memory; collect in the same process.
+ */
+export function directClient(
+  client: Anthropic = new Anthropic(),
+  opts: { concurrency?: number; log?: (s: string) => void } = {},
+): BatchClient {
+  const runs = new Map<string, IndividualResponse[]>();
+  const ended = (id: string, results: IndividualResponse[]): MessageBatch => {
+    const ok = results.filter((r) => r.result.type === 'succeeded').length;
+    return {
+      id,
+      type: 'message_batch',
+      processing_status: 'ended',
+      request_counts: {
+        processing: 0,
+        succeeded: ok,
+        errored: results.length - ok,
+        canceled: 0,
+        expired: 0,
+      },
+    } as unknown as MessageBatch;
+  };
+  return {
+    async create(requests) {
+      const id = `direct_${Date.now()}`;
+      const results: IndividualResponse[] = [];
+      let next = 0;
+      const worker = async (): Promise<void> => {
+        while (next < requests.length) {
+          const req = requests[next++]!;
+          try {
+            const message = await client.messages.create(
+              req.params as Anthropic.MessageCreateParamsNonStreaming,
+            );
+            results.push({
+              custom_id: req.custom_id,
+              result: { type: 'succeeded', message },
+            } as IndividualResponse);
+          } catch (e) {
+            opts.log?.(`  ${req.custom_id}: ${(e as Error).message}`);
+            results.push({
+              custom_id: req.custom_id,
+              result: {
+                type: 'errored',
+                error: { type: 'error', error: { type: 'api_error', message: String(e) } },
+              },
+            } as unknown as IndividualResponse);
+          }
+          opts.log?.(`direct: ${results.length}/${requests.length}`);
+        }
+      };
+      await Promise.all(Array.from({ length: opts.concurrency ?? 4 }, worker));
+      runs.set(id, results);
+      return ended(id, results);
+    },
+    async retrieve(id) {
+      return ended(id, runs.get(id) ?? []);
+    },
+    async results(id) {
+      const results = runs.get(id) ?? [];
+      return (async function* () {
+        yield* results;
+      })();
+    },
+  };
+}
+
 // ---------------------------------------------------------------- requests
 
 const CUSTOM_ID = /^[a-zA-Z0-9_-]{1,64}$/;
@@ -62,7 +140,7 @@ export function buildRequest(g: Grounding): Request {
       max_tokens: MAX_TOKENS,
       system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: buildUserMessage(g) }],
-      output_config: { format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
+      output_config: { effort: EFFORT, format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
     },
   };
 }
@@ -75,6 +153,8 @@ export interface SelectOptions {
   dryRun?: number;
   /** Slugs whose existing row is `reviewed` are skipped. */
   existing?: readonly Definition[];
+  /** Slugs locked elsewhere (Airtable `reviewed` / `rejected`) are skipped too. */
+  skip?: ReadonlySet<string>;
 }
 
 /** Every definable slug with its kind, in a stable order: people, places, events. */
@@ -143,7 +223,7 @@ export function selectTargets(
   const reviewed = new Set(
     (opts.existing ?? []).filter((d) => d.status === 'reviewed').map((d) => d.slug),
   );
-  targets = targets.filter((t) => !reviewed.has(t.slug));
+  targets = targets.filter((t) => !reviewed.has(t.slug) && !opts.skip?.has(t.slug));
   if (opts.limit !== undefined) targets = targets.slice(0, opts.limit);
   return targets;
 }
@@ -155,7 +235,8 @@ export interface BatchRecord {
   batchId: string;
   model: string;
   submittedAt: string;
-  targets: { slug: string; kind: GroundKind }[];
+  /** `sources`: background works that were in the prompt (`easton`, `smith`, …). */
+  targets: { slug: string; kind: GroundKind; sources?: string[] }[];
   /** Estimated input tokens across all requests (4 chars/token). */
   estimatedInputTokens: number;
 }
@@ -177,7 +258,8 @@ export async function submit(
   const log = opts.log ?? (() => {});
   const targets = selectTargets(ctx, opts);
   if (targets.length === 0) throw new Error('nothing to submit');
-  const requests = targets.map((t) => buildRequest(ground(t.kind, t.slug, ctx)));
+  const grounds = targets.map((t) => ground(t.kind, t.slug, ctx));
+  const requests = grounds.map((g) => buildRequest(g));
   const estimatedInputTokens = requests.reduce(
     (s, r) =>
       s +
@@ -197,7 +279,10 @@ export async function submit(
     batchId: batch.id,
     model: MODEL,
     submittedAt: new Date().toISOString(),
-    targets,
+    targets: targets.map((t, i) => {
+      const sources = grounds[i]!.background?.map((b) => b.source);
+      return sources?.length ? { ...t, sources } : t;
+    }),
     estimatedInputTokens,
   };
   const dir = opts.recordDir ?? DEFINITIONS_CACHE_DIR;
@@ -273,7 +358,6 @@ export function rowFromResult(
     generatedAt: meta.generatedAt,
     status: 'draft',
   };
-  if (out.notes) row.notes = out.notes;
   if (message.stop_reason === 'max_tokens') {
     row.notes = failureNotes(row.notes, ['output truncated at max_tokens']);
   }

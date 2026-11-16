@@ -20,18 +20,22 @@ reviewable data, never overwriting a reviewed row.
 - `@anthropic-ai/sdk` 0.126, **Message Batches** (`client.messages.batches.create`,
   poll `processing_status`, stream results keyed by `custom_id` = slug; results
   arrive in any order and the collector never assumes otherwise).
-- Model `claude-opus-5`, adaptive thinking (the default — no `thinking` param,
-  no `budget_tokens`), `max_tokens` 2000, `output_config.format` JSON schema:
-  `{ definition: string, citations: string[] /* osisRef */, confidence: 'high'|'medium'|'low', notes?: string }`,
-  `additionalProperties: false`.
-- System prompt (stable, `cache_control: {type:'ephemeral'}`): role, rules —
-  ≤ 120 words; only claims supported by the supplied verses/relationships;
-  cite osisRefs from the supplied list only; say what is uncertain; no
-  doctrinal interpretation; plain modern English; name the entity as the
-  displayTitle; if the sources are too thin, say so in `notes` and keep the
-  definition to what is known. It is 1,666 chars (~420 tokens), which is
-  below the prompt-cache minimum, so the `cache_control` is harmless but will
-  not engage; padding it to qualify would cost more than it saves.
+- Model `claude-opus-5-5` (switched from `claude-opus-5` on 2026-10-21),
+  adaptive thinking (always on — no `thinking` param, no `budget_tokens`),
+  `output_config.effort: 'high'` (Opus 5.5 defaults to `medium`), `max_tokens`
+  8000 (room for thinking; billed on use), `output_config.format` JSON schema:
+  `{ definition: string, citations: string[] /* osisRef */, confidence: 'high'|'medium'|'low' }`,
+  `additionalProperties: false`. The model's `notes` field was removed on
+  2026-10-21 (Robert: a distraction); the row's `notes` is now written only by
+  the pipeline, for check failures.
+- System prompt (stable, `cache_control: {type:'ephemeral'}`; the cache does
+  engage in batches): general-audience role; ≤ 150 words; title first; claims
+  from the supplied verses and facts, with stated inferences allowed from
+  logic, context and connected passages, and modern place identifications as
+  inferences; dates presented as inferred; no "the graph"/"the data"; other
+  sources mentioned only in support, never to dispute; OSIS refs only in
+  `citations`, SBL-style `2 Kgs 5:12` in text; neutral on uncertainty; no
+  doctrinal interpretation. Revised 2026-10-21 from Robert's dry-run review.
 - User content per entity (`ground.ts`): record fields; relationships with
   names; up to 40 verses chosen for spread across books (one per book
   minimum, the rest in proportion, evenly sampled within a book so first and
@@ -46,7 +50,7 @@ status: 'draft'|'reviewed', notes? }`. Regeneration skips `reviewed`
   asked.
 - Checker (`check.ts`): shape re-validated on the way in; every citation must
   be a real verse that mentions the entity (people, places: `detail.verses`)
-  or lie in the event's verse list; ≤ 130 words; non-empty text; at least
+  or lie in the event's verse list; ≤ 165 words (was 130 until 2026-10-21); non-empty text; at least
   one citation; no duplicates. A failing row is **kept** as `draft` with
   `notes: 'citation check failed: …'` — never dropped, never patched.
 - Where the file lives: `THEOGRAPHIC_METADATA_DIR/json/definitions.json` when
@@ -62,6 +66,19 @@ status: 'draft'|'reviewed', notes? }`. Regeneration skips `reviewed`
   2,000 cap ≈ 9.6M. At Opus 5 batch rates ($2.50 / $12.50 per MTok):
   **≈ $50 expected, ≈ $130 worst case.** Verify with the dry run's `usage`
   before the full run.
+
+- Background sources (added 2026-10-21, Robert: "name the dictionary and don't
+  limit to Easton's"): `packages/data/src/dicts/`. Smith's (1863), ISBE (1915)
+  and Hitchcock's (1869) from CrossWire SWORD modules (public domain), and
+  STEPBible TIPNR (CC BY 4.0) at a pinned commit; every file pinned by sha256.
+  Matched automatically: a name match plus shared verses (TIPNR's exhaustive
+  reference lists; ISBE `osisRef` and Smith `passage` attributes per sense);
+  ties and senses whose verses are < 40% one candidate's are skipped, aliases
+  never match without shared verses, Hitchcock attaches by primary name. Each
+  source has a token cap; over the 8,000-token prompt cap, ISBE → Smith →
+  Easton are cut first. Coverage: 4,237 of 4,365 people and places get at
+  least one source (Smith 3,296, ISBE 3,166, TIPNR 3,845, Hitchcock 3,373).
+  Full-run input rises ≈ 1.65M → 2.75M tokens (≈ +$2). Credited on /about/.
 
 ## Running it
 
@@ -93,12 +110,25 @@ submit; `--out path` redirects collect/check to another file.
       with no row, still shows Easton).
 - [x] Tests (mocked SDK, no network): 46 in `packages/data/test/definitions.test.ts`,
       7 in `apps/web/test/definitions.test.ts`.
-- [ ] Dry run 30 → `docs/checkpoints/cp-08-dryrun.json`; Robert reviews.
-      **Blocked: no credential on the machine that built this** (no
-      `ANTHROPIC_API_KEY`, no `ant` CLI, no `~/.config/anthropic`). Nothing has
-      been sent to the API. Robert runs the two commands above and commits
-      the resulting file.
-- [ ] Full run; commit to the metadata repo; bump `data.lock`.
+- [x] Dry run 30 → `docs/checkpoints/cp-08-dryrun.json` (2026-10-21,
+      `msgbatch_01PAuqgWbFxfcZaanyv8jmHn`, `claude-opus-5`). 30/30 succeeded;
+      1 check failure (`reign_of_jehoshaphat_181`, 131 words > 130). Usage:
+      27,374 input + 13,830 cache write + 13,830 cache read, 11,113 output
+      (~370/request) ≈ $0.25 at Opus 5 batch rates → full run ≈ $40 (Opus 5),
+      ≈ $32 (Opus 5.5). The system-prompt cache did engage, contrary to the
+      Design note. Robert reviews; prompt revisions below.
+- [x] Full run (2026-10-23, `msgbatch_013kqCrVdfspKcQQtBnWUCjc`, Opus 5.5,
+      effort high, five background sources): 4,815 succeeded, 0 errored or
+      expired; sat at 0/4,815 for ~2 h, then finished within the next hour.
+      Upserted to Airtable: 4,815 written, 0 link problems. 23 check failures,
+      kept as flagged drafts: 13 over the 165-word cap (166–176), 10 with no
+      citations because the entity has no verses (places `ham_515`, `jaar_608`,
+      `aram-naharaim_84`, `aram-zobah_85`, `benjamins_gate_437`, and possessive
+      duplicates `samarias_1023`, `jerusalems_637`, `egypts_363`, `zions_1264`,
+      `ashdods_102`). Usage: 4,922,727 input + 7,199,870 cache read + 1,202,305
+      cache write, 2,418,139 output ≈ $37.8 at Opus 5.5 batch rates.
+- [ ] Robert reviews in Airtable; export (`etl/export_airtable.py`, PR #57 in
+      the metadata repo), commit `json/definitions.json` there, bump `data.lock`.
 
 ## Decisions made
 
@@ -128,22 +158,91 @@ submit; `--out path` redirects collect/check to another file.
 
 ## Where I left off
 
-Pipeline, gate, bundle, site and tests are done and green
-(`npm run typecheck && THEOGRAPHIC_REQUIRE_DATA=1 npm test && npm run build`,
-prettier clean). **The dry run has not been executed** — no API credential was
-available in the environment. Next session, with a credential:
+Dry run done and saved (see Tasks). Findings from a first read, for Robert:
 
-1. `npm run data:definitions -- submit --dry-run 30` (30 requests, ~16k input
-   tokens; the `--preview` output was inspected and the sample is: 10 people
-   led by `abiel_23` (ambiguous), 10 places led by `atad_112` (no
-   coordinates), 10 events).
-2. `npm run data:definitions -- collect <batchId>`; copy the merged file to
-   `docs/checkpoints/cp-08-dryrun.json`; paste the `usage:` line into the
-   Cost bullet above.
-3. If the API rejects the request shape (the one thing a mock cannot prove),
-   the likely culprits are `output_config.format` with an optional `notes`
-   property, or `cache_control` on a system block inside a batch — both are
-   documented as supported, neither has been exercised here.
+- Outside knowledge leaks in despite the rule, mostly from Easton: modern
+  identifications (Abana = Barada, Baal-zephon on the Gulf of Suez, Lahmam
+  "southwest of Jerusalem", Mount Shepher "south of the Dead Sea").
+- Text talks about "the graph" and restates graph dates/durations, which
+  the page already shows.
+- Inline references are inconsistent (raw OSIS `2Kgs.5.12` vs `2 Samuel 3:4`)
+  and duplicate the citation list.
+- One event (`zaccheus_…_440`) never names its title.
+- `notes` are useful data QA: `hezron_568` coordinates in the far north vs a
+  southern boundary verse; `rehoboth_991` coordinates vs Easton; `abiel_23`
+  alias links to Ner/Jehiel; creation event lists Jesus Christ as participant.
+
+Second run (2026-10-21, `msgbatch_01BJfExoUr5MoFPqGxAFUcHk`, Opus 5, revised
+prompt from Robert's review): `cp-08-dryrun-v2.json`; side by side in
+`cp-08-dryrun-compare.md`. No "the graph", no OSIS in text, no source-arguing,
+titles named. Remaining: longer (avg 88 → 104 words; 2 over the 130 cap),
+some "others place it…/usually identified" phrasing, a little interpretive
+filler. Usage 27,359 in + 34,628 cache write + 12,592 cache read, 12,115 out.
+After review (2026-10-21): model `notes` removed from schema and prompt;
+model switched to Opus 5.5 at effort `high`. Not re-run on the 30 by Robert's
+call. Robert's rulings on the second run's open points (2026-10-21): longer is
+fine (prompt cap 120 → 150 words, check cap 130 → 165); other sources and views
+may be mentioned when they support the conclusion, never to dispute one;
+inferences may come from logic and connected passages elsewhere in the Bible,
+stated as inference (citations still only from CITABLE).
+
+Third run (2026-10-21, `msgbatch_011YRdihXfWFfz1SMPh2qmvh`, Opus 5.5, effort
+high): `cp-08-dryrun-v3.json`, compared in `cp-08-dryrun-compare-v3.md`. 30/30,
+0 check failures, 92–153 words (avg 131). Usage 27,419 in + 31,626 cache write
++ 13,554 cache read, 12,716 out ≈ $0.26 → full run ≈ $30–40. Uses connected
+passages well (Hezron ↔ Num 34:4; Arphaxad ↔ Gen 11:10; Tabor ↔ Judg 4).
+Open for Robert: etymologies stated as fact (Atad, Haggith, Shapher); some
+"some identify… others place…" alternatives rather than one supported
+conclusion (Cherith, Rehoboth, Atad); one named dictionary (Hezron); titles
+without "The" read stiffly ("Reign of Hezekiah was…"). Next: Robert's call,
+then the full run.
+
+Robert's rulings on the third run (2026-10-21): "The" allowed before event
+titles; competing views kept, and the definition says which one this entry
+follows (for places, the view the coordinates match; "the location shown
+here"); sources named by title when used; name meanings left as they are;
+connected passages may explain supplied facts the verses don't (the Creation /
+John 1:3, Col 1:16 pattern) — kept as a principle in the prompt. Open: other
+dictionaries beyond Easton's (the batch model has no web access).
+
+Background dictionaries implemented (see Design); not yet run through a batch.
+Airtable (2026-10-22, Robert): the `definitions` table in "Theographic Bible
+Data" (`app5UK4s70d5PwupX`, table `tblY6WVGPxYxQNrHv`) is the source of truth
+for definitions, edits and review status. Fields: slug; person/place/event
+links; text; citations (links to verses); status draft/reviewed/rejected;
+confidence; model; generatedAt; batchId; sources; checkProblems; reviewNotes;
+reviewedAt. Created by `npm run data:definitions -- airtable-setup`
+(`packages/data/src/airtable/definitions-table.ts`) with a pipeline PAT in
+Keychain (`airtable-theographic-pat`). The Airtable connector in Claude can
+read the schema but not change it.
+
+Round trip built (2026-10-22): `submit` skips slugs that are reviewed/rejected
+in Airtable; `collect` upserts by slug with person/place/event and verse links,
+batchId and background sources; `airtable-push` pushes a file; `load` reads the
+exported Airtable records (rejected rows dropped). `--direct` sends a small run
+through the Messages API (twice the price, minutes not hours) when the batch
+queue is slow — used for the fourth dry run after a batch sat 23 minutes at
+0/30.
+
+Fourth run (Opus 5.5, high effort, dictionaries, `direct_1792647364693`):
+`cp-08-dryrun-v4.json`; all 30 upserted to Airtable as drafts, every row linked
+to its entity and verses; 0 check failures; 116–160 words (avg 138). Names its
+sources and says which view the map follows ("The location shown here follows
+the Barada identification"; Hezron: "does not follow either of these southern
+identifications"). Export verified (2026-10-22): a full `etl/export_airtable.py` run (with the
+timeout retries in theographic-bible-metadata PR #57) wrote `definitions.json`
+(30 rows) and `Definitions.csv`; `load` read it back with 0 link problems and
+0 check failures.
+
+**Full run submitted 2026-10-22: `msgbatch_013kqCrVdfspKcQQtBnWUCjc`, 4,815
+requests (~7.3M estimated input tokens incl. the cached system prompt), Opus
+5.5, effort high.** If the collect tab dies (app restart), rerun:
+`ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) AIRTABLE_TOKEN=$(security find-generic-password -a "$USER" -s airtable-theographic-pat -w) npm run data:definitions -- collect msgbatch_013kqCrVdfspKcQQtBnWUCjc`
+— collect is safe to repeat (merge by slug, Airtable upsert by slug, reviewed
+rows untouched).
+
+Credentials: key in macOS Keychain (service `anthropic-api-key`); run with
+`ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s anthropic-api-key -w) npm run data:definitions -- …`
 
 ## Verify
 

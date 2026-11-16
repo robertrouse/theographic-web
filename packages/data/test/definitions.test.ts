@@ -70,7 +70,7 @@ describe('ground', () => {
     expect(g.verses[0]!.label).toBe('Genesis 2:1');
     expect(g.citable).toEqual(['Gen.2.1']);
     expect(g.totalVerses).toBe(1);
-    expect(g.easton).toBeUndefined(); // Adam has no Easton entry in the fixture
+    expect(g.background).toBeUndefined(); // Adam has no Easton entry in the fixture
   });
 
   it('carries the ambiguity flag and the Easton entry', () => {
@@ -78,8 +78,13 @@ describe('ground', () => {
     expect(eve.title).toBe('Eve (wife of Adam)');
     expect(Object.fromEntries(eve.facts)['Note']).toMatch(/shared by several people/);
     const god = ground('person', 'god_1', ctx);
-    expect(god.easton).toBe('God. The Creator.');
-    expect(god.eastonTruncated).toBeUndefined();
+    expect(god.background).toEqual([
+      {
+        source: 'easton',
+        label: "BACKGROUND (Easton's Bible Dictionary, 1897)",
+        text: 'God. The Creator.',
+      },
+    ]);
     expect(god.citable).toEqual(['Gen.1.1', 'John.1.1', 'John.1.2']);
   });
 
@@ -95,7 +100,7 @@ describe('ground', () => {
       Location: '33, 44 (Rough)',
       'People born here': 'Adam',
     });
-    expect(eden.easton).toBe('Eden. Delight.');
+    expect(eden.background?.[0]?.text).toBe('Eden. Delight.');
   });
 
   it('assembles an event from its passage', () => {
@@ -109,7 +114,7 @@ describe('ground', () => {
       Locations: 'Antioch (Syria)',
     });
     expect(g.citable).toEqual(['Gen.1.1', 'Gen.1.2']);
-    expect(g.easton).toBeUndefined();
+    expect(g.background).toBeUndefined();
   });
 
   it('knows every slug it can define, and no other', () => {
@@ -185,7 +190,7 @@ describe('token budget', () => {
       Array.from({ length: 60 }, (_, i) => `Paragraph ${i} ${'x'.repeat(600)}`).join('\n\n'),
     ];
     const g = ground('person', 'god_1', buildGroundContext(normalize(src)));
-    expect(g.eastonTruncated).toBe(true);
+    expect(g.background?.[0]?.truncated).toBe(true);
     expect(g.verses).toHaveLength(3); // verses were not touched
     expect(Math.ceil(buildUserMessage(g).length / 4)).toBeLessThanOrEqual(MAX_PROMPT_TOKENS + 100);
   });
@@ -200,7 +205,7 @@ describe('prompt', () => {
     expect(msg).toContain('Also called: LORD, Lord');
     expect(msg).toContain('[Gen.1.1] Genesis 1:1 — In the beginning God created');
     expect(msg).toContain('CITABLE: Gen.1.1, John.1.1, John.1.2');
-    expect(msg).toContain('legacy reference (1897), may be dated or conflate people');
+    expect(msg).toContain("BACKGROUND (Easton's Bible Dictionary, 1897):");
     expect(msg).toContain('God. The Creator.');
     expect(msg).toMatch(/Write the definition of God as JSON\.$/);
   });
@@ -222,19 +227,21 @@ describe('prompt', () => {
     const b = buildUserMessage(ground('place', 'eden_1', ctx));
     expect(a).toBe(b);
     expect(SYSTEM_PROMPT).not.toMatch(/\d{4}-\d{2}-\d{2}/);
-    expect(SYSTEM_PROMPT).toContain('At most 120 words');
+    expect(SYSTEM_PROMPT).toContain('At most 150 words');
+    expect(SYSTEM_PROMPT).not.toMatch(/the graph records|knowledge graph/);
   });
 
   it('builds a batch request with the cached system prompt and the JSON schema', () => {
     const r = buildRequest(ground('person', 'adam_2', ctx));
     expect(r.custom_id).toBe('adam_2');
-    expect(r.params.model).toBe('claude-opus-5');
-    expect(r.params.max_tokens).toBe(2000);
+    expect(r.params.model).toBe('claude-opus-5-5');
+    expect(r.params.max_tokens).toBe(8000);
     expect(r.params).not.toHaveProperty('thinking'); // adaptive is the default; no budget_tokens
     const system = r.params.system as Anthropic.Messages.TextBlockParam[];
     expect(system[0]!.cache_control).toEqual({ type: 'ephemeral' });
     expect(system[0]!.text).toBe(SYSTEM_PROMPT);
     expect(r.params.output_config).toEqual({
+      effort: 'high',
       format: { type: 'json_schema', schema: OUTPUT_SCHEMA },
     });
     expect(OUTPUT_SCHEMA.required).toEqual(['definition', 'citations', 'confidence']);
@@ -245,10 +252,12 @@ describe('prompt', () => {
 // ------------------------------------------------------------------- check
 
 describe('parseOutput', () => {
-  it('accepts the schema shape, trimming empty notes', () => {
-    expect(
-      parseOutput('{"definition":"x","citations":["Gen.1.1"],"confidence":"high","notes":" "}'),
-    ).toEqual({ definition: 'x', citations: ['Gen.1.1'], confidence: 'high' });
+  it('accepts the schema shape', () => {
+    expect(parseOutput('{"definition":"x","citations":["Gen.1.1"],"confidence":"high"}')).toEqual({
+      definition: 'x',
+      citations: ['Gen.1.1'],
+      confidence: 'high',
+    });
   });
 
   it.each([
@@ -258,7 +267,7 @@ describe('parseOutput', () => {
     ['{"definition":"x","citations":"Gen.1.1","confidence":"high"}', 'citations must be'],
     ['{"definition":"x","citations":[1],"confidence":"high"}', 'citations must be'],
     ['{"definition":"x","citations":[],"confidence":"sure"}', 'confidence must be'],
-    ['{"definition":"x","citations":[],"confidence":"high","notes":3}', 'notes must be'],
+    ['{"definition":"x","citations":[],"confidence":"high","notes":"x"}', 'unexpected key'],
     ['{"definition":"x","citations":[],"confidence":"high","extra":1}', 'unexpected key'],
   ])('rejects %s', (text, message) => {
     expect(() => parseOutput(text)).toThrow(OutputShapeError);
@@ -301,9 +310,20 @@ describe('checkDefinition', () => {
 
   it('rejects empty text and over-long text', () => {
     expect(checkDefinition(row({ text: '  ' }), ctx).problems).toContain('empty text');
-    const long = Array.from({ length: 131 }, () => 'word').join(' ');
-    expect(checkDefinition(row({ text: long }), ctx).problems).toContain('131 words, cap 130');
+    const long = Array.from({ length: 166 }, () => 'word').join(' ');
+    expect(checkDefinition(row({ text: long }), ctx).problems).toContain('166 words, cap 165');
     expect(wordCount('  a  b\nc ')).toBe(3);
+  });
+
+  it('rejects machine (OSIS) refs in the text and accepts readable ones', () => {
+    const osis = 'Naaman went away angry (2Kgs.5.12; Gen.1.1).';
+    expect(checkDefinition(row({ text: osis }), ctx).problems).toContain(
+      'OSIS ref in text: 2Kgs.5.12, Gen.1.1',
+    );
+    const readable = 'Naaman went away angry (2 Kgs 5:12; Gen 1:1).';
+    expect(
+      checkDefinition(row({ text: readable }), ctx).problems.filter((p) => p.startsWith('OSIS')),
+    ).toEqual([]);
   });
 
   it('checks a place against its own verses and an event against its passage', () => {
@@ -464,8 +484,8 @@ function fakeClient(replies: Record<string, string | { error: string }>): BatchC
   };
 }
 
-const out = (definition: string, citations: string[], notes?: string): string =>
-  JSON.stringify({ definition, citations, confidence: 'medium', ...(notes ? { notes } : {}) });
+const out = (definition: string, citations: string[]): string =>
+  JSON.stringify({ definition, citations, confidence: 'medium' });
 
 describe('selectTargets', () => {
   it('lists people, places then events, and can be narrowed', () => {
@@ -550,7 +570,7 @@ describe('submit + collect (mocked SDK)', () => {
     const client = fakeClient({
       god_1: out('God is the creator of heaven and earth.', ['Gen.1.1', 'John.1.1']),
       adam_2: out('Adam was in Eden with Eve.', ['Gen.1.1']), // Gen.1.1 does not mention Adam
-      eve_3: out('Eve was the wife of Adam.', ['Gen.2.1'], 'only one verse'),
+      eve_3: out('Eve was the wife of Adam.', ['Gen.2.1']),
       antioch_2: { error: 'api_error' },
     });
     const { record } = await submit(client, ctx, {
@@ -588,7 +608,6 @@ describe('submit + collect (mocked SDK)', () => {
       model: 'claude-opus-5',
       generatedAt: '2026-09-16',
       status: 'draft',
-      notes: 'only one verse',
     });
     expect(r.usage).toEqual({ input: 300, output: 60, cacheRead: 15, cacheWrite: 30 });
     expect(r.merge).toMatchObject({ added: ['adam_2', 'eve_3', 'god_1'], keptReviewed: [] });
@@ -726,6 +745,7 @@ describe('parseDefsArgs', () => {
         limit: 5,
         dryRun: 30,
         preview: false,
+        direct: false,
       },
     );
     expect(parseDefsArgs(['submit', '--slugs', 'a, b,,c', '--preview'])).toMatchObject({
@@ -738,6 +758,10 @@ describe('parseDefsArgs', () => {
       pollMs: 10,
       out: 'x.json',
       preview: false,
+      direct: false,
+    });
+    expect(parseDefsArgs(['submit', '--dry-run', '30', '--direct'])).toMatchObject({
+      direct: true,
     });
     expect(parseDefsArgs([])).toMatchObject({ command: 'help' });
   });

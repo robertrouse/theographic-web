@@ -19,13 +19,15 @@ import { verseIdOfOsis } from './ground.js';
 import { MAX_WORDS } from './prompt.js';
 
 /** The generous ceiling on the check; the prompt asks for `MAX_WORDS`. */
-export const MAX_WORDS_HARD = 130;
+export const MAX_WORDS_HARD = 165;
+
+/** Machine refs (`2Kgs.5.12`) belong in `citations`; the text uses `2 Kgs 5:12`. */
+const OSIS_IN_TEXT = /\b[1-3]?[A-Z][A-Za-z]+\.\d+\.\d+\b/g;
 
 export interface ModelOutput {
   definition: string;
   citations: string[];
   confidence: 'high' | 'medium' | 'low';
-  notes?: string;
 }
 
 export class OutputShapeError extends Error {}
@@ -44,7 +46,7 @@ export function parseOutput(text: string): ModelOutput {
     throw new OutputShapeError('not an object');
   }
   const o = raw as Record<string, unknown>;
-  const allowed = new Set(['definition', 'citations', 'confidence', 'notes']);
+  const allowed = new Set(['definition', 'citations', 'confidence']);
   for (const k of Object.keys(o)) {
     if (!allowed.has(k)) throw new OutputShapeError(`unexpected key ${JSON.stringify(k)}`);
   }
@@ -56,17 +58,11 @@ export function parseOutput(text: string): ModelOutput {
   if (typeof o['confidence'] !== 'string' || !CONFIDENCE.has(o['confidence'])) {
     throw new OutputShapeError('confidence must be high | medium | low');
   }
-  if (o['notes'] !== undefined && typeof o['notes'] !== 'string') {
-    throw new OutputShapeError('notes must be a string when present');
-  }
-  const out: ModelOutput = {
+  return {
     definition: o['definition'],
     citations: o['citations'] as string[],
     confidence: o['confidence'] as ModelOutput['confidence'],
   };
-  const notes = (o['notes'] as string | undefined)?.trim();
-  if (notes) out.notes = notes;
-  return out;
 }
 
 export function wordCount(s: string): number {
@@ -108,6 +104,8 @@ export function checkDefinition(
   if (text.length === 0) problems.push('empty text');
   const words = wordCount(text);
   if (words > MAX_WORDS_HARD) problems.push(`${words} words, cap ${MAX_WORDS_HARD}`);
+  const osis = text.match(OSIS_IN_TEXT);
+  if (osis) problems.push(`OSIS ref in text: ${osis.join(', ')}`);
   if (row.citations.length === 0) problems.push('no citations');
   if (row.kind === 'group') {
     problems.push('groups are not defined by this pipeline');
