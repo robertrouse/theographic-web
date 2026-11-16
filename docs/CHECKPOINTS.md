@@ -33,7 +33,7 @@ changes run on `design/*` branches without a row; in-depth sections get a
 
 | #   | Section | Status | Branch / PR | Next action |
 | --- | ------- | ------ | ----------- | ----------- |
-| D-01 | [Brand alignment with Viz.Bible](checkpoints/D-01-brand-alignment.md) | in-progress | `design/brand-vizbible` | Phases 0–1 in review on the PR preview; Robert: decisions 1–4 in the brief (logo blocks Phase 2) |
+| D-01 | [Brand alignment with Viz.Bible](checkpoints/D-01-brand-alignment.md) | in-progress | `design/brand-vizbible` · [#106](https://github.com/robertrouse/theographic-web/pull/106) | Phases 0–1 merged and verified; Robert: decision 1 (logo) unblocks Phase 2 |
 
 ## Dependencies
 
