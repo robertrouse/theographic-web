@@ -1,15 +1,15 @@
 {
   "repo": "robertrouse/theographic-bible-metadata",
-  "sha": "7797ffb8e53f0b34d1626d22219e4ad1c048b9f3",
+  "sha": "6dc5de5ececa751852bee355334c5d722218ebf2",
   "files": {
-    "books.json": "cb8dd4a6a5d5974f3c7dc19dfeadd50d0aa5e944344b57459255512e597adc24",
-    "chapters.json": "c1d95acc258b5771dcce37796262db3515d14459d107116f38a0c44b5c3cc994",
-    "definitions.json": "0d1d1a5e135ecb9ddc5908810790d955f92597904727b379789fc4af8f4eb93c",
+    "books.json": "87c1c95bf32396e8d42d9b6fb58f282c4d3a1af3ab59db507a3b6ce68dc31b4c",
+    "chapters.json": "e3f479f7c99b6ccab5217f572190057c4aca40a2797b7b0c3d639eeefcfe2079",
+    "definitions.json": "5dca545f3f7cf03a1b5c3f782c53bb3ed3b8fd3e27ae931bcabda587534098c5",
     "easton.json": "eb114e7a2f6e5d8224aac8593e7c76bd27aa6eca6ba34209028862ec91bc265a",
-    "events.json": "4179ffedce628e78fb9f7256f9329bad8a902377e7cdbafa49f2583d99208b80",
-    "people.json": "328d2b142b42713d7d2e755b6ca80448ba4c22baa8ced4443f1528623e76c815",
+    "events.json": "2b24aed4ee91b006324243f4b24ff33a06f4dc6b5ee843d733f38a6ede9a1324",
+    "people.json": "c1658ac4075e8c1c7208db2bf5570e24f26566d6980bbbfc21f908e855eee587",
     "peopleGroups.json": "3f0acd8f867fd0eaa15fc7f6f6287cae7dd92cf94a34e9d685967b4985d0e080",
-    "places.json": "5f60dc2f0db436a58afcec19ff04dd176c4e9a7c4aa8c65853feedb7a0281502",
-    "verses.json": "aaba48df3e03ea8b5784820ef747a5adda99f5ddd0a4ec6e8c40f808a632dc74"
+    "places.json": "0329bbc5fcde8d391b2d8b3e016eef2336dde0093514fe4e341574ab9df27d50",
+    "verses.json": "19d0b4229d0890cdb8b03fc5355ac93df293f536e7a49922c5cb4a64ef0bf4a9"
   }
 }
