@@ -290,7 +290,7 @@ describe('real sources', async () => {
         'daughter_of_lot_-_younger_984',
         'timna_2859',
       ]);
-      expect(stats.links).toBe(40690);
+      expect(stats.links).toBe(40719);
     },
   );
 });
